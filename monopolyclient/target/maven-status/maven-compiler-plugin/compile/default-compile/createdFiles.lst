@@ -1,0 +1,5 @@
+game\MonopolyGame.class
+controller\GameController.class
+module-info.class
+gui\GameMain.class
+game\IMonopolyGame.class

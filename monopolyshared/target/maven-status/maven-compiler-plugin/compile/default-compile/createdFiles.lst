@@ -1,0 +1,16 @@
+models\GoalBonusSquare.class
+restshared\MonopolyResponse.class
+models\Log.class
+models\User.class
+restshared\UserDTO.class
+models\RedCardSquare.class
+models\Dice.class
+models\StartSquare.class
+models\PlayerSquare.class
+communicatorshared\CommunicatorWebSocketMessage.class
+models\Board.class
+module-info.class
+models\DressingRoomSquare.class
+communicatorshared\CommunicatorWebSocketMessageOperation.class
+models\Wallet.class
+models\Square.class
