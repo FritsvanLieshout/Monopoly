@@ -1,4 +1,5 @@
 module monopolyshared {
+    requires javafx.graphics;
     exports communicatorshared;
     opens communicatorshared;
 
@@ -7,4 +8,5 @@ module monopolyshared {
 
     exports models;
     opens models;
+    exports enums;
 }

@@ -35,7 +35,7 @@ public class Board {
     public Square moveUser(User user, int nofDice) {
         int newPlace = user.getCurrentPlace() + nofDice;
         user.setPlace(newPlace);
-        squares[newPlace].action(user, this);
+        //squares[newPlace].action(user, this);
 
         return squares[newPlace];
     }

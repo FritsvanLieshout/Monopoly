@@ -1,18 +1,27 @@
 package models;
+import javafx.scene.layout.*;
 
-public abstract class Square {
+public class Square extends StackPane {
 
+    private int squareId;
     private String squareName;
+
+    public Square() { }
 
     public Square(String squareName) {
         this.squareName = squareName;
     }
 
-    public String getSquareName() {
-        return squareName;
+    public Square(int id, String squareName) {
+        this.squareId = id;
+        this.squareName = squareName;
     }
 
-    public void setSquareName(String name) { this.squareName = name; }
+    public int getSquareId() { return squareId; }
 
-    public abstract void action(User user, Board board);
+    public void setSquareId(int id) { this.squareId = id; }
+
+    public String getSquareName() { return squareName; }
+
+    public void setSquareName(String name) { this.squareName = name; }
 }

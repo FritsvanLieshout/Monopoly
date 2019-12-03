@@ -12,12 +12,4 @@ public class GoalBonusSquare extends Square {
     public int getBonus() {
         return bonus;
     }
-
-    @Override
-    public void action(User user, Board board) {
-        //Log dat de user de pot krijgt.
-
-        int goalBonus = getBonus();
-        user.getWallet().addMoneyToWallet(goalBonus);
-    }
 }

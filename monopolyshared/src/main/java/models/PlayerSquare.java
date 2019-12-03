@@ -45,22 +45,4 @@ public class PlayerSquare extends Square {
         return false;
         //}
     }
-
-    @Override
-    public void action(User user, Board board) {
-        if (owner < 0) {
-            //Wil je deze speler kopen? -> LOG
-            if(wantToBuySquare(user)) {
-                buySquare(user);
-            }
-            else {
-                //een log dat deze user de speler niet wilt kopen.
-            }
-        }
-        else {
-            if (owner != user.getUserId()) {
-                payRent(user, board);
-            }
-        }
-    }
 }
