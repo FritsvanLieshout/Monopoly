@@ -6,10 +6,12 @@ public class PlayerSquare extends Square {
     private int rentPrice;
     private int owner = -1;
 
+    public PlayerSquare() { }
+
     public PlayerSquare(String name, int price) {
         super(name);
         this.price = price;
-        this.rentPrice = price * 70 / 100;
+        this.rentPrice = price / 50 * 10;
     }
 
     public int getPrice() {

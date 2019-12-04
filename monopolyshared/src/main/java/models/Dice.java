@@ -10,12 +10,9 @@ public class Dice {
         this.nofDice = nofDice;
     }
 
-    public int getNofDice() { return nofDice; }
-
-    public void setNofDice(int nofDice) { this.nofDice = nofDice; }
-//    public int getNOFDice() {
-//        Random rnd = new Random();
-//        int nofDice = 1 + rnd.nextInt(6);
-//        return nofDice;
-//    }
+    public int getNofDice() {
+        Random rnd = new Random();
+        nofDice = 1 + rnd.nextInt(6);
+        return nofDice;
+    }
 }

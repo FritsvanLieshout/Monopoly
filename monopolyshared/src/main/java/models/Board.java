@@ -8,32 +8,11 @@ public class Board {
     User[] users;
     Square[] squares = new Square[40];
 
-    public Board(int totalUsers) {
-        this.users = new User[totalUsers];
-        this.totalUsers = totalUsers;
-
-        for (int i = 0; i < squares.length; i++) {
-            if (i == 0) {
-                squares[i] = new StartSquare("Start");
-            }
-            else if (i == 10) {
-                squares[i] = new DressingRoomSquare("Dressing Room | Just Injured");
-            }
-            else if (i == 20) {
-                squares[i] = new GoalBonusSquare("Goal Bonus", 50);
-            }
-            else if (i == 30) {
-                squares[i] = new RedCardSquare("Red Card!");
-            }
-            else {
-                //todo
-                squares[i] = new PlayerSquare(squares[i].getSquareName(), 0);
-            }
-        }
+    public Board() {
     }
 
-    public Square moveUser(User user, int nofDice) {
-        int newPlace = user.getCurrentPlace() + nofDice;
+    public Square moveUser(User user, int nofDice1, int nofDice2) {
+        int newPlace = user.getCurrentPlace() + (nofDice1 + nofDice2);
         user.setPlace(newPlace);
         //squares[newPlace].action(user, this);
 

@@ -1,22 +1,16 @@
 package game;
 
-import models.Board;
-import models.Dice;
 import models.User;
 
-import java.util.Random;
+public class MonopolyGame implements IMonopolyGame {
 
-public class MonopolyGame {
+    User user = new User(1, "Jan");
 
-    public void throwDice(Dice dice) {
-        Random rnd = new Random();
-        int nofDice = 1 + rnd.nextInt(6);
-        dice.setNofDice(nofDice);
-    }
+    public MonopolyGame() { }
 
-
-    public void moveUser(User user, Dice dice, Board board) {
-        throwDice(dice);
-        board.moveUser(user, dice.getNofDice());
+    public void moveUser(int playerNr, int dice1, int dice2) {
+        int currentPlace = user.getCurrentPlace();
+        int newPlace = currentPlace + (dice1 + dice2);
+        user.setPlace(newPlace);
     }
 }

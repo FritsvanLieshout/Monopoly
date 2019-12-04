@@ -5,7 +5,7 @@ public class User {
     private int userId;
     private String username;
     private String password;
-    private int place = 0;
+    private int place;
     private Wallet wallet;
 
     public User() {
@@ -13,6 +13,7 @@ public class User {
     }
 
     public User(int userId, String username) {
+        this.place = 0;
         this.userId = userId;
         this.username = username;
         this.wallet = new Wallet(3500);

@@ -175,7 +175,7 @@
          <center>
             <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <GridPane fx:id="gpMonopolyBoard" alignment="CENTER" style="-fx-border-color: Black; -fx-background-color: c8e0ca; -fx-padding: 1;" StackPane.alignment="CENTER">
+                  <GridPane fx:id="gpMonopolyBoard" alignment="CENTER" style="-fx-background-color: c8e0ca;" StackPane.alignment="CENTER">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
