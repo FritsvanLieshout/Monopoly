@@ -1,5 +1,7 @@
 package game;
 
+import models.Log;
+import models.Square;
 import models.User;
 
 public class MonopolyGame implements IMonopolyGame {
@@ -12,5 +14,7 @@ public class MonopolyGame implements IMonopolyGame {
         int currentPlace = user.getCurrentPlace();
         int newPlace = currentPlace + (dice1 + dice2);
         user.setPlace(newPlace);
+
+        Log.print(user, "Do something");
     }
 }

@@ -1,26 +1,21 @@
 package controller;
 
 import enums.Card;
-import enums.ClubColor;
 import enums.FootballPlayer;
 import enums.Stadium;
 import game.IMonopolyGame;
 import game.MonopolyGame;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
-import javafx.stage.Stage;
 import models.*;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable, IMonopolyGUI {
@@ -72,76 +67,138 @@ public class GameController implements Initializable, IMonopolyGUI {
                 moveUser();
             }
         });
+
+        btnBuyPlayer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
+
+        btnPayRent.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
+
+        btnEndTurn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+            }
+        });
     }
 
     private void initBoard(Square[][] board, GridPane grid) {
-            for (int y = 0; y < 10; y++) {
-                for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
                 if (x == 0 || y == 0 || x == 9 || y == 9) {
                     if (snCount <= squareNames.length) {
                         id++;
-                        if (snCount == 0) {
-                            Square s = new StartSquare(squareNames[snCount]);
-                            board[x][y] = s;
-                            s.setSquareId(id);
-                            s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                            grid.add(s, x, y);
-                            s.getChildren().add(new Label(squareNames[snCount]));
-                        } else if (snCount == 9) {
-                            Square s = new DressingRoomSquare(squareNames[snCount]);
-                            board[x][y] = s;
-                            s.setSquareId(id);
-                            s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                            s.getChildren().add(new Label(squareNames[snCount]));
-                            grid.add(s, x, y);
-                        } else if (snCount == 35) {
-                            Square s = new GoalBonusSquare(squareNames[snCount], 500);
-                            board[x][y] = s;
-                            s.setSquareId(id);
-                            s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                            s.getChildren().add(new Label(squareNames[snCount]));
-                            grid.add(s, x, y);
-                        } else if (snCount == 26) {
-                            Square s = new RedCardSquare(squareNames[snCount]);
-                            board[x][y] = s;
-                            s.setSquareId(id);
-                            s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                            s.getChildren().add(new Label(squareNames[snCount]));
-                            grid.add(s, x, y);
-                        } else if (snCount == 2 || snCount == 7 || snCount == 12 || snCount == 20 || snCount == 23 || snCount == 33) {
-                            Square s = new Square();
-                            board[x][y] = s;
-                            s.setSquareId(id);
-                            s.setSquareName(squareNames[snCount]);
-                            s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                            s.getChildren().add(new Label(squareNames[snCount]));
-                            grid.add(s, x, y);
-                        } else {
-                            if (snCount == 4 || snCount == 16 || snCount == 17 || snCount == 30) {
-                                Square s = new PlayerSquare(squareNames[snCount], 200);
-                                board[x][y] = s;
-                                s.setSquareId(id);
-                                s.setSquareName(squareNames[snCount]);
-                                s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
-                                s.getChildren().add(new Label(squareNames[snCount]));
-                                grid.add(s, x, y);
-                            } else {
-                                Square s = new PlayerSquare(squareNames[snCount], 200 * snCount / 4);
-                                board[x][y] = s;
-                                s.setSquareId(id);
-                                s.setSquareName(squareNames[snCount]);
-                                s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
 
-                                Label lbl = new Label(squareNames[snCount]);
-                                s.getChildren().add(lbl);
-                                grid.add(s, x, y);
-                            }
+                        switch (snCount) {
+                            case 0:
+                                initStartSquare(board, grid, x, y);
+                                break;
+                            case 9:
+                                initDressingRoomSquare(board, grid, x, y);
+                                break;
+                            case 35:
+                                initGoalBonusSquare(board, grid, x, y);
+                                break;
+                            case 26:
+                                initRedCardSquare(board, grid, x, y);
+                                break;
+                            case 2:
+                            case 7:
+                            case 12:
+                            case 20:
+                            case 23:
+                            case 33:
+                                initCardSquares(board, grid, x, y);
+                                break;
+                            case 4:
+                            case 16:
+                            case 17:
+                            case 30:
+                                initStadiumSquares(board, grid, x, y);
+                            default:
+                                initFootballPlayerSquares(board, grid, x, y);
                         }
                         snCount++;
                     }
                 }
             }
         }
+    }
+
+    private void initStartSquare(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new StartSquare(squareNames[snCount]);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setStyle("-fx-border-color: black;");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initDressingRoomSquare(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new DressingRoomSquare(squareNames[snCount]);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setStyle("-fx-border-color: black;");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initGoalBonusSquare(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new GoalBonusSquare(squareNames[snCount], 500);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setStyle("-fx-border-color: black;");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initRedCardSquare(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new RedCardSquare(squareNames[snCount]);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setStyle("-fx-border-color: black;");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initCardSquares(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new Square();
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setSquareName(squareNames[snCount]);
+        s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initStadiumSquares(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new PlayerSquare(squareNames[snCount], 200);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setSquareName(squareNames[snCount]);
+        s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
+        s.getChildren().add(new Label(squareNames[snCount]));
+        grid.add(s, x, y);
+    }
+
+    private void initFootballPlayerSquares(Square[][] board, GridPane grid, int x, int y) {
+        Square s = new PlayerSquare(squareNames[snCount], 200 * snCount / 4);
+        board[x][y] = s;
+        s.setSquareId(id);
+        s.setSquareName(squareNames[snCount]);
+        s.setStyle("-fx-border-color: black; -fx-pref-width: 75");
+
+        Label lbl = new Label(squareNames[snCount]);
+        s.getChildren().add(lbl);
+        grid.add(s, x, y);
     }
 
     private void initSquareNames(String[] names) {
