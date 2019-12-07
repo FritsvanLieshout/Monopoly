@@ -7,6 +7,5 @@ module monopolyshared {
     opens restshared;
 
     exports models;
-    opens models;
     exports enums;
 }

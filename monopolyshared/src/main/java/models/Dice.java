@@ -12,7 +12,7 @@ public class Dice {
 
     public int getNofDice() {
         Random rnd = new Random();
-        nofDice = 1 + rnd.nextInt(6);
+        int nofDice = 1 + rnd.nextInt(6);
         return nofDice;
     }
 }

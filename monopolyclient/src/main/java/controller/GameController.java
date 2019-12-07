@@ -1,8 +1,5 @@
 package controller;
 
-import enums.Card;
-import enums.FootballPlayer;
-import enums.Stadium;
 import game.IMonopolyGame;
 import game.MonopolyGame;
 import javafx.event.ActionEvent;
@@ -13,7 +10,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
+import logic_factory.LogicFactory;
+import logic_interface.IGameLogic;
 import models.*;
+import enums.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -49,8 +49,10 @@ public class GameController implements Initializable, IMonopolyGUI {
     private IMonopolyGame game;
     Dice dice = new Dice();
 
-    public GameController() {
+    private LogicFactory logicFactory;
 
+    public GameController() {
+        logicFactory = new LogicFactory();
     }
 
     @Override
@@ -94,42 +96,46 @@ public class GameController implements Initializable, IMonopolyGUI {
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
                 if (x == 0 || y == 0 || x == 9 || y == 9) {
-                    if (snCount <= squareNames.length) {
-                        id++;
-
-                        switch (snCount) {
-                            case 0:
-                                initStartSquare(board, grid, x, y);
-                                break;
-                            case 9:
-                                initDressingRoomSquare(board, grid, x, y);
-                                break;
-                            case 35:
-                                initGoalBonusSquare(board, grid, x, y);
-                                break;
-                            case 26:
-                                initRedCardSquare(board, grid, x, y);
-                                break;
-                            case 2:
-                            case 7:
-                            case 12:
-                            case 20:
-                            case 23:
-                            case 33:
-                                initCardSquares(board, grid, x, y);
-                                break;
-                            case 4:
-                            case 16:
-                            case 17:
-                            case 30:
-                                initStadiumSquares(board, grid, x, y);
-                            default:
-                                initFootballPlayerSquares(board, grid, x, y);
-                        }
-                        snCount++;
-                    }
+                    initSquares(board, grid, x, y);
                 }
             }
+        }
+    }
+
+    private void initSquares(Square[][] board, GridPane grid, int x, int y) {
+        if (snCount <= squareNames.length) {
+            id++;
+
+            switch (snCount) {
+                case 0:
+                    initStartSquare(board, grid, x, y);
+                    break;
+                case 9:
+                    initDressingRoomSquare(board, grid, x, y);
+                    break;
+                case 35:
+                    initGoalBonusSquare(board, grid, x, y);
+                    break;
+                case 26:
+                    initRedCardSquare(board, grid, x, y);
+                    break;
+                case 2:
+                case 7:
+                case 12:
+                case 20:
+                case 23:
+                case 33:
+                    initCardSquares(board, grid, x, y);
+                    break;
+                case 4:
+                case 16:
+                case 17:
+                case 30:
+                    initStadiumSquares(board, grid, x, y);
+                default:
+                    initFootballPlayerSquares(board, grid, x, y);
+            }
+            snCount++;
         }
     }
 
@@ -201,6 +207,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         grid.add(s, x, y);
     }
 
+
     private void initSquareNames(String[] names) {
         names[0] = "Start";
         names[1] = FootballPlayer.KANE.toString();
@@ -241,15 +248,14 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void moveUser() {
-        int dice1 = dice.getNofDice();
-        int dice2 = dice.getNofDice();
+        IGameLogic IGL = logicFactory.getIGameLogic();
+
+        int dice1 = IGL.getDice(dice);
+        int dice2 = IGL.getDice(dice);
+
+        IGL.moveUser(1, dice1, dice2);
 
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
-        game.moveUser(1, dice1, dice2);
-    }
-
-    private void startGame() {
-
     }
 }

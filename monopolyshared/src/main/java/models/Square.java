@@ -1,6 +1,6 @@
 package models;
-import enums.ClubColor;
-import javafx.scene.layout.*;
+
+import javafx.scene.layout.StackPane;
 
 public class Square extends StackPane {
 

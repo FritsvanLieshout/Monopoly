@@ -3,6 +3,8 @@ module monopolyclient {
     requires javafx.controls;
     requires monopolyshared;
     requires javafx.fxml;
+    requires factory;
+    requires logicinterface;
 
     exports gui;
     opens gui;
