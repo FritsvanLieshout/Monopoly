@@ -15,6 +15,6 @@ public class MonopolyGame implements IMonopolyGame {
         int newPlace = currentPlace + (dice1 + dice2);
         user.setPlace(newPlace);
 
-        Log.print(user, "Do something");
+        Log.print("Do something");
     }
 }

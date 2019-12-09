@@ -1,8 +1,7 @@
 package models;
 
-import javafx.scene.layout.StackPane;
 
-public class Square extends StackPane {
+public class Square {
 
     private int squareId;
     private String squareName;
@@ -25,4 +24,6 @@ public class Square extends StackPane {
     public String getSquareName() { return squareName; }
 
     public void setSquareName(String name) { this.squareName = name; }
+
+    public void doAction(User user, Board board){};
 }
