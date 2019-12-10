@@ -1,7 +1,5 @@
 package controller;
 
-import game.IMonopolyGame;
-import game.MonopolyGame;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -39,18 +37,23 @@ public class GameController implements Initializable, IMonopolyGUI {
     public Button btnEndTurn;
     public GridPane gpMonopolyBoard;
 
-    private IMonopolyGame game;
     Dice dice = new Dice();
 
     private LogicFactory logicFactory;
+    private IBoardLogic iBoardLogic;
+    private IGameLogic iGameLogic;
+
+    private User user;
 
     public GameController() {
         logicFactory = new LogicFactory();
+        iBoardLogic = logicFactory.getIBoardLogic();
+        iGameLogic = logicFactory.getIGameLogic();
+        user = new User(1, "Kevin");
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        game = new MonopolyGame();
 
         btnThrowDice.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -82,15 +85,17 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void moveUser() {
-        IBoardLogic IBL = logicFactory.getIBoardLogic();
-
-        int dice1 = IBL.getDice(dice);
-        int dice2 = IBL.getDice(dice);
+        int dice1 = iGameLogic.getDice(dice);
+        int dice2 = iGameLogic.getDice(dice);
         int nofDice = dice1 + dice2;
-
-        IBL.moveUser(1, nofDice);
+        //iBoardLogic.moveUser(user, nofDice);
+        iBoardLogic.moveUser(user, 10);
 
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
+
+        if (user.getCurrentPlace() == 30) {
+            iGameLogic.redCard(user);
+        }
     }
 }

@@ -4,6 +4,8 @@ import models.Dice;
 import models.User;
 
 public interface IGameLogic {
-    void startBonus(int playerNr);
-    void redCard(int playerNr);
+    int getDice(Dice dice);
+    void startBonus(User user);
+    void redCard(User user);
+    boolean checkIfUserWantToBuyPlayer(User user);
 }

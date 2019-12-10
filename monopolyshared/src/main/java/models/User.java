@@ -7,6 +7,7 @@ public class User {
     private String password;
     private int place;
     private Wallet wallet;
+    boolean isInDressingRoom;
 
     public User() {
         this.wallet = new Wallet(3500);
@@ -17,6 +18,7 @@ public class User {
         this.userId = userId;
         this.username = username;
         this.wallet = new Wallet(3500);
+        this.isInDressingRoom = false;
     }
 
     public int getUserId() {
@@ -36,4 +38,8 @@ public class User {
     public Wallet getWallet() {
         return wallet;
     }
+
+    public boolean isInDressingRoom() { return this.isInDressingRoom; }
+
+    public void setInDressingRoom(boolean isInDressingRoom) { this.isInDressingRoom = isInDressingRoom; }
 }

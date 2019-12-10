@@ -2,8 +2,8 @@ package logic_interface;
 
 import models.Dice;
 import models.Square;
+import models.User;
 
 public interface IBoardLogic {
-    int getDice(Dice dice);
-    Square moveUser(int playerNr, int dice);
+    Square moveUser(User user, int dice);
 }
