@@ -4,7 +4,13 @@ import logic_interface.IUserLogic;
 import models.User;
 
 public class UserLogic implements IUserLogic {
-    public void registerUser(User user) {
+    public boolean registerUser(User user) {
         //TODO
+        return false;
+    }
+
+    public boolean login(User user) {
+        //TODO
+        return false;
     }
 }

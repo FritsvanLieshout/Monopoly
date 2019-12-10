@@ -1,14 +1,14 @@
 package models;
 
-public class PlayerSquare extends Square {
+public class FootballPlayerSquare extends Square {
 
     private int price;
     private int rentPrice;
     private int owner = -1;
 
-    public PlayerSquare() { }
+    public FootballPlayerSquare() { }
 
-    public PlayerSquare(String name, int price) {
+    public FootballPlayerSquare(String name, int price) {
         super(name);
         this.price = price;
         this.rentPrice = price / 50 * 10;

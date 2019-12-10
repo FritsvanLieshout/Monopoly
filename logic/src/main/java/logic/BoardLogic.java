@@ -82,7 +82,7 @@ public class BoardLogic implements IBoardLogic {
 
     private void initFootballPlayerSquare(Square[] squares, String[] squareNames, int i) {
         //TODO: Fix calculating for the price of the player.
-        squares[i] = new PlayerSquare(squareNames[i], i * 50);
+        squares[i] = new FootballPlayerSquare(squareNames[i], i * 50);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
     }
@@ -111,6 +111,9 @@ public class BoardLogic implements IBoardLogic {
     }
 
     public boolean checkIfUserIsOverStart() {
+        //TODO
         return false;
     }
+
+
 }

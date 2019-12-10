@@ -87,9 +87,9 @@ public class GameController implements Initializable, IMonopolyGUI {
     private void moveUser() {
         int dice1 = iGameLogic.getDice(dice);
         int dice2 = iGameLogic.getDice(dice);
-        int nofDice = dice1 + dice2;
-        //iBoardLogic.moveUser(user, nofDice);
-        iBoardLogic.moveUser(user, 10);
+        int noDice = dice1 + dice2;
+
+        iBoardLogic.moveUser(user, noDice);
 
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));

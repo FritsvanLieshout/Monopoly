@@ -3,5 +3,6 @@ package logic_interface;
 import models.User;
 
 public interface IUserLogic {
-    void registerUser(User user);
+    boolean registerUser(User user);
+    boolean login(User user);
 }

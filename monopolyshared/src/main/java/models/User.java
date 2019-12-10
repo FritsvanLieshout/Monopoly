@@ -27,13 +27,9 @@ public class User {
 
     public String getUsername() { return username; }
 
-    public int getCurrentPlace() {
-        return place;
-    }
+    public int getCurrentPlace() { return place; }
 
-    public void setPlace(int place) {
-        this.place = place;
-    }
+    public void setPlace(int place) { this.place = place; }
 
     public Wallet getWallet() {
         return wallet;
