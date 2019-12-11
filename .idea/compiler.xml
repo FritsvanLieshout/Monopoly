@@ -10,14 +10,17 @@
         <module name="monopolyshared" />
         <module name="logicinterface" />
         <module name="dalinterface" />
-        <module name="monopolyserver" />
+        <module name="messaging" />
         <module name="monopolyclient" />
+        <module name="monopolywebsocketclient" />
         <module name="dal" />
         <module name="logic" />
+        <module name="monopolywebsocketserver" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="models" target="11" />
+      <module name="monopolyserver" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

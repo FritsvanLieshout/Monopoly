@@ -26,16 +26,17 @@ public class FootballPlayerSquare extends Square {
         this.owner = owner;
     }
 
+    //This methods called in GameLogic
     public void buySquare(User user) {
         int price = getPrice();
-        user.getWallet().subtractMoney(price);
+        user.getWallet().withDrawMoneyOfWallet(price);
         setOwner(user.getUserId());
         //Een log dat de user de speler wilt kopen.
     }
 
     public void payRent(User user, Board board) {
         int rent = getRentPrice();
-        user.getWallet().subtractMoney(rent);
+        user.getWallet().withDrawMoneyOfWallet(rent);
         board.getUser(owner).getWallet().addMoneyToWallet(rent);
         //Een log dat user x aantal geld huur heeft betaal aan de eigenaar.
     }

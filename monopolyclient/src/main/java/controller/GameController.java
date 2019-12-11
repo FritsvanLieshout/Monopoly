@@ -49,7 +49,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
-        user = new User(1, "Kevin");
+        user = new User(1, "Kevin"); //TODO: this need the user that's logged in
     }
 
     @Override
@@ -65,7 +65,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         btnBuyPlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                buyFootballPlayer();
             }
         });
 
@@ -97,5 +97,9 @@ public class GameController implements Initializable, IMonopolyGUI {
         if (user.getCurrentPlace() == 30) {
             iGameLogic.redCard(user);
         }
+    }
+
+    private void buyFootballPlayer() {
+        //TODO: logic code is available in GameLogic
     }
 }

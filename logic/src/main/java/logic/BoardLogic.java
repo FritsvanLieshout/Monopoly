@@ -90,7 +90,7 @@ public class BoardLogic implements IBoardLogic {
     @Override
     public Square moveUser(User user, int dice) {
         int newPlace = board.getPositionOnBoard(user.getCurrentPlace());
-        if (checkUserIsInDressingRoom(user)) { }
+        if (checkIfUserIsInDressingRoom(user)) { /*Nothing*/ }
         else {
             newPlace = board.getPositionOnBoard(user.getCurrentPlace() + dice);
 
@@ -100,9 +100,9 @@ public class BoardLogic implements IBoardLogic {
         return board.getSquares()[newPlace];
     }
 
-    public boolean checkUserIsInDressingRoom(User user) {
+    public boolean checkIfUserIsInDressingRoom(User user) {
         if (user.isInDressingRoom()) {
-            user.getWallet().subtractMoney(500);
+            user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
             Log.print(user, user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
             return true;
