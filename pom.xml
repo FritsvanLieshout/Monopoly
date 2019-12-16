@@ -17,7 +17,6 @@
         <module>logicinterface</module>
         <module>factory</module>
         <module>monopolywebsocketclient</module>
-        <module>monopolyserver</module>
         <module>messaging</module>
         <module>monopolywebsocketserver</module>
     </modules>

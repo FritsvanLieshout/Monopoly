@@ -1,20 +1,21 @@
 package models;
 
 
-public class Square {
+public abstract class Square {
 
     private int squareId;
     private String squareName;
+    private int price;
+    private int owner = -1;
+    private int rentPrice;
 
-    public Square() { }
+    public Square(String squareName) { this.squareName = squareName; }
 
-    public Square(String squareName) {
+    public Square(String squareName, int price, int owner, int rentPrice) {
         this.squareName = squareName;
-    }
-
-    public Square(int id, String squareName) {
-        this.squareId = id;
-        this.squareName = squareName;
+        this.price = price;
+        this.owner = owner;
+        this.rentPrice = rentPrice;
     }
 
     public int getSquareId() { return squareId; }
@@ -25,5 +26,12 @@ public class Square {
 
     public void setSquareName(String name) { this.squareName = name; }
 
-    public void doAction(User user, Board board){};
+    public int getPrice() { return price; }
+
+    public int getOwner() { return owner; }
+
+    public void setOwner(int owner) { this.owner = owner; }
+
+    public int getRentPrice() { return rentPrice; }
+
 }

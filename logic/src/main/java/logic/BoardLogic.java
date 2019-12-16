@@ -69,51 +69,33 @@ public class BoardLogic implements IBoardLogic {
     }
 
     private void initSquare(Square[] squares, String[] squareNames, int i) {
-        squares[i] = new Square(squareNames[i]);
+        squares[i] = new RandomSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
     }
 
     private void initStadiumSquare(Square[] squares, String[] squareNames, int i) {
-        squares[i] = new StadiumSquare(squareNames[i]);
+        squares[i] = new StadiumSquare(squareNames[i], 2000, -1, 500);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
     }
 
     private void initFootballPlayerSquare(Square[] squares, String[] squareNames, int i) {
         //TODO: Fix calculating for the price of the player.
-        squares[i] = new FootballPlayerSquare(squareNames[i], i * 50);
+        int price = i * 50;
+        squares[i] = new FootballPlayerSquare(squareNames[i], price, -1,price / 50 * 10 );
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
     }
 
     @Override
-    public Square moveUser(User user, int dice) {
-        int newPlace = board.getPositionOnBoard(user.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(user)) { /*Nothing*/ }
-        else {
-            newPlace = board.getPositionOnBoard(user.getCurrentPlace() + dice);
-
-            user.setPlace(newPlace);
-            Log.print(user, user.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[user.getCurrentPlace()].getSquareName());
-        }
-        return board.getSquares()[newPlace];
+    public Square[] getSquares() {
+        squares = board.getSquares();
+        return squares;
     }
 
-    public boolean checkIfUserIsInDressingRoom(User user) {
-        if (user.isInDressingRoom()) {
-            user.getWallet().withDrawMoneyOfWallet(500);
-            user.setInDressingRoom(false);
-            Log.print(user, user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
-            return true;
-        }
-        return false;
+    @Override
+    public Board getBoard() {
+        return board;
     }
-
-    public boolean checkIfUserIsOverStart() {
-        //TODO
-        return false;
-    }
-
-
 }

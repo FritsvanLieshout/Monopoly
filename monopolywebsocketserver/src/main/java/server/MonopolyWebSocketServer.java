@@ -19,6 +19,15 @@ public class MonopolyWebSocketServer {
 
     // Start the web socket server
     private static void startWebSocketServer() {
+        //IServerHandlerFactory factory = new ServerHandler();
+        //IServerMessageProcessor messageProcessor = new ServerMessageProcessor(factory);
+        //final IServerWebSocket socket = new ServerWebSocket();
+        //socket.setMessageProcessor(messageProcessor);
+
+        //IServerMessageGenerator messageGenerator = new ServerMessageGenerator(socket);
+        //IGame game = new Game(messageGenerator);
+        //messageProcessor.register(game);
+
 
         Server webSocketServer = new Server();
         ServerConnector connector = new ServerConnector(webSocketServer);

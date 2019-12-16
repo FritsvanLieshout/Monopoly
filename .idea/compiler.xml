@@ -10,9 +10,9 @@
         <module name="monopolyshared" />
         <module name="logicinterface" />
         <module name="dalinterface" />
+        <module name="monopolywebsocketclient" />
         <module name="messaging" />
         <module name="monopolyclient" />
-        <module name="monopolywebsocketclient" />
         <module name="dal" />
         <module name="logic" />
         <module name="monopolywebsocketserver" />

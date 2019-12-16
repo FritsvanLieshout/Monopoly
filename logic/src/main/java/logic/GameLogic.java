@@ -11,6 +11,29 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
+    public Square moveUser(User user, Board board, int dice) {
+        int newPlace = board.getPositionOnBoard(user.getCurrentPlace());
+        if (checkIfUserIsInDressingRoom(user, board)) { }
+        else {
+            newPlace = board.getPositionOnBoard(user.getCurrentPlace() + dice);
+            user.setPlace(newPlace);
+            Log.print(user, user.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[user.getCurrentPlace()].getSquareName());
+            if (checkIfUserIsOverStart(user)) { }
+            if (checkIfSquareIsOwned(user, board)) { }
+        }
+        return board.getSquares()[newPlace];
+    }
+
+    public boolean checkIfUserIsInDressingRoom(User user, Board board) {
+        if (user.isInDressingRoom()) {
+            user.getWallet().withDrawMoneyOfWallet(500);
+            user.setInDressingRoom(false);
+            Log.print(user, user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
+            return true;
+        }
+        return false;
+    }
+
     public void startBonus(User user) {
         user.getWallet().addMoneyToWallet(2000);
         Log.print(user,user.getUsername() + " is over start, 2000 added to " + user.getUsername() + " wallet");
@@ -24,15 +47,35 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void buyFootballPlayer(User user, FootballPlayerSquare[] squares, int position) {
-        int price = squares[position].getPrice();
-        user.getWallet().withDrawMoneyOfWallet(price);
-        squares[position].setOwner(user.getUserId());
-        Log.print(user, user.getUsername() + "is the owner of square " + squares[position].getSquareName() + " \n for the price " + price + " and " + price + " is withdrawn from the wallet");
+    public void buyFootballPlayer(User user, Board board) {
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == user.getCurrentPlace()) {
+                user.getWallet().withDrawMoneyOfWallet(s.getPrice());
+                s.setOwner(user.getUserId());
+                Log.print(user, s.getSquareName() + " has been added to your club!");
+            }
+        }
     }
 
-    @Override
-    public boolean checkIfUserWantToBuyPlayer(User user) {
+    public boolean checkIfUserIsOverStart(User user) {
+        //TODO -> the current place is always higher than 0. Need a check like if the user is again over squareId 0
+        if (user.getCurrentPlace() >= 0) {
+            user.getWallet().addMoneyToWallet(1000);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkIfSquareIsOwned(User user, Board board) {
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == user.getCurrentPlace()) {
+                if (s.getOwner() != user.getUserId()) {
+                    user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
+                    board.getUser(s.getOwner()).getWallet().addMoneyToWallet(s.getRentPrice());
+                    return true;
+                }
+            }
+        }
         return false;
     }
 }

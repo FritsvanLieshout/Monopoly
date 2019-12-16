@@ -63,7 +63,6 @@ public class ClientWebSocket implements IClientWebSocket {
         System.out.println("[WebSocket Client stop]");
         try {
             session.close();
-
         } catch (IOException ex){
             // do something useful eventually
             ex.printStackTrace();

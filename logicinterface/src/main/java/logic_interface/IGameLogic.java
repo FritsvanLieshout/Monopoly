@@ -1,8 +1,6 @@
 package logic_interface;
 
-import models.Dice;
-import models.FootballPlayerSquare;
-import models.User;
+import models.*;
 
 /**
  * Interface provided by the GameLogic class
@@ -19,23 +17,35 @@ public interface IGameLogic {
     int getDice(Dice dice);
 
     /**
-     * If the user at start or the user has been over the start square.
-     * @param user
-     * The result of this method is that the user get a 'weekly wage'
-     * The weekly wage is 2500.
-     * The weekly wage is added to the wallet of the user. By a method
-     * call of getWallet().addMoneyToWallet(weekly_wage).
-     */
-    void startBonus(User user);
-
-    /**
      * If the user came on this tile. The user will be placed to 'in dressing room'.
      * @param user
      * The place of the user set to the id of the 'dressing room' square. Called by the method
-     * user.setPlace(10). 10 is the id of the dressing room square. And an other setter for
+     * user.setPlace(10). 10 is the id of the dressing room square. And another setter for
      * the boolean isUserInDressingRoom. Called by the method user.setInDressingRoom(true).
      */
     void redCard(User user);
-    void buyFootballPlayer(User user, FootballPlayerSquare[] squares, int position);
-    boolean checkIfUserWantToBuyPlayer(User user); //Need to be void buyFootballPlayer(User user), because the check need to be in the logic class.
+
+    /**
+     * If the square is not owned by himself or other players. The user has an option to buy a player that is linked
+     * on a square. The square has a price. If the user buy this square, Inside the square is a setter of the owner
+     * if the square isn't owned by anyone is this -1.
+     * If the square has an owner this integer set to his/her userId.
+     * @param user
+     * @param board
+     */
+    void buyFootballPlayer(User user, Board board);
+
+    /**
+     * The user goes the steps forward that are given by the dice.
+     * In this method is an int newPlace. newPlace is called by this method
+     * board.getPositionOnBoard(user.getCurrentPlace().
+     * If checkIfUserIsInDressingRoom is false the newPlace is the same method
+     * as above. But this time is the number of the dice added ofter this method.
+     * Place of the user set by newPlace.
+     * @param user
+     * @param board
+     * @param dice
+     * @return the square where the user became through newPlace.
+     */
+    Square moveUser(User user, Board board, int dice);
 }

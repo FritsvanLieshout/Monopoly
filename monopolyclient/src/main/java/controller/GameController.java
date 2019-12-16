@@ -8,6 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
+import logic.BoardLogic;
 import logic_factory.LogicFactory;
 import logic_interface.*;
 import models.*;
@@ -44,11 +45,13 @@ public class GameController implements Initializable, IMonopolyGUI {
     private IGameLogic iGameLogic;
 
     private User user;
+    private Board board;
 
     public GameController() {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
+        board = iBoardLogic.getBoard();
         user = new User(1, "Kevin"); //TODO: this need the user that's logged in
     }
 
@@ -79,7 +82,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         btnEndTurn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
+                endTurn();
             }
         });
     }
@@ -89,7 +92,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         int dice2 = iGameLogic.getDice(dice);
         int noDice = dice1 + dice2;
 
-        iBoardLogic.moveUser(user, noDice);
+        iGameLogic.moveUser(user, board, noDice);
 
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
@@ -100,6 +103,9 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void buyFootballPlayer() {
-        //TODO: logic code is available in GameLogic
+        iGameLogic.buyFootballPlayer(user, board);
+    }
+
+    private void endTurn() {
     }
 }
