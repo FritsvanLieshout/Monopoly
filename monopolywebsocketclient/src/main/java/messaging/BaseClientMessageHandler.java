@@ -1,5 +1,6 @@
 package messaging;
 
+import client_interface.IClientMessageHandler;
 import serialization.Serializer;
 
 import java.lang.reflect.ParameterizedType;

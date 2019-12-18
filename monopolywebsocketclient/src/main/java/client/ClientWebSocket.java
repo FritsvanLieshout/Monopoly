@@ -1,5 +1,6 @@
 package client;
 
+import client_interface.IClientWebSocket;
 import messages.SocketMessage;
 import messages.SocketMessageGenerator;
 import serialization.Serializer;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+@ClientEndpoint
 public class ClientWebSocket implements IClientWebSocket {
 
     private String uri = "ws://localhost:8050/monopoly/";
@@ -44,6 +46,9 @@ public class ClientWebSocket implements IClientWebSocket {
         }
     }
 
+    /**
+     * Start a WebSocket client.
+     */
     private void startClient() {
         System.out.println("[WebSocket Client start]");
         try {

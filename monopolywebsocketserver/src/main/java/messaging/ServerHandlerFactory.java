@@ -1,12 +1,14 @@
 package messaging;
 
-public class ServerHandlerFactory {
+import server_interface.IServerHandlerFactory;
+import server_interface.IServerMessageHandler;
+
+public class ServerHandlerFactory implements IServerHandlerFactory {
     public IServerMessageHandler getHandler(String classname) {
-        switch (classname) {
-            case "UserTestMessage":
-                return new TestHandler();
-            default:
-                return null;
+        if ("UserTestMessage".equals(classname)) {
+           // return new TestHandler();
+            return null;
         }
+        return null;
     }
 }

@@ -6,7 +6,6 @@ import models.*;
 public class BoardLogic implements IBoardLogic {
 
     private Board board;
-    private User[] users;
     private Square[] squares;
     private String[] squareNames;
 

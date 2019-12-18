@@ -1,0 +1,5 @@
+messages\SocketMessage.class
+messages\SocketMessageGenerator.class
+serialization\Serializer.class
+messages\UserTestMessage.class
+messages\UserTestResultMessage.class

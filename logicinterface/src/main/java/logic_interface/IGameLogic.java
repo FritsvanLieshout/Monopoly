@@ -1,6 +1,9 @@
 package logic_interface;
 
-import models.*;
+import models.Board;
+import models.Dice;
+import models.Square;
+import models.User;
 
 /**
  * Interface provided by the GameLogic class
@@ -42,6 +45,10 @@ public interface IGameLogic {
      * If checkIfUserIsInDressingRoom is false the newPlace is the same method
      * as above. But this time is the number of the dice added ofter this method.
      * Place of the user set by newPlace.
+     * Also is there an check if the square is owned by another user. This is called
+     * by the method checkIfSquareIsOwned(). If the square is owned by another user
+     * the user that became on this square has to pay rent to the user that owned the
+     * square. The wallet of both users gets a update.
      * @param user
      * @param board
      * @param dice

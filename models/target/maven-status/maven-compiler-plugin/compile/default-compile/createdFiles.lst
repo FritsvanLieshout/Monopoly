@@ -1,0 +1,15 @@
+models\GoalBonusSquare.class
+models\ChangeSquare.class
+models\StadiumSquare.class
+models\Log.class
+models\FootballPlayerSquare.class
+models\User.class
+models\RedCardSquare.class
+models\Dice.class
+models\StartSquare.class
+models\CommunityChestSquare.class
+models\RandomSquare.class
+models\Board.class
+models\DressingRoomSquare.class
+models\Wallet.class
+models\Square.class

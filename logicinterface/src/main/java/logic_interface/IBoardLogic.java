@@ -1,6 +1,8 @@
 package logic_interface;
 
-import models.*;
+
+import models.Board;
+import models.Square;
 
 /**
  * Interface provided by the GameLogic class

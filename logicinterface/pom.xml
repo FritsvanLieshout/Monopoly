@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.fritsvanlieshout.bigidea</groupId>
-            <artifactId>monopolyshared</artifactId>
+            <artifactId>models</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

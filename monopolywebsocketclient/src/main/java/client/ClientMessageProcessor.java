@@ -1,9 +1,10 @@
 package client;
 
+import client_interface.IClientMessageProcessor;
 import messaging.ClientHandlerFactory;
-import messaging.IClientMessageHandler;
+import client_interface.IClientMessageHandler;
 
-public class ClientMessageProcessor {
+public class ClientMessageProcessor implements IClientMessageProcessor {
     public void processMessage(String sessionId, String type, String data) {
         String simpleType = type.split("\\.")[type.split("\\.").length - 1];
 

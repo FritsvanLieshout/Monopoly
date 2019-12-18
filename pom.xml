@@ -19,6 +19,7 @@
         <module>monopolywebsocketclient</module>
         <module>messaging</module>
         <module>monopolywebsocketserver</module>
+        <module>models</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

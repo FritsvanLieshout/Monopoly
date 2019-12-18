@@ -1,0 +1,6 @@
+client\ClientMessageGenerator.class
+messaging\BaseClientMessageHandler.class
+messaging\ClientHandlerFactory.class
+messaging\TestResultHandler.class
+client\ClientWebSocket.class
+client\ClientMessageProcessor.class

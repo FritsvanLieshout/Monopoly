@@ -9,6 +9,7 @@
         <module name="factory" />
         <module name="monopolyshared" />
         <module name="logicinterface" />
+        <module name="models" />
         <module name="dalinterface" />
         <module name="monopolywebsocketclient" />
         <module name="messaging" />

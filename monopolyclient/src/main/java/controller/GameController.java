@@ -8,12 +8,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
-import logic.BoardLogic;
 import logic_factory.LogicFactory;
 import logic_interface.*;
 import models.*;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable, IMonopolyGUI {
@@ -46,13 +46,16 @@ public class GameController implements Initializable, IMonopolyGUI {
 
     private User user;
     private Board board;
+    private ArrayList<User> users;
 
     public GameController() {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
-        board = iBoardLogic.getBoard();
+        users = new ArrayList<>();
         user = new User(1, "Kevin"); //TODO: this need the user that's logged in
+        users.add(user);
+        board = iBoardLogic.getBoard();
     }
 
     @Override
@@ -97,6 +100,7 @@ public class GameController implements Initializable, IMonopolyGUI {
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
 
+        //TODO -> this check in the game logic
         if (user.getCurrentPlace() == 30) {
             iGameLogic.redCard(user);
         }

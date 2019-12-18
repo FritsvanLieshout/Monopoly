@@ -1,0 +1,13 @@
+restshared\MonopolyResponse.class
+client_interface\IClientMessageGenerator.class
+server_interface\IServerWebSocket.class
+server_interface\IServerMessageProcessor.class
+server_interface\IServerMessageGenerator.class
+server_interface\IServerMessageHandler.class
+client_interface\IClientMessageProcessor.class
+restshared\UserDTO.class
+client_interface\IClientWebSocket.class
+client_interface\IClientHandlerFactory.class
+client_interface\IClientMessageHandler.class
+client_interface\IGameClient.class
+server_interface\IServerHandlerFactory.class

@@ -1,5 +1,6 @@
 package socketcommunication;
 
+import client_interface.IGameClient;
 import models.Square;
 import models.User;
 

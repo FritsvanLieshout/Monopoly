@@ -1,5 +1,6 @@
 package server;
 
+import server_interface.IServerWebSocket;
 import messages.SocketMessage;
 import messages.SocketMessageGenerator;
 import serialization.Serializer;
