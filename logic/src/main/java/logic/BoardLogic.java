@@ -3,14 +3,18 @@ package logic;
 import logic_interface.IBoardLogic;
 import models.*;
 
+import java.util.ArrayList;
+
 public class BoardLogic implements IBoardLogic {
 
     private Board board;
     private Square[] squares;
     private String[] squareNames;
+    private ArrayList<Square> squareList;
 
     public BoardLogic() {
         board = new Board();
+        squareList = new ArrayList<>();
         initBoard(board);
     }
 
@@ -35,48 +39,56 @@ public class BoardLogic implements IBoardLogic {
         squares[i] = new StartSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initDressingRoomSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new DressingRoomSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initGoalBonusSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new GoalBonusSquare(squareNames[i], 2500);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initRedCardSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new RedCardSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initCommunityChestSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new CommunityChestSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initChangeSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new ChangeSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new RandomSquare(squareNames[i]);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initStadiumSquare(Square[] squares, String[] squareNames, int i) {
         squares[i] = new StadiumSquare(squareNames[i], 2000, -1, 500);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     private void initFootballPlayerSquare(Square[] squares, String[] squareNames, int i) {
@@ -85,6 +97,7 @@ public class BoardLogic implements IBoardLogic {
         squares[i] = new FootballPlayerSquare(squareNames[i], price, -1,price / 50 * 10 );
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
+        squareList.add(squares[i]);
     }
 
     @Override
@@ -97,4 +110,7 @@ public class BoardLogic implements IBoardLogic {
     public Board getBoard() {
         return board;
     }
+
+    @Override
+    public ArrayList getSquareList() { return squareList; }
 }

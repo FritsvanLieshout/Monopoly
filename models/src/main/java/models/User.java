@@ -13,6 +13,15 @@ public class User {
         this.wallet = new Wallet(3500);
     }
 
+    public User(int userId, String username, String password) {
+        this.place = 0;
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+        this.wallet = new Wallet(3500);
+        this.isInDressingRoom = false;
+    }
+
     public User(int userId, String username) {
         this.place = 0;
         this.userId = userId;

@@ -1,8 +1,11 @@
 package logic_interface;
 
 
+import javafx.scene.layout.GridPane;
 import models.Board;
 import models.Square;
+
+import java.util.ArrayList;
 
 /**
  * Interface provided by the GameLogic class
@@ -20,4 +23,10 @@ public interface IBoardLogic {
      * @return board
      */
     Board getBoard();
+
+    /**
+     * This method return a list of al the squares on the board.
+     * @return squares -> List
+     */
+    ArrayList<Square> getSquareList();
 }

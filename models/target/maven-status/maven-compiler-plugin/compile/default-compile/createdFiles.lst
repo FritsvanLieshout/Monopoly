@@ -1,7 +1,6 @@
 models\GoalBonusSquare.class
 models\ChangeSquare.class
 models\StadiumSquare.class
-models\Log.class
 models\FootballPlayerSquare.class
 models\User.class
 models\RedCardSquare.class

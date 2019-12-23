@@ -179,10 +179,11 @@ class GameLogicTest {
      * The user starts at square 0. If he throws the dice the user goes
      * to a new position on the board.
      * @throws IllegalArgumentException user 1 cannot pay rent if the square isn't owned.
+     * TODO
      */
 
     @Test
     void payRentIfSquareIsNotOwned() {
-        //TODO
+
     }
 }
