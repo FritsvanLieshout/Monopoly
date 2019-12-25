@@ -11,10 +11,10 @@ public class Board {
         //users = new User[userCount]; //-> public Board(int userCount) -> new User[userCount]
         users = new User[1];
         squares = new Square[40];
-        squareNames = new String[] { "Start", "Kane", "Community Chest", "Heung-Min Son", "Income Tax", "Emirates Stadium", "Insigne", "Change", "Koulibaly", "Mertens",
-                "Dressing Room | Just Injured", "Rashford", "Vacation", "De Gea", "Pogba", "Old Trafford", "Matthijs de Ligt", "Community Chest", "Dybala", "Ronaldo",
-                "Goal Bonus", "Salah", "Change", "Mane", "Big Virgil", "Anfield", "Suarez", "De Jong", "Rest", "Messi",
-                "Red Card", "Aguero", "Sterling", "Community Chest", "De Bruyne", "Etihad Stadium", "Change", "Mbappe", "additional tax", "Neymar"};
+        squareNames = new String[] { "Start", "Kane", "Community\nChest", "Heung-Min\nSon", "Income Tax", "Emirates\nStadium", "Insigne", "Change", "Koulibaly", "Mertens",
+                "Dressing Room\nor Just Injured", "Rashford", "Vacation", "De Gea", "Pogba", "Old Trafford", "Matthijs de Ligt", "Community Chest", "Dybala", "Ronaldo",
+                "Goal Bonus", "Salah", "Change", "Mane", "Big Virgil", "Anfield", "Suarez", "De Jong", "Nothing", "Messi",
+                "Red Card", "Aguero", "Sterling", "Community Chest", "De Bruyne", "Etihad Stadium", "Change", "Mbappe", "Additional tax", "Neymar"};
     }
 
     public int getPositionOnBoard(int position) {

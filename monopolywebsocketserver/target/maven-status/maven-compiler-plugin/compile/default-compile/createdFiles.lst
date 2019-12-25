@@ -1,7 +1,0 @@
-messaging\TestHandler.class
-server\MonopolyWebSocketServer.class
-messaging\ServerHandlerFactory.class
-messaging\BaseServerMessageHandler.class
-server\ServerWebSocket.class
-server\ServerMessageGenerator.class
-server\ServerMessageProcessor.class
