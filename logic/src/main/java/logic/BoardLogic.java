@@ -113,4 +113,5 @@ public class BoardLogic implements IBoardLogic {
 
     @Override
     public ArrayList getSquareList() { return squareList; }
+
 }

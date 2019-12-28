@@ -2,7 +2,7 @@ package models;
 
 public class Board {
 
-    private int currentTurn;
+    private int currentTurn = 1;
     private User[] users;
     private Square[] squares;
     private String[] squareNames;
@@ -37,9 +37,5 @@ public class Board {
         return currentTurn;
     }
 
-    public void switchTurn() {
-        if (++currentTurn >= users.length) {
-            currentTurn = 0;
-        }
-    }
+    public void setCurrentTurn(int currentTurn) { this.currentTurn = currentTurn; }
 }

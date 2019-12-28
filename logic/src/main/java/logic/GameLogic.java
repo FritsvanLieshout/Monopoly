@@ -5,6 +5,8 @@ import models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 public class GameLogic implements IGameLogic {
 
     private static final Logger LOG = LoggerFactory.getLogger(GameLogic.class);
@@ -19,10 +21,10 @@ public class GameLogic implements IGameLogic {
         int newPlace = board.getPositionOnBoard(user.getCurrentPlace());
         if (checkIfUserIsInDressingRoom(user, board)) { }
         else {
+            if (checkIfUserIsOverStart(user, dice)) { }
             newPlace = board.getPositionOnBoard(user.getCurrentPlace() + dice);
             user.setPlace(newPlace);
-            LOG.debug(user.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[user.getCurrentPlace()].getSquareName());
-            if (checkIfUserIsOverStart(user)) { }
+            System.out.println(user.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[user.getCurrentPlace()].getSquareName());
             if (checkIfSquareIsOwned(user, board)) { }
         }
         return board.getSquares()[newPlace];
@@ -32,7 +34,7 @@ public class GameLogic implements IGameLogic {
     public void redCard(User user) {
         user.setPlace(10); //Need the coordinates of the dressing room.
         user.setInDressingRoom(true);
-        LOG.debug(user.getUsername() + " receives a RED Card! and has to go to the dressing room!");
+        System.out.println(user.getUsername() + " receives a RED Card! and has to go to the dressing room!");
     }
 
     @Override
@@ -42,27 +44,34 @@ public class GameLogic implements IGameLogic {
                 if (s.getSquareId() == user.getCurrentPlace()) {
                     user.getWallet().withDrawMoneyOfWallet(s.getPrice());
                     s.setOwner(user.getUserId());
-                    LOG.debug(s.getSquareName() + " has been added to " + user.getUsername() + "'s club!");
-                    LOG.debug(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
+                    System.out.println(s.getSquareName() + " has been added to " + user.getUsername() + "'s club!");
+                    System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
                     break;
                 }
             }
         }
     }
 
+    @Override
+    public void switchTurn(Board board, ArrayList<User> users) {
+        int current = board.getCurrentTurn();
+        if(++current >= users.size()){
+            board.setCurrentTurn(1);
+        }
+    }
+
     private void payRent(User user, Board board, Square s) {
         user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
         board.getUser(s.getOwner()).getWallet().addMoneyToWallet(s.getRentPrice());
-        LOG.debug(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
-        LOG.debug(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
+        System.out.println(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
+        System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
     }
 
-    private boolean checkIfUserIsOverStart(User user) {
-        //TODO -> the current place is always higher than 0. Need a check like if the user is again over squareId 0 maybe like roundCount or something like that
-        if (user.getCurrentPlace() >= 0) {
+    private boolean checkIfUserIsOverStart(User user, int dice) {
+        if (user.getCurrentPlace() + dice >= 40) {
             user.getWallet().addMoneyToWallet(2000);
-            LOG.debug(user.getUsername() + " is over start, €2000 added to " + user.getUsername() + "'s wallet");
-            LOG.debug(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
+            System.out.println(user.getUsername() + " is over start, €2000 added to " + user.getUsername() + "'s wallet");
+            System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
             return true;
         }
         return false;
@@ -72,7 +81,7 @@ public class GameLogic implements IGameLogic {
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == user.getCurrentPlace()) {
                 if (s.getOwner() < 0) {
-                    LOG.debug(s.getSquareName() + " is not owned by another user!");
+                    System.out.println(s.getSquareName() + " is not owned by another user!");
                     return true;
                 }
 
@@ -89,7 +98,7 @@ public class GameLogic implements IGameLogic {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
-            LOG.debug(user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
+            System.out.println(user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
             return true;
         }
         return false;

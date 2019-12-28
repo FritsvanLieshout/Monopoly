@@ -3,6 +3,7 @@ package controller;
 import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -46,7 +47,9 @@ public class GameController implements Initializable, IMonopolyGUI {
     private IBoardLogic iBoardLogic;
     private IGameLogic iGameLogic;
 
-    private User user;
+    User user;
+    User user2;
+
     private Board board;
     private ArrayList<User> users;
     private Square[][] boardSquares;
@@ -58,7 +61,9 @@ public class GameController implements Initializable, IMonopolyGUI {
         iGameLogic = logicFactory.getIGameLogic();
         users = new ArrayList<>();
         user = new User(1, "Kevin"); //TODO: this need the user that's logged in
+        user2 = new User(2, "Lisa");
         users.add(user);
+        users.add(user2);
         board = iBoardLogic.getBoard();
         boardSquares = new Square[11][11];
         squareList = iBoardLogic.getSquareList();
@@ -68,11 +73,18 @@ public class GameController implements Initializable, IMonopolyGUI {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initLayoutBoard(gpMonopolyBoard);
         initSquaresToBoard(boardSquares, gpMonopolyBoard);
+        setPawnOnBoard(0);
 
         btnThrowDice.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                moveUser();
+//                if (board.getCurrentTurn() == user.getUserId()) {
+                    moveUser();
+//                }
+//                else {
+//                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "It's not your turn!");
+//                    alert.show();
+//                }
             }
         });
 
@@ -158,27 +170,46 @@ public class GameController implements Initializable, IMonopolyGUI {
     private void initSquares(Square[][] squares, GridPane grid, int x, int y, int squareId) {
         Square s = squareList.get(squareId);
         squares[x][y] = s;
-        s.getChildren().add(new Label(s.getSquareName()));
+        Label squareName = new Label(s.getSquareName());
+        s.getChildren().add(squareName);
         s.setStyle("-fx-border-color: black;");
         grid.add(s, x, y);
     }
 
-    //Pawn -> een soort van nieuwe private Square[][] boardSquares; voor de pionen die overlappen de grid met de labels
+    private void setPawnOnBoard(int squareId) {
+        squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+    }
+
+    private void movePawnOnBoard(int squareId, int playerNr) {
+        //playerNr = user.userId
+        //user.getColor();
+        squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+    }
+
+    private void resetPawnOnBoard(int squareId, int playerNr) {
+        squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1");
+    }
+
+    //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
+    private void startGame() { }
 
     private void moveUser() {
-        int dice1 = iGameLogic.getDice(dice);
-        int dice2 = iGameLogic.getDice(dice);
-        int noDice = dice1 + dice2;
+        // if (board.getCurrentTurn() == user.getUserId()) {
+            resetPawnOnBoard(user.getCurrentPlace(), user.getUserId());
+            int dice1 = iGameLogic.getDice(dice);
+            int dice2 = iGameLogic.getDice(dice);
+            int noDice = dice1 + dice2;
 
-        iGameLogic.moveUser(user, board, noDice);
+            lblDice1.setText(Integer.toString(dice1));
+            lblDice2.setText(Integer.toString(dice2));
 
-        lblDice1.setText(Integer.toString(dice1));
-        lblDice2.setText(Integer.toString(dice2));
+            iGameLogic.moveUser(user, board, noDice);
+            movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
 
-        //TODO -> this check in the game logic
-        if (user.getCurrentPlace() == 30) {
-            iGameLogic.redCard(user);
-        }
+            if (user.getCurrentPlace() == 30) {
+                iGameLogic.redCard(user);
+            }
+       // }
     }
 
     private void buyFootballPlayer() {
@@ -186,5 +217,6 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void endTurn() {
+        iGameLogic.switchTurn(board, users);
     }
 }

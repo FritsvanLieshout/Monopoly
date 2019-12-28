@@ -5,6 +5,8 @@ import models.Dice;
 import models.Square;
 import models.User;
 
+import java.util.ArrayList;
+
 /**
  * Interface provided by the GameLogic class
  * @author frits
@@ -55,4 +57,13 @@ public interface IGameLogic {
      * @return the square where the user became through newPlace.
      */
     Square moveUser(User user, Board board, int dice);
+
+    /**
+     * If the user end his/her turn this method will be called in the
+     * board logic class.
+     * @param board
+     * @param users
+     * The user his/her id is the current turn number.
+     */
+    void switchTurn(Board board, ArrayList<User> users);
 }
