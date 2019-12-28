@@ -84,6 +84,7 @@ public class GameLogic implements IGameLogic {
                     System.out.println(s.getSquareName() + " is not owned by another user!");
                     return true;
                 }
+                //Call another method for a check of some squares that you can't buy (Start, Red Car,d etc).
 
                 else if (s.getOwner() != user.getUserId()) {
                     payRent(user, board, s);
@@ -98,7 +99,7 @@ public class GameLogic implements IGameLogic {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
-            System.out.println(user.getUsername() + " stays at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
+            System.out.println(user.getUsername() + " stays this round at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
             return true;
         }
         return false;

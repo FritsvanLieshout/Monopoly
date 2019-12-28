@@ -181,20 +181,35 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void movePawnOnBoard(int squareId, int playerNr) {
-        //playerNr = user.userId
+        //playerNr = user.getUserId
         //user.getColor();
-        squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+        if (squareList.get(squareId).getOwner() > 0) {
+            squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5; -fx-background-color: RED");
+        }
+        else {
+            squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+        }
     }
 
     private void resetPawnOnBoard(int squareId, int playerNr) {
-        squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1");
+        if (squareList.get(squareId).getOwner() > 0) {
+            squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1; -fx-background-color: RED");
+        }
+        else {
+            squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1");
+        }
+    }
+
+    private void setOwnerOfSquareColor(int squareId, int playerNr) {
+        //-> playerNr = user.getUserId -> user.getColor();
+        squareList.get(squareId).setStyle("-fx-background-color: RED");
     }
 
     //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
     private void startGame() { }
 
     private void moveUser() {
-        // if (board.getCurrentTurn() == user.getUserId()) {
+        // if (board.getCurrentTurn() == user.getUserId())
             resetPawnOnBoard(user.getCurrentPlace(), user.getUserId());
             int dice1 = iGameLogic.getDice(dice);
             int dice2 = iGameLogic.getDice(dice);
@@ -203,20 +218,25 @@ public class GameController implements Initializable, IMonopolyGUI {
             lblDice1.setText(Integer.toString(dice1));
             lblDice2.setText(Integer.toString(dice2));
 
-            iGameLogic.moveUser(user, board, noDice);
+            iGameLogic.moveUser(user, board, 8);
             movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
 
             if (user.getCurrentPlace() == 30) {
                 iGameLogic.redCard(user);
+                resetPawnOnBoard(30, user.getUserId()); // -> squareId 30 = RED Card
+                movePawnOnBoard(10, user.getUserId());  // -> squareId 10 = Dressing Room
             }
        // }
     }
 
     private void buyFootballPlayer() {
         iGameLogic.buyFootballPlayer(user, board);
+        setOwnerOfSquareColor(user.getCurrentPlace(), user.getUserId());
     }
 
     private void endTurn() {
         iGameLogic.switchTurn(board, users);
     }
+
+    //ArrayList met Change and Community Chests -> Add Money, Withdraw Money and Go to a specific square
 }
