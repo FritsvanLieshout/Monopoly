@@ -3,14 +3,14 @@ package controller;
 import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
+import javafx.scene.shape.Rectangle;
 import logic_factory.LogicFactory;
 import logic_interface.*;
 import models.*;
@@ -49,19 +49,28 @@ public class GameController implements Initializable, IMonopolyGUI {
 
     User user;
     User user2;
+    User user3;
+    User user4;
 
     private Board board;
     private ArrayList<User> users;
     private Square[][] boardSquares;
     private ArrayList<Square> squareList;
 
+    Rectangle rec1 = new Rectangle(25, 25, Color.RED);
+    Rectangle rec2 = new Rectangle(25, 25, Color.BLUE);
+    Rectangle rec3 = new Rectangle(25, 25, Color.YELLOW);
+    Rectangle rec4 = new Rectangle(25, 25, Color.ORANGE);
+
     public GameController() {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
         users = new ArrayList<>();
-        user = new User(1, "Kevin"); //TODO: this need the user that's logged in
+        user = new User(1, "Jan"); //TODO: this need the user that's logged in
         user2 = new User(2, "Lisa");
+        user3 = new User(3, "Evi");
+        user4 = new User(4, "Frank");
         users.add(user);
         users.add(user2);
         board = iBoardLogic.getBoard();
@@ -73,6 +82,14 @@ public class GameController implements Initializable, IMonopolyGUI {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initLayoutBoard(gpMonopolyBoard);
         initSquaresToBoard(boardSquares, gpMonopolyBoard);
+        rec1.setStrokeWidth(2);
+        rec1.setStroke(Color.BLACK);
+        rec2.setStrokeWidth(2);
+        rec2.setStroke(Color.BLACK);
+        rec3.setStrokeWidth(2);
+        rec3.setStroke(Color.BLACK);
+        rec4.setStrokeWidth(2);
+        rec4.setStroke(Color.BLACK);
         setPawnOnBoard(0);
 
         btnThrowDice.setOnAction(new EventHandler<ActionEvent>() {
@@ -177,32 +194,48 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void setPawnOnBoard(int squareId) {
-        squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+        //squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+        //TODO -> fix this with more users -> squareList.get(squareId).setStyle("-fx-border-color: YELLOW; -fx-border-width: 5");
+
+        squareList.get(squareId).setMargin(rec1, new Insets(-30, -30, 0, 0));
+        squareList.get(squareId).setMargin(rec2, new Insets(-30, 30, 0, 0));
+        squareList.get(squareId).setMargin(rec3, new Insets(30, -30, 0, 0));
+        squareList.get(squareId).setMargin(rec4, new Insets(30, 30, 0, 0));
+        squareList.get(squareId).getChildren().addAll(rec1, rec2, rec3, rec4);
     }
 
     private void movePawnOnBoard(int squareId, int playerNr) {
         //playerNr = user.getUserId
         //user.getColor();
         if (squareList.get(squareId).getOwner() > 0) {
-            squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5; -fx-background-color: RED");
+            //squareList.get(squareId).getChildren().add(rec1);
+            setPawn(squareId, playerNr);
         }
         else {
-            squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
+            setPawn(squareId, playerNr);
         }
     }
 
-    private void resetPawnOnBoard(int squareId, int playerNr) {
-        if (squareList.get(squareId).getOwner() > 0) {
-            squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1; -fx-background-color: RED");
-        }
-        else {
-            squareList.get(squareId).setStyle("-fx-border-color: BLACK; -fx-border-width: 1");
+    private void setPawn(int squareId, int playerNr) {
+        switch(playerNr) {
+            case 1:
+                squareList.get(squareId).getChildren().add(rec1);
+                break;
+            case 2:
+                squareList.get(squareId).getChildren().add(rec2);
+                break;
+            case 3:
+                squareList.get(squareId).getChildren().add(rec3);
+                break;
+            case 4:
+                squareList.get(squareId).getChildren().add(rec4);
+                break;
         }
     }
 
     private void setOwnerOfSquareColor(int squareId, int playerNr) {
         //-> playerNr = user.getUserId -> user.getColor();
-        squareList.get(squareId).setStyle("-fx-background-color: RED");
+        squareList.get(squareId).setStyle("-fx-background-color: RED; -fx-border-width: 1; -fx-border-color: BLACK");
     }
 
     //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
@@ -210,23 +243,55 @@ public class GameController implements Initializable, IMonopolyGUI {
 
     private void moveUser() {
         // if (board.getCurrentTurn() == user.getUserId())
-            resetPawnOnBoard(user.getCurrentPlace(), user.getUserId());
-            int dice1 = iGameLogic.getDice(dice);
-            int dice2 = iGameLogic.getDice(dice);
-            int noDice = dice1 + dice2;
+        int dice1 = iGameLogic.getDice(dice);
+        int dice2 = iGameLogic.getDice(dice);
+        int noDice = dice1 + dice2;
+        int oldPlace = user.getCurrentPlace();
 
-            lblDice1.setText(Integer.toString(dice1));
-            lblDice2.setText(Integer.toString(dice2));
+        lblDice1.setText(Integer.toString(dice1));
+        lblDice2.setText(Integer.toString(dice2));
 
-            iGameLogic.moveUser(user, board, 8);
+        iGameLogic.moveUser(user, board, noDice);
+
+        if (oldPlace != user.getCurrentPlace()) {
             movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
+        }
 
-            if (user.getCurrentPlace() == 30) {
-                iGameLogic.redCard(user);
-                resetPawnOnBoard(30, user.getUserId()); // -> squareId 30 = RED Card
-                movePawnOnBoard(10, user.getUserId());  // -> squareId 10 = Dressing Room
-            }
-       // }
+        varCheckForARedCard(user);
+
+        //Below here will be removed if web sockets are implemented!
+        int oldPlace2 = user2.getCurrentPlace();
+        int oldPlace3 = user3.getCurrentPlace();
+        int oldPlace4 = user4.getCurrentPlace();
+
+        iGameLogic.moveUser(user2, board, 8);
+        iGameLogic.moveUser(user3, board, 11);
+        iGameLogic.moveUser(user4, board, 3);
+
+        if (oldPlace2 != user2.getCurrentPlace()) {
+            movePawnOnBoard(user2.getCurrentPlace(), user2.getUserId());
+        }
+
+        if (oldPlace3 != user3.getCurrentPlace()) {
+            movePawnOnBoard(user3.getCurrentPlace(), user3.getUserId());
+        }
+
+        if (oldPlace4 != user4.getCurrentPlace()) {
+            movePawnOnBoard(user4.getCurrentPlace(), user4.getUserId());
+        }
+
+        varCheckForARedCard(user2);
+        varCheckForARedCard(user3);
+        varCheckForARedCard(user4);
+    }
+
+    private boolean varCheckForARedCard(User user) {
+        if (user.getCurrentPlace() == 30) {
+            iGameLogic.redCard(user);
+            movePawnOnBoard(10, user.getUserId());  // -> squareId 10 = Dressing Room
+            return true;
+        }
+        return false;
     }
 
     private void buyFootballPlayer() {
@@ -235,8 +300,7 @@ public class GameController implements Initializable, IMonopolyGUI {
     }
 
     private void endTurn() {
-        iGameLogic.switchTurn(board, users);
+        //iGameLogic.switchTurn(board, users);
     }
-
     //ArrayList met Change and Community Chests -> Add Money, Withdraw Money and Go to a specific square
 }
