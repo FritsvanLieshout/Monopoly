@@ -1,15 +1,28 @@
 package server;
 
+import logic_interface.IGameLogic;
+import server_interface.IServerHandlerFactory;
 import server_interface.IServerMessageHandler;
 import server_interface.IServerMessageProcessor;
 import messaging.ServerHandlerFactory;
 
 public class ServerMessageProcessor implements IServerMessageProcessor {
-    public void processMessage(String sessionId, String type, String data) {
-        String simpleType = type.split(".")[type.split(".").length - 1];
 
-        ServerHandlerFactory factory = new ServerHandlerFactory();
-        IServerMessageHandler handler = factory.getHandler(simpleType);
+    private IGameLogic game;
+    private IServerHandlerFactory factory;
+
+    public ServerMessageProcessor(IServerHandlerFactory factory) { this.factory = factory; }
+
+    public void registerGame(IGameLogic game) { this.game = game; }
+
+    public IGameLogic getGame() { return game; }
+
+    @Override
+    public void processMessage(String sessionId, String type, String data) {
+        String classname = type.split("\\.")[type.split("\\.").length - 1];
+        IServerMessageHandler handler = factory.getHandler(classname, getGame());
         handler.handleMessage(data, sessionId);
     }
+
+    //public void handleDisconnect(String sessionId) { getGame().processClientDisconect(sessionId); }
 }

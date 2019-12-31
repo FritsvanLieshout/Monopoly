@@ -2,14 +2,18 @@ package logic;
 
 import logic_interface.IGameLogic;
 import models.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import server_interface.IServerMessageGenerator;
 
 import java.util.ArrayList;
 
 public class GameLogic implements IGameLogic {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GameLogic.class);
+    private ArrayList<User> users = new ArrayList<>();
+    private IServerMessageGenerator messageGenerator;
+
+    public GameLogic(IServerMessageGenerator messageGenerator) { this.messageGenerator = messageGenerator; }
+
+    public GameLogic() { }
 
     @Override
     public int getDice(Dice dice) {
@@ -60,6 +64,54 @@ public class GameLogic implements IGameLogic {
         }
     }
 
+    @Override
+    public void registerNewUser(String username, String password, String sessionId) {
+        boolean success = false;
+        //boolean success = restClient.register(username, password);
+
+        if (success) {
+            loginUser(username, password, sessionId);
+        }
+        else {
+            messageGenerator.notifyRegisterResult(sessionId, true);
+        }
+    }
+
+    public void loginUser(String username, String password, String sessionId) {
+        if (users.size() < 2) {
+            if (checkUserNameAlreadyExists(username)) {
+                messageGenerator.notifyRegisterResult(sessionId, false);
+                return;
+            }
+
+            //String token = restClient.login(username, password);
+            //messageGenerator.notifyLoginResult(sessionId, token);
+            //if (token != null && !token.equals("")) {
+            //    User u = new User(Integer.parseInt(sessionId), username);
+            //    users.add(u);
+            //    messageGenerator.notifyAddUser(sessionId, username);
+            //    checkStartingCondition();
+            //}
+        }
+    }
+
+    private void checkStartCondition() {
+        if (users.size() == 4) {
+            //startGame();
+        }
+    }
+
+    private boolean checkUserNameAlreadyExists(String username)
+    {
+        for(User u : users) {
+            if (u.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     private void payRent(User user, Board board, Square s) {
         user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
         board.getUser(s.getOwner()).getWallet().addMoneyToWallet(s.getRentPrice());
@@ -104,4 +156,6 @@ public class GameLogic implements IGameLogic {
         }
         return false;
     }
+
+
 }

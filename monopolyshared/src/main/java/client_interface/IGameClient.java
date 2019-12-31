@@ -7,6 +7,25 @@ import models.User;
  * @author frits
  */
 public interface IGameClient {
+    void registerClientGUI(IClientGUI gui);
+    /**
+     * This method register a new User.
+     * @param username
+     * @param password
+     */
+    void registerUser(String username, String password);
+
+    /**
+     *
+     * @param success
+     */
+    void handleUserRegistrationResponse(boolean success);
+
+    /**
+     *
+     */
+    void handleUserRegistered(String username);
+
     /**
      * The user goes the steps forward that are given by the dice.
      * In this method is an int newPlace. newPlace is called by this method
@@ -16,7 +35,6 @@ public interface IGameClient {
      * Place of the user set by newPlace.
      * @param user
      * @param dice
-     * @return the square where the user became through newPlace.
      */
-    Square moveUser(User user, int dice);
+    void moveUser(User user, int dice);
 }

@@ -1,5 +1,8 @@
 package controller;
 
+import client_interface.IClientGUI;
+import client_interface.IGameClient;
+import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,7 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class GameController implements Initializable, IMonopolyGUI {
+public class GameController implements Initializable, IClientGUI {
 
     public Circle colorPlayer1;
     public Circle colorPlayer2;
@@ -62,7 +65,11 @@ public class GameController implements Initializable, IMonopolyGUI {
     Rectangle rec3 = new Rectangle(25, 25, Color.YELLOW);
     Rectangle rec4 = new Rectangle(25, 25, Color.ORANGE);
 
-    public GameController() {
+    private IGameClient gameClient;
+
+    public GameController(IGameClient gameClient) {
+        this.gameClient = gameClient;
+        getGameClient().registerClientGUI(this);
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
@@ -114,9 +121,7 @@ public class GameController implements Initializable, IMonopolyGUI {
 
         btnPayRent.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-
-            }
+            public void handle(ActionEvent actionEvent) { register(); }
         });
 
         btnEndTurn.setOnAction(new EventHandler<ActionEvent>() {
@@ -207,13 +212,7 @@ public class GameController implements Initializable, IMonopolyGUI {
     private void movePawnOnBoard(int squareId, int playerNr) {
         //playerNr = user.getUserId
         //user.getColor();
-        if (squareList.get(squareId).getOwner() > 0) {
-            //squareList.get(squareId).getChildren().add(rec1);
-            setPawn(squareId, playerNr);
-        }
-        else {
-            setPawn(squareId, playerNr);
-        }
+        setPawn(squareId, playerNr);
     }
 
     private void setPawn(int squareId, int playerNr) {
@@ -241,7 +240,8 @@ public class GameController implements Initializable, IMonopolyGUI {
     //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
     private void startGame() { }
 
-    private void moveUser() {
+    @Override
+    public void moveUser() {
         // if (board.getCurrentTurn() == user.getUserId())
         int dice1 = iGameLogic.getDice(dice);
         int dice2 = iGameLogic.getDice(dice);
@@ -260,30 +260,77 @@ public class GameController implements Initializable, IMonopolyGUI {
         varCheckForARedCard(user);
 
         //Below here will be removed if web sockets are implemented!
-        int oldPlace2 = user2.getCurrentPlace();
-        int oldPlace3 = user3.getCurrentPlace();
-        int oldPlace4 = user4.getCurrentPlace();
-
-        iGameLogic.moveUser(user2, board, 8);
-        iGameLogic.moveUser(user3, board, 11);
-        iGameLogic.moveUser(user4, board, 3);
-
-        if (oldPlace2 != user2.getCurrentPlace()) {
-            movePawnOnBoard(user2.getCurrentPlace(), user2.getUserId());
-        }
-
-        if (oldPlace3 != user3.getCurrentPlace()) {
-            movePawnOnBoard(user3.getCurrentPlace(), user3.getUserId());
-        }
-
-        if (oldPlace4 != user4.getCurrentPlace()) {
-            movePawnOnBoard(user4.getCurrentPlace(), user4.getUserId());
-        }
-
-        varCheckForARedCard(user2);
-        varCheckForARedCard(user3);
-        varCheckForARedCard(user4);
+//        int oldPlace2 = user2.getCurrentPlace();
+//        int oldPlace3 = user3.getCurrentPlace();
+//        int oldPlace4 = user4.getCurrentPlace();
+//
+//        iGameLogic.moveUser(user2, board, 8);
+//        iGameLogic.moveUser(user3, board, 11);
+//        iGameLogic.moveUser(user4, board, 3);
+//
+//        if (oldPlace2 != user2.getCurrentPlace()) {
+//            movePawnOnBoard(user2.getCurrentPlace(), user2.getUserId());
+//        }
+//
+//        if (oldPlace3 != user3.getCurrentPlace()) {
+//            movePawnOnBoard(user3.getCurrentPlace(), user3.getUserId());
+//        }
+//
+//        if (oldPlace4 != user4.getCurrentPlace()) {
+//            movePawnOnBoard(user4.getCurrentPlace(), user4.getUserId());
+//        }
+//
+//        varCheckForARedCard(user2);
+//        varCheckForARedCard(user3);
+//        varCheckForARedCard(user4);
     }
+
+    @Override
+    public void processRegistrationResponse(boolean response) {
+        Platform.runLater(() -> {
+            if (response) {
+                showAlert("Monopoly", "Registration success!");
+            }
+            else {
+                showAlert("Monopoly", "Registration failed!");
+            }
+        });
+    }
+
+    @Override
+    public void processUserRegistered(String username) {
+        showAlert("Monopoly", "name: " + username + " has been registered");
+    }
+
+    private void showAlert(String header, String content)
+    {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(header);
+                alert.setHeaderText("Message for " + user.getUsername());
+                alert.setContentText(content);
+                alert.showAndWait();
+            }
+        });
+    }
+
+    public void register() { processLoginOrRegistration(false); }
+
+    public void login() { processLoginOrRegistration(true); }
+
+    public void processLoginOrRegistration(boolean isLogin) {
+        String username = "Jan";
+        String password = "I hate WebSockets";
+
+        if (!isLogin) { getGameClient().registerUser(username, password); }
+        else {
+            //getGameClient().loginUser(username, password);
+        }
+    }
+
+    public IGameClient getGameClient() { return gameClient; }
 
     private boolean varCheckForARedCard(User user) {
         if (user.getCurrentPlace() == 30) {

@@ -1,6 +1,8 @@
 package client;
 
+import client_interface.IClientMessageProcessor;
 import client_interface.IClientWebSocket;
+import client_interface.IGameClient;
 import messages.SocketMessage;
 import messages.SocketMessageGenerator;
 import serialization.Serializer;
@@ -20,6 +22,10 @@ public class ClientWebSocket implements IClientWebSocket {
     private static ClientWebSocket instance = null;
 
     boolean isRunning = false;
+
+    private IClientMessageProcessor messageProcessor;
+
+    private IGameClient gameClient;
 
     public static ClientWebSocket getInstance() {
         if (instance == null) {
@@ -84,20 +90,18 @@ public class ClientWebSocket implements IClientWebSocket {
         onWebSocketMessageReceived(message, session.getId());
     }
 
+    @Override
+    public void setMessageProcessor(IClientMessageProcessor handler) {
+        this.messageProcessor = handler;
+    }
+
+    @Override
     public void onWebSocketMessageReceived(String message, String sessionId)
     {
         Serializer ser = Serializer.getSerializer();
         SocketMessage msg = ser.deserialize(message, SocketMessage.class);
-        ClientMessageProcessor messageProcessor = new ClientMessageProcessor();
         messageProcessor.processMessage(sessionId, msg.getMessageType(), msg.getMessageData());
     }
-
-/*    private IMessageProcessor messageProcessor;
-
-    @Override
-    public void setMessageProcessor(IMessageProcessor handler) {
-        this.messageProcessor = handler;
-    }*/
 
     @OnError
     public void onWebSocketError(Session session, Throwable cause) {

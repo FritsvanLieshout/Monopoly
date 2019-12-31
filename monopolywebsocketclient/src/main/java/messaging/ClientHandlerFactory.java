@@ -2,12 +2,19 @@ package messaging;
 
 import client_interface.IClientHandlerFactory;
 import client_interface.IClientMessageHandler;
+import client_interface.IGameClient;
+import messages.RegisterUserMessage;
+import messages.RegistrationResultMessage;
 
 public class ClientHandlerFactory implements IClientHandlerFactory {
-    public IClientMessageHandler getHandler(String classname) {
+    public IClientMessageHandler getHandler(String classname, Object game) {
+        IGameClient gc = (IGameClient)game;
+
         switch (classname) {
-            case "USERTESTMESSAGE":
-                return new TestResultHandler();
+            case "RegistrationResultMessage":
+                return new RegistrationResultMessageHandler(gc);
+            case "UserHasRegisteredMessage":
+                return new UserHasRegisteredMessageHandler(gc);
             default:
                 return null;
         }

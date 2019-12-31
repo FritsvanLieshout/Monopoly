@@ -1,15 +1,18 @@
 package server;
 
+import server_interface.IServerMessageProcessor;
 import server_interface.IServerWebSocket;
 import messages.SocketMessage;
 import messages.SocketMessageGenerator;
 import serialization.Serializer;
 
-import javax.websocket.server.*;
+import javax.inject.Singleton;
+import javax.websocket.server.ServerEndpoint;
 import javax.websocket.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+@Singleton
 @ServerEndpoint(value="/monopoly/")
 public class ServerWebSocket implements IServerWebSocket {
     private static ServerWebSocket instance = null;
@@ -19,6 +22,17 @@ public class ServerWebSocket implements IServerWebSocket {
             instance = new ServerWebSocket();
         }
         return instance;
+    }
+
+    private IServerMessageProcessor messageProcessor;
+
+    public IServerMessageProcessor getMessageProcessor() {
+        return messageProcessor;
+    }
+
+    public void setMessageProcessor(IServerMessageProcessor processor)
+    {
+        this.messageProcessor = processor;
     }
 
     private static ArrayList<Session> sessions = new ArrayList<>();
@@ -33,8 +47,7 @@ public class ServerWebSocket implements IServerWebSocket {
         String sessionId = session.getId();
         Serializer ser = Serializer.getSerializer();
         SocketMessage msg = ser.deserialize(message, SocketMessage.class);
-        ServerMessageProcessor processor = new ServerMessageProcessor();
-        processor.processMessage(sessionId, msg.getMessageType(), msg.getMessageData());
+        getMessageProcessor().processMessage(sessionId, msg.getMessageType(), msg.getMessageData());
     }
 
     @OnClose

@@ -1,5 +1,5 @@
 package client_interface;
 
 public interface IClientMessageGenerator {
-    void sendPlayer(String username, String password);
+    void registerUserOnServer(String username, String password);
 }

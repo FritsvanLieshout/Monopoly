@@ -66,4 +66,6 @@ public interface IGameLogic {
      * The user his/her id is the current turn number.
      */
     void switchTurn(Board board, ArrayList<User> users);
+
+    void registerNewUser(String username, String password, String sessionId);
 }

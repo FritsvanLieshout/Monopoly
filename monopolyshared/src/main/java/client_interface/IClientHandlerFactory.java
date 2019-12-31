@@ -1,5 +1,5 @@
 package client_interface;
 
 public interface IClientHandlerFactory {
-    IClientMessageHandler getHandler(String classname);
+    IClientMessageHandler getHandler(String simpletType, Object game);
 }

@@ -1,9 +1,8 @@
 package server_interface;
 
 public interface IServerMessageGenerator {
-    /**
-     *
-     * @param username
-     */
-    void sendPlayer(String username);
+    void notifyUserAdded(String sessionId, String playerName);
+
+    void notifyRegisterResult(String sessionId, boolean success);
+
 }
