@@ -2,8 +2,8 @@ package client;
 
 import client_interface.IClientMessageGenerator;
 import client_interface.IClientWebSocket;
+import messages.LoginMessage;
 import messages.RegisterUserMessage;
-import messages.UserTestMessage;
 
 public class ClientMessageGenerator implements IClientMessageGenerator {
 
@@ -15,4 +15,10 @@ public class ClientMessageGenerator implements IClientMessageGenerator {
     public void registerUserOnServer(String username, String password) {
         clientWebSocket.send(new RegisterUserMessage(username, password));
     }
+
+    @Override
+    public void login(String username, String password) {
+        clientWebSocket.send(new LoginMessage(username, password));
+    }
+
 }

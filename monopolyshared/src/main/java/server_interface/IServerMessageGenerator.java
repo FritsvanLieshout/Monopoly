@@ -5,4 +5,6 @@ public interface IServerMessageGenerator {
 
     void notifyRegisterResult(String sessionId, boolean success);
 
+    void notifyLoginResult(String sessionId, String token);
+
 }

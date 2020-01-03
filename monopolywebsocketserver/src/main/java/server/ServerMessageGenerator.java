@@ -1,11 +1,8 @@
 package server;
 
-import messages.RegisterUserMessage;
-import messages.RegistrationResultMessage;
-import messages.UserHasRegisteredMessage;
+import messages.*;
 import server_interface.IServerMessageGenerator;
 import server_interface.IServerWebSocket;
-import messages.UserTestResultMessage;
 
 public class ServerMessageGenerator implements IServerMessageGenerator {
     private IServerWebSocket serverWebSocket;
@@ -23,5 +20,11 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
         RegistrationResultMessage msg = new RegistrationResultMessage(success);
         serverWebSocket.sendTo(sessionId, msg);
 
+    }
+
+    @Override
+    public void notifyLoginResult(String sessionId, String token) {
+        LoginResultMessage msg = new LoginResultMessage(token);
+        serverWebSocket.sendTo(sessionId, msg);
     }
 }

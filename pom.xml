@@ -8,6 +8,7 @@
     <artifactId>bigidea_monopoly</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>monopolyclient</module>
         <module>monopolyshared</module>
@@ -20,7 +21,10 @@
         <module>messaging</module>
         <module>monopolywebsocketserver</module>
         <module>models</module>
+        <module>monopolyrestserver</module>
+        <module>monopolyrestclient</module>
     </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>

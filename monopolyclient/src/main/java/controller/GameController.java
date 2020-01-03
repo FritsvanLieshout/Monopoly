@@ -43,6 +43,10 @@ public class GameController implements Initializable, IClientGUI {
     public Button btnPayRent;
     public Button btnEndTurn;
     public GridPane gpMonopolyBoard;
+    public TextField tfUsername;
+    public TextField tfPassword;
+    public Button btnLogin;
+    public Button btnRegister;
 
     Dice dice = new Dice();
 
@@ -98,6 +102,20 @@ public class GameController implements Initializable, IClientGUI {
         rec4.setStrokeWidth(2);
         rec4.setStroke(Color.BLACK);
         setPawnOnBoard(0);
+
+        btnLogin.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                login();
+            }
+        });
+
+        btnRegister.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                register();
+            }
+        });
 
         btnThrowDice.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -258,31 +276,6 @@ public class GameController implements Initializable, IClientGUI {
         }
 
         varCheckForARedCard(user);
-
-        //Below here will be removed if web sockets are implemented!
-//        int oldPlace2 = user2.getCurrentPlace();
-//        int oldPlace3 = user3.getCurrentPlace();
-//        int oldPlace4 = user4.getCurrentPlace();
-//
-//        iGameLogic.moveUser(user2, board, 8);
-//        iGameLogic.moveUser(user3, board, 11);
-//        iGameLogic.moveUser(user4, board, 3);
-//
-//        if (oldPlace2 != user2.getCurrentPlace()) {
-//            movePawnOnBoard(user2.getCurrentPlace(), user2.getUserId());
-//        }
-//
-//        if (oldPlace3 != user3.getCurrentPlace()) {
-//            movePawnOnBoard(user3.getCurrentPlace(), user3.getUserId());
-//        }
-//
-//        if (oldPlace4 != user4.getCurrentPlace()) {
-//            movePawnOnBoard(user4.getCurrentPlace(), user4.getUserId());
-//        }
-//
-//        varCheckForARedCard(user2);
-//        varCheckForARedCard(user3);
-//        varCheckForARedCard(user4);
     }
 
     @Override
@@ -292,14 +285,26 @@ public class GameController implements Initializable, IClientGUI {
                 showAlert("Monopoly", "Registration success!");
             }
             else {
-                showAlert("Monopoly", "Registration failed!");
+                showAlert("Monopoly", "Registration failed, please try again!");
             }
         });
     }
 
     @Override
     public void processUserRegistered(String username) {
-        showAlert("Monopoly", "name: " + username + " has been registered");
+        showAlert("Monopoly", "User: " + username + " has been registered");
+    }
+
+    @Override
+    public void processLoginResponse(String token) {
+        Platform.runLater(() -> {
+            if (token == null || token.equals("")) {
+                showAlert("Monopoly", "Login Failed");
+            }
+            else {
+                showAlert("Monopoly", "Login Success, waiting for other opponent(s)");
+            }
+        });
     }
 
     private void showAlert(String header, String content)
@@ -321,12 +326,22 @@ public class GameController implements Initializable, IClientGUI {
     public void login() { processLoginOrRegistration(true); }
 
     public void processLoginOrRegistration(boolean isLogin) {
-        String username = "Jan";
-        String password = "I hate WebSockets";
+        String username = tfUsername.getText();
+        String password = tfPassword.getText();
 
-        if (!isLogin) { getGameClient().registerUser(username, password); }
+        if(username.equals("") || username == null)
+        {
+            showAlert("Monopoly", "Invalid username");
+        }
+        else if (password.equals("") || password == null) {
+            showAlert("Monopoly", "Invalid password");
+        }
         else {
-            //getGameClient().loginUser(username, password);
+            if (!isLogin) {
+                getGameClient().registerUser(username, password);
+            } else {
+                getGameClient().loginUser(username, password);
+            }
         }
     }
 

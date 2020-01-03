@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 
-public class Serializer {
+public class Serializer extends BaseSerializer<String> {
     private static Serializer serializer;
 
     public static Serializer getSerializer()
@@ -19,9 +19,7 @@ public class Serializer {
         return gson.fromJson(data, tClass);
     }
 
-    public <T> T deserialize(String data, Type type) {
-        return gson.fromJson(data, type);
-    }
+    public <T> T deserialize(String data, Type type) { return gson.fromJson(data, type); }
 
     public String serialize(Object object) {
         return gson.toJson(object);

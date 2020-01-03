@@ -10,8 +10,11 @@
     <file url="file://$PROJECT_DIR$/messaging" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/models" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/monopolyclient" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/monopolyrestclient" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/monopolyrestserver" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/monopolyshared" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/monopolywebsocketclient" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/monopolywebsocketserver" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/restauthenticationshared" charset="UTF-8" />
   </component>
 </project>

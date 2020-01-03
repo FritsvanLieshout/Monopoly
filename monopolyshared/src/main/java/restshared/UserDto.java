@@ -1,16 +1,14 @@
 package restshared;
 
-public class UserDTO {
+public class UserDto {
 
     private int userId;
     private String username;
     private String password;
 
-    public UserDTO() {
+    public UserDto() { }
 
-    }
-
-    public UserDTO(int userId, String username, String password) {
+    public UserDto(int userId, String username, String password) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -42,6 +40,6 @@ public class UserDTO {
 
     @Override
     public String toString() {
-        return "UserID: " + userId + ", Username: " + username + ", Password: " + password;
+        return "UserId: " + userId + ", Username: " + username + ", Password: " + password;
     }
 }

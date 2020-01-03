@@ -8,7 +8,7 @@ public class MonopolyResponse {
     private boolean success;
 
     // List of users
-    private List<UserDTO> users;
+    private List<UserDto> users;
 
     public boolean isSuccess() {
         return success;
@@ -18,11 +18,11 @@ public class MonopolyResponse {
         this.success = success;
     }
 
-    public List<UserDTO> getUsers() {
+    public List<UserDto> getUsers() {
         return users;
     }
 
-    public void setPlayers(List<UserDTO> users) {
+    public void setUsers(List<UserDto> users) {
         this.users = users;
     }
 }

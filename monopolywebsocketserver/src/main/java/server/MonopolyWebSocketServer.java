@@ -17,6 +17,7 @@ import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 
 public class MonopolyWebSocketServer {
+
     private static final int PORT = 8050;
 
     /**
@@ -34,6 +35,7 @@ public class MonopolyWebSocketServer {
         socket.setMessageProcessor(messageProcessor);
 
         IServerMessageGenerator messageGenerator = new ServerMessageGenerator(socket);
+
         IGameLogic game = new GameLogic(messageGenerator);
         messageProcessor.registerGame(game);
 

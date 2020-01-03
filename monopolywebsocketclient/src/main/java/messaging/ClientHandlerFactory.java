@@ -15,6 +15,8 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new RegistrationResultMessageHandler(gc);
             case "UserHasRegisteredMessage":
                 return new UserHasRegisteredMessageHandler(gc);
+            case "LoginResultMessage":
+                return new LoginResultMessageHandler(gc);
             default:
                 return null;
         }

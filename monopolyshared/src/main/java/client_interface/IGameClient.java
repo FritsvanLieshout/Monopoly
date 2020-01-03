@@ -7,7 +7,13 @@ import models.User;
  * @author frits
  */
 public interface IGameClient {
+
+    /**
+     *
+     * @param gui
+     */
     void registerClientGUI(IClientGUI gui);
+
     /**
      * This method register a new User.
      * @param username
@@ -17,14 +23,27 @@ public interface IGameClient {
 
     /**
      *
+     * @param username
+     * @param password
+     */
+    void loginUser(String username, String password);
+    /**
+     *
      * @param success
      */
     void handleUserRegistrationResponse(boolean success);
 
     /**
      *
+     * @param username
      */
     void handleUserRegistered(String username);
+
+    /**
+     *
+     * @param token
+     */
+    void handleLoginResponse(String token);
 
     /**
      * The user goes the steps forward that are given by the dice.

@@ -2,6 +2,8 @@ package logic;
 
 import logic_interface.IGameLogic;
 import models.*;
+import restclient.MonopolyRestClient;
+import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
 
 import java.util.ArrayList;
@@ -10,8 +12,12 @@ public class GameLogic implements IGameLogic {
 
     private ArrayList<User> users = new ArrayList<>();
     private IServerMessageGenerator messageGenerator;
+    private static MonopolyRestClient monopolyRestClient;
 
-    public GameLogic(IServerMessageGenerator messageGenerator) { this.messageGenerator = messageGenerator; }
+    public GameLogic(IServerMessageGenerator messageGenerator) {
+        this.messageGenerator = messageGenerator;
+        monopolyRestClient = new MonopolyRestClient();
+    }
 
     public GameLogic() { }
 
@@ -66,36 +72,42 @@ public class GameLogic implements IGameLogic {
 
     @Override
     public void registerNewUser(String username, String password, String sessionId) {
-        boolean success = false;
-        //boolean success = restClient.register(username, password);
+       // boolean success = restClient.register(username, password);
+        System.out.println("\n");
+        System.out.println("Add new player");
+        UserDto userDto = monopolyRestClient.registerUser(username, password);
 
-        if (success) {
-            loginUser(username, password, sessionId);
+        if (userDto != null) {
+            System.out.println("Player" + userDto + " added to monopoly game!");
+            System.out.println("\n");
+            messageGenerator.notifyRegisterResult(sessionId, true);
+            login(username, password, sessionId);
         }
         else {
-            messageGenerator.notifyRegisterResult(sessionId, true);
+            messageGenerator.notifyRegisterResult(sessionId, false);
         }
     }
 
-    public void loginUser(String username, String password, String sessionId) {
-        if (users.size() < 2) {
+    @Override
+    public void login(String username, String password, String sessionId) {
+        if (users.size() < 4) {
             if (checkUserNameAlreadyExists(username)) {
                 messageGenerator.notifyRegisterResult(sessionId, false);
                 return;
             }
 
-            //String token = restClient.login(username, password);
-            //messageGenerator.notifyLoginResult(sessionId, token);
-            //if (token != null && !token.equals("")) {
-            //    User u = new User(Integer.parseInt(sessionId), username);
-            //    users.add(u);
-            //    messageGenerator.notifyAddUser(sessionId, username);
-            //    checkStartingCondition();
-            //}
+            UserDto userDto = monopolyRestClient.loginUser(username, password);
+            messageGenerator.notifyLoginResult(sessionId, "Token");
+            if (userDto != null) {
+                User user = new User(Integer.parseInt(sessionId), username);
+                users.add(user);
+                messageGenerator.notifyUserAdded(sessionId, username);
+                checkStartingCondition();
+            }
         }
     }
 
-    private void checkStartCondition() {
+    private void checkStartingCondition() {
         if (users.size() == 4) {
             //startGame();
         }

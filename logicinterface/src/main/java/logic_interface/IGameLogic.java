@@ -67,5 +67,19 @@ public interface IGameLogic {
      */
     void switchTurn(Board board, ArrayList<User> users);
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @param sessionId
+     */
     void registerNewUser(String username, String password, String sessionId);
+
+    /**
+     *
+     * @param username
+     * @param password
+     * @param sessionId
+     */
+    void login(String username, String password, String sessionId);
 }

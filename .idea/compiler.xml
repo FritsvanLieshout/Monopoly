@@ -14,14 +14,17 @@
         <module name="dalinterface" />
         <module name="messaging" />
         <module name="monopolyclient" />
+        <module name="monopolyrestserver" />
         <module name="monopolywebsocketclient" />
-        <module name="logic" />
+        <module name="monopolyrestclient" />
         <module name="monopolywebsocketserver" />
+        <module name="logic" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="models" target="11" />
       <module name="monopolyserver" target="11" />
+      <module name="restauthenticationshared" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
