@@ -32,7 +32,7 @@ class GameLogicTest {
         boardLogic = new BoardLogic();
         dice = new Dice();
         board = boardLogic.getBoard();
-        user = new User(1, "Kevin");
+        user = new User(1, "1", "Kevin");
     }
 
     @AfterEach
@@ -73,7 +73,7 @@ class GameLogicTest {
         int oldPlace = user.getCurrentPlace();
         int noDice1 = gameLogic.getDice(dice);
         int noDice2 = gameLogic.getDice(dice);
-        gameLogic.moveUser(user, board, (noDice1 + noDice2));
+        //gameLogic.moveUser(user, board, (noDice1 + noDice2));
         int newPlace = user.getCurrentPlace();
 
         Assertions.assertNotEquals(oldPlace, newPlace);
@@ -144,7 +144,7 @@ class GameLogicTest {
     @Test
     void payRent() {
         //User 2
-        User user2 = new User(2, "PayRentPls");
+        User user2 = new User(2, "1", "PayRentPls");
         int position2 = user2.getCurrentPlace();
         int newPosition2 = position2 + 8;
 

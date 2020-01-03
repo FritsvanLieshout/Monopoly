@@ -20,6 +20,7 @@ import models.*;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameController implements Initializable, IClientGUI {
@@ -55,9 +56,6 @@ public class GameController implements Initializable, IClientGUI {
     private IGameLogic iGameLogic;
 
     User user;
-    User user2;
-    User user3;
-    User user4;
 
     private Board board;
     private ArrayList<User> users;
@@ -77,13 +75,9 @@ public class GameController implements Initializable, IClientGUI {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
-        users = new ArrayList<>();
-        user = new User(1, "Jan"); //TODO: this need the user that's logged in
-        user2 = new User(2, "Lisa");
-        user3 = new User(3, "Evi");
-        user4 = new User(4, "Frank");
-        users.add(user);
-        users.add(user2);
+//        users = new ArrayList<>();
+//        user = new User(1, "1", "Jan"); //TODO: this need the user that's logged in
+//        users.add(user);
         board = iBoardLogic.getBoard();
         boardSquares = new Square[11][11];
         squareList = iBoardLogic.getSquareList();
@@ -258,24 +252,36 @@ public class GameController implements Initializable, IClientGUI {
     //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
     private void startGame() { }
 
+//    @Override
+//    public void moveUser() {
+//        // if (board.getCurrentTurn() == user.getUserId())
+//        int dice1 = iGameLogic.getDice(dice);
+//        int dice2 = iGameLogic.getDice(dice);
+//        int noDice = dice1 + dice2;
+//        int oldPlace = user.getCurrentPlace();
+//
+//        lblDice1.setText(Integer.toString(dice1));
+//        lblDice2.setText(Integer.toString(dice2));
+//
+//        getGameClient().moveUser(noDice);
+//
+//        if (oldPlace != user.getCurrentPlace()) {
+//            movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
+//        }
+//
+//        varCheckForARedCard(user);
+//    }
+
     @Override
     public void moveUser() {
-        // if (board.getCurrentTurn() == user.getUserId())
         int dice1 = iGameLogic.getDice(dice);
         int dice2 = iGameLogic.getDice(dice);
         int noDice = dice1 + dice2;
-        int oldPlace = user.getCurrentPlace();
 
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
 
-        iGameLogic.moveUser(user, board, noDice);
-
-        if (oldPlace != user.getCurrentPlace()) {
-            movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
-        }
-
-        varCheckForARedCard(user);
+        getGameClient().moveUser(noDice);
     }
 
     @Override
@@ -303,6 +309,42 @@ public class GameController implements Initializable, IClientGUI {
             }
             else {
                 showAlert("Monopoly", "Login Success, waiting for other opponent(s)");
+                btnLogin.setDisable(true);
+                btnRegister.setDisable(true);
+                tfUsername.setDisable(true);
+                tfPassword.setDisable(true);
+            }
+        });
+    }
+
+    @Override
+    public void processMoveUserResponse(int dice, String sessionId) {
+        User currentUser = iGameLogic.getUser(sessionId);
+        Platform.runLater(() -> {
+            movePawnOnBoard(currentUser.getUserId(), dice);
+            showAlert("Monopoly", "Great", sessionId);
+        });
+    }
+
+    @Override
+    public void processUsersInGameResponse(List<String> usernameList) {
+        Platform.runLater(() -> {
+            lblPlayer1.setText(usernameList.get(0));
+            lblPlayer2.setText(usernameList.get(1));
+        });
+    }
+
+    private void showAlert(String header, String content, String sessionId)
+    {
+        User currentUser = iGameLogic.getUser(sessionId);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(header);
+                alert.setHeaderText("Message for " + currentUser.getUsername());
+                alert.setContentText(content);
+                alert.showAndWait();
             }
         });
     }
@@ -314,7 +356,7 @@ public class GameController implements Initializable, IClientGUI {
             public void run() {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(header);
-                alert.setHeaderText("Message for " + user.getUsername());
+                //alert.setHeaderText("Message for " + currentUser.getUsername());
                 alert.setContentText(content);
                 alert.showAndWait();
             }

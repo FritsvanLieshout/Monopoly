@@ -1,5 +1,6 @@
 package logic;
 
+import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
 import models.*;
 import restclient.MonopolyRestClient;
@@ -7,16 +8,22 @@ import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameLogic implements IGameLogic {
 
-    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<User> onlineUsers = new ArrayList<>();
     private IServerMessageGenerator messageGenerator;
     private static MonopolyRestClient monopolyRestClient;
+
+    private Board board;
+    private BoardLogic boardLogic;
 
     public GameLogic(IServerMessageGenerator messageGenerator) {
         this.messageGenerator = messageGenerator;
         monopolyRestClient = new MonopolyRestClient();
+        boardLogic = new BoardLogic();
+        board = boardLogic.getBoard();
     }
 
     public GameLogic() { }
@@ -27,15 +34,25 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public Square moveUser(User user, Board board, int dice) {
-        int newPlace = board.getPositionOnBoard(user.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(user, board)) { }
+    public User getUser(String sessionId) {
+        for (User user : onlineUsers) {
+            if (user.getSessionId().equals(sessionId)) return user;
+        }
+        return null;
+    }
+
+    @Override
+    public Square moveUser(int dice, String sessionId) {
+        User currentUser = getUser(sessionId);
+        int newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace());
+        if (checkIfUserIsInDressingRoom(currentUser, board)) { }
         else {
-            if (checkIfUserIsOverStart(user, dice)) { }
-            newPlace = board.getPositionOnBoard(user.getCurrentPlace() + dice);
-            user.setPlace(newPlace);
-            System.out.println(user.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[user.getCurrentPlace()].getSquareName());
-            if (checkIfSquareIsOwned(user, board)) { }
+            if (checkIfUserIsOverStart(currentUser, dice)) { }
+            newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
+            currentUser.setPlace(newPlace);
+            System.out.println(currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName());
+            messageGenerator.notifyMoveUserMessage(dice, sessionId);
+            if (checkIfSquareIsOwned(currentUser, board)) { }
         }
         return board.getSquares()[newPlace];
     }
@@ -74,11 +91,11 @@ public class GameLogic implements IGameLogic {
     public void registerNewUser(String username, String password, String sessionId) {
        // boolean success = restClient.register(username, password);
         System.out.println("\n");
-        System.out.println("Add new player");
+        System.out.println("Register a new user: ");
         UserDto userDto = monopolyRestClient.registerUser(username, password);
 
         if (userDto != null) {
-            System.out.println("Player" + userDto + " added to monopoly game!");
+            System.out.println("User " + userDto + " added to monopoly game!");
             System.out.println("\n");
             messageGenerator.notifyRegisterResult(sessionId, true);
             login(username, password, sessionId);
@@ -90,32 +107,46 @@ public class GameLogic implements IGameLogic {
 
     @Override
     public void login(String username, String password, String sessionId) {
-        if (users.size() < 4) {
+        if (onlineUsers.size() < 4) {
             if (checkUserNameAlreadyExists(username)) {
                 messageGenerator.notifyRegisterResult(sessionId, false);
                 return;
             }
 
-            UserDto userDto = monopolyRestClient.loginUser(username, password);
+            //UserDto userDto = monopolyRestClient.loginUser(username, password);
             messageGenerator.notifyLoginResult(sessionId, "Token");
-            if (userDto != null) {
-                User user = new User(Integer.parseInt(sessionId), username);
-                users.add(user);
-                messageGenerator.notifyUserAdded(sessionId, username);
-                checkStartingCondition();
-            }
+            User user = new User(Integer.parseInt(sessionId), sessionId, username);
+            onlineUsers.add(user);
+            messageGenerator.notifyUserAdded(sessionId, username);
+            checkStartingCondition();
+        }
+    }
+
+    public void startGame(List<String> usernameList, String sessionId) { }
+
+    @Override
+    public void updateUsersInGame() {
+        List<String> usernameList = new ArrayList<>();
+
+        for (User user : onlineUsers) {
+            usernameList.add(user.getUsername());
+        }
+
+        for (User user : onlineUsers) {
+            messageGenerator.updateUsersInGame(usernameList, user.getSessionId());
+            //One with all users
         }
     }
 
     private void checkStartingCondition() {
-        if (users.size() == 4) {
-            //startGame();
+        if (onlineUsers.size() == 2) {
+            //startGame(users, sessionId);
         }
     }
 
     private boolean checkUserNameAlreadyExists(String username)
     {
-        for(User u : users) {
+        for(User u : onlineUsers) {
             if (u.getUsername().equals(username)) {
                 return true;
             }
@@ -168,6 +199,4 @@ public class GameLogic implements IGameLogic {
         }
         return false;
     }
-
-
 }

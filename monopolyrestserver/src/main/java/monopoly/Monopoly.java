@@ -19,7 +19,7 @@ public class Monopoly {
     // Singleton pattern
     private Monopoly() {
         users = new HashMap<>();
-        nextUserId = 0;
+        nextUserId = 1;
     }
 
     /**

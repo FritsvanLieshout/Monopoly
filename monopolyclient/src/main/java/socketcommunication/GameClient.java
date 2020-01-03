@@ -3,7 +3,11 @@ package socketcommunication;
 import client_interface.IClientGUI;
 import client_interface.IClientMessageGenerator;
 import client_interface.IGameClient;
+import models.Board;
+import models.Square;
 import models.User;
+
+import java.util.List;
 
 public class GameClient implements IGameClient {
     private IClientMessageGenerator messageGenerator;
@@ -29,5 +33,11 @@ public class GameClient implements IGameClient {
     public void handleLoginResponse(String token) { clientGUI.processLoginResponse(token); }
 
     @Override
-    public void moveUser(User user, int dice) { clientGUI.moveUser(); }
+    public void moveUser(int dice) { messageGenerator.moveUser(dice); }
+
+    @Override
+    public void handleMoveUserResponse(int dice, String sessionId) { clientGUI.processMoveUserResponse(dice, sessionId); }
+
+    @Override
+    public void handleUsersInGameResponse(List<String> usernameList) { clientGUI.processUsersInGameResponse(usernameList); }
 }

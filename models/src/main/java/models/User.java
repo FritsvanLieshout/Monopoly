@@ -3,6 +3,7 @@ package models;
 public class User {
 
     private int userId;
+    private String sessionId;
     private String username;
     private String password;
     private int place;
@@ -13,28 +14,34 @@ public class User {
         this.wallet = new Wallet(3500);
     }
 
-    public User(int userId, String username, String password) {
-        this.place = 0;
+    public User(int userId, String sessionId, String username, String password) {
         this.userId = userId;
+        this.place = 0;
+        this.sessionId = sessionId;
         this.username = username;
         this.password = password;
         this.wallet = new Wallet(3500);
         this.isInDressingRoom = false;
     }
 
-    public User(int userId, String username) {
-        this.place = 0;
+    public User(int userId, String sessionId, String username) {
         this.userId = userId;
+        this.place = 0;
+        this.sessionId = sessionId;
         this.username = username;
         this.wallet = new Wallet(3500);
         this.isInDressingRoom = false;
     }
 
-    public int getUserId() {
-        return userId;
-    }
+    public int getUserId() { return userId; }
 
     public void setUserId(int userId) { this.userId = userId; }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
 
     public String getUsername() { return username; }
 

@@ -1,5 +1,7 @@
 package server_interface;
 
+import java.util.List;
+
 public interface IServerMessageGenerator {
     void notifyUserAdded(String sessionId, String playerName);
 
@@ -7,4 +9,7 @@ public interface IServerMessageGenerator {
 
     void notifyLoginResult(String sessionId, String token);
 
+    void notifyMoveUserMessage(int dice, String sessionId);
+
+    void updateUsersInGame(List<String> usernameList, String sessionId);
 }

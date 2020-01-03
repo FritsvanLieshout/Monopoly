@@ -6,6 +6,7 @@ import models.Square;
 import models.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface provided by the GameLogic class
@@ -51,12 +52,10 @@ public interface IGameLogic {
      * by the method checkIfSquareIsOwned(). If the square is owned by another user
      * the user that became on this square has to pay rent to the user that owned the
      * square. The wallet of both users gets a update.
-     * @param user
-     * @param board
      * @param dice
      * @return the square where the user became through newPlace.
      */
-    Square moveUser(User user, Board board, int dice);
+    Square moveUser(int dice, String sessionId);
 
     /**
      * If the user end his/her turn this method will be called in the
@@ -82,4 +81,16 @@ public interface IGameLogic {
      * @param sessionId
      */
     void login(String username, String password, String sessionId);
+
+    /**
+     *
+     * @param sessionId
+     * @return user
+     */
+    User getUser(String sessionId);
+
+    /**
+     *
+     */
+    void updateUsersInGame();
 }

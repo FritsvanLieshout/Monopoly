@@ -17,6 +17,10 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new UserHasRegisteredMessageHandler(gc);
             case "LoginResultMessage":
                 return new LoginResultMessageHandler(gc);
+            case "MoveUserResultMessage":
+                return new MoveUserResultMessageHandler(gc);
+            case "UsersInGameResultMessage":
+                return new UsersInGameResultMessageHandler(gc);
             default:
                 return null;
         }

@@ -1,7 +1,10 @@
 package client_interface;
 
+import models.Board;
 import models.Square;
 import models.User;
+
+import java.util.List;
 
 /**
  * @author frits
@@ -52,8 +55,19 @@ public interface IGameClient {
      * If checkIfUserIsInDressingRoom is false the newPlace is the same method
      * as above. But this time is the number of the dice added ofter this method.
      * Place of the user set by newPlace.
-     * @param user
      * @param dice
      */
-    void moveUser(User user, int dice);
+    void moveUser(int dice);
+
+    /**
+     *
+     * @param dice
+     */
+    void handleMoveUserResponse(int dice, String sessionId);
+
+    /**
+     *
+     * @param usernameList
+     */
+    void handleUsersInGameResponse(List<String> usernameList);
 }

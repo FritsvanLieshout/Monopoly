@@ -4,6 +4,8 @@ import messages.*;
 import server_interface.IServerMessageGenerator;
 import server_interface.IServerWebSocket;
 
+import java.util.List;
+
 public class ServerMessageGenerator implements IServerMessageGenerator {
     private IServerWebSocket serverWebSocket;
 
@@ -25,6 +27,19 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     @Override
     public void notifyLoginResult(String sessionId, String token) {
         LoginResultMessage msg = new LoginResultMessage(token);
+        serverWebSocket.sendTo(sessionId, msg);
+    }
+
+    @Override
+    public void notifyMoveUserMessage(int dice, String sessionId) {
+        MoveUserResultMessage msg = new MoveUserResultMessage(dice, sessionId);
+        serverWebSocket.sendTo(sessionId, msg);
+        //broadcast
+    }
+
+    @Override
+    public void updateUsersInGame(List<String> usernameList, String sessionId) {
+        UsersInGameResultMessage msg = new UsersInGameResultMessage(usernameList);
         serverWebSocket.sendTo(sessionId, msg);
     }
 }
