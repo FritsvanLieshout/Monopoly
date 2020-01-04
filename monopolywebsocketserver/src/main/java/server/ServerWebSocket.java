@@ -52,7 +52,7 @@ public class ServerWebSocket implements IServerWebSocket {
 
     @OnClose
     public void onClose(CloseReason reason, Session session) {
-        //getMessageProcessor().handleDisconnect(session.getId());
+        getMessageProcessor().handleDisconnect(session.getId());
         sessions.remove(session);
     }
 

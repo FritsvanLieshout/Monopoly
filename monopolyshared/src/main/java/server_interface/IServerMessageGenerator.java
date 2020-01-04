@@ -1,5 +1,7 @@
 package server_interface;
 
+import models.User;
+
 import java.util.List;
 
 public interface IServerMessageGenerator {
@@ -12,4 +14,6 @@ public interface IServerMessageGenerator {
     void notifyMoveUserMessage(int dice, String sessionId);
 
     void updateUsersInGame(List<String> usernameList, String sessionId);
+
+    void updateUserList(List<User> onlineUsers, String sessionId);
 }

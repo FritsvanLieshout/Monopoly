@@ -1,6 +1,7 @@
 package server;
 
 import messages.*;
+import models.User;
 import server_interface.IServerMessageGenerator;
 import server_interface.IServerWebSocket;
 
@@ -40,6 +41,12 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     @Override
     public void updateUsersInGame(List<String> usernameList, String sessionId) {
         UsersInGameResultMessage msg = new UsersInGameResultMessage(usernameList);
+        serverWebSocket.sendTo(sessionId, msg);
+    }
+
+    @Override
+    public void updateUserList(List<User> onlineUsers, String sessionId) {
+        UserListResultMessage msg = new UserListResultMessage(onlineUsers);
         serverWebSocket.sendTo(sessionId, msg);
     }
 }

@@ -45,7 +45,7 @@ public class GameController implements Initializable, IClientGUI {
     public Button btnEndTurn;
     public GridPane gpMonopolyBoard;
     public TextField tfUsername;
-    public TextField tfPassword;
+    public PasswordField tfPassword;
     public Button btnLogin;
     public Button btnRegister;
 
@@ -75,7 +75,7 @@ public class GameController implements Initializable, IClientGUI {
         logicFactory = new LogicFactory();
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
-//        users = new ArrayList<>();
+        users = new ArrayList<>();
 //        user = new User(1, "1", "Jan"); //TODO: this need the user that's logged in
 //        users.add(user);
         board = iBoardLogic.getBoard();
@@ -96,6 +96,13 @@ public class GameController implements Initializable, IClientGUI {
         rec4.setStrokeWidth(2);
         rec4.setStroke(Color.BLACK);
         setPawnOnBoard(0);
+
+        btnThrowDice.setDisable(true);
+        btnEndTurn.setDisable(true);
+        btnPayRent.setDisable(true);
+        btnBuyPlayer.setDisable(true);
+        btnPlaceHotel.setDisable(true);
+        btnPlaceHouse.setDisable(true);
 
         btnLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -313,14 +320,15 @@ public class GameController implements Initializable, IClientGUI {
                 btnRegister.setDisable(true);
                 tfUsername.setDisable(true);
                 tfPassword.setDisable(true);
+                setDisable(false);
             }
         });
     }
 
     @Override
     public void processMoveUserResponse(int dice, String sessionId) {
-        User currentUser = iGameLogic.getUser(sessionId);
         Platform.runLater(() -> {
+            User currentUser = getUser(sessionId);
             movePawnOnBoard(currentUser.getUserId(), dice);
             showAlert("Monopoly", "Great", sessionId);
         });
@@ -329,17 +337,29 @@ public class GameController implements Initializable, IClientGUI {
     @Override
     public void processUsersInGameResponse(List<String> usernameList) {
         Platform.runLater(() -> {
-            lblPlayer1.setText(usernameList.get(0));
-            lblPlayer2.setText(usernameList.get(1));
+            //lblPlayer1.setText(usernameList.get(0));
+        });
+    }
+
+    @Override
+    public void processUserListResponse(List<User> users) {
+        Platform.runLater(() -> {
+            for (User user : users) {
+                this.users.add(user);
+                if (user.getUserId() == 1) { lblPlayer1.setText(user.getUsername()); }
+                else if (user.getUserId() == 2) { lblPlayer2.setText(user.getUsername()); }
+                else if (user.getUserId() == 3) { lblPlayer3.setText(user.getUsername()); }
+                else { lblPlayer4.setText(user.getUsername()); }
+            }
         });
     }
 
     private void showAlert(String header, String content, String sessionId)
     {
-        User currentUser = iGameLogic.getUser(sessionId);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                User currentUser = getUser(sessionId);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(header);
                 alert.setHeaderText("Message for " + currentUser.getUsername());
@@ -405,6 +425,22 @@ public class GameController implements Initializable, IClientGUI {
 
     private void endTurn() {
         //iGameLogic.switchTurn(board, users);
+    }
+
+    private void setDisable(boolean result) {
+        btnThrowDice.setDisable(result);
+        btnEndTurn.setDisable(result);
+        btnPayRent.setDisable(result);
+        btnBuyPlayer.setDisable(result);
+        btnPlaceHotel.setDisable(result);
+        btnPlaceHouse.setDisable(result);
+    }
+
+    private User getUser(String sessionId) {
+        for (User user : users) {
+            if (user.getSessionId().equals(sessionId)) return user;
+        }
+        return null;
     }
     //ArrayList met Change and Community Chests -> Add Money, Withdraw Money and Go to a specific square
 }

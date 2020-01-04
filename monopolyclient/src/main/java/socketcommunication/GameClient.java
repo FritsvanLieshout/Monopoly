@@ -40,4 +40,7 @@ public class GameClient implements IGameClient {
 
     @Override
     public void handleUsersInGameResponse(List<String> usernameList) { clientGUI.processUsersInGameResponse(usernameList); }
+
+    @Override
+    public void handleUserListResponse(List<User> users) { clientGUI.processUserListResponse(users); }
 }

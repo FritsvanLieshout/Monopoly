@@ -92,5 +92,5 @@ public interface IGameLogic {
     /**
      *
      */
-    void updateUsersInGame();
+    void processClientDisconnect(String sessionId);
 }

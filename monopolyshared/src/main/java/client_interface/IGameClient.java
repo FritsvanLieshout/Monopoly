@@ -70,4 +70,10 @@ public interface IGameClient {
      * @param usernameList
      */
     void handleUsersInGameResponse(List<String> usernameList);
+
+    /**
+     *
+     * @param users
+     */
+    void handleUserListResponse(List<User> users);
 }

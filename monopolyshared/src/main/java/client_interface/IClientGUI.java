@@ -1,5 +1,7 @@
 package client_interface;
 
+import models.User;
+
 import java.util.List;
 
 public interface IClientGUI {
@@ -15,4 +17,6 @@ public interface IClientGUI {
     void processMoveUserResponse(int dice, String sessionId);
 
     void processUsersInGameResponse(List<String> usernameList);
+
+    void processUserListResponse(List<User> users);
 }

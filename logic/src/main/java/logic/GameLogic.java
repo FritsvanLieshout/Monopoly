@@ -10,6 +10,11 @@ import server_interface.IServerMessageGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+THIS CLASS IS ONLY RESPONSIBLE FOR HANDLING GAME LOGIC / RULES
+THE METHODS ARE CALLED FROM THE MESSAGE HANDLERS
+WHEN A MESSAGE NEEDS TO BE SENT TO CLIENTS, THE MESSAGE GENERATOR CLASS IS USED
+ */
 public class GameLogic implements IGameLogic {
 
     private ArrayList<User> onlineUsers = new ArrayList<>();
@@ -118,13 +123,23 @@ public class GameLogic implements IGameLogic {
             User user = new User(Integer.parseInt(sessionId), sessionId, username);
             onlineUsers.add(user);
             messageGenerator.notifyUserAdded(sessionId, username);
+            updateUsersInGame();
             checkStartingCondition();
         }
     }
 
-    public void startGame(List<String> usernameList, String sessionId) { }
-
     @Override
+    public void processClientDisconnect(String sessionId)
+    {
+        for(User user : onlineUsers) {
+            if (user.getSessionId().equals(sessionId)) {
+                onlineUsers.remove(user);
+            }
+        }
+    }
+
+    public void startGame() { }
+
     public void updateUsersInGame() {
         List<String> usernameList = new ArrayList<>();
 
@@ -134,13 +149,14 @@ public class GameLogic implements IGameLogic {
 
         for (User user : onlineUsers) {
             messageGenerator.updateUsersInGame(usernameList, user.getSessionId());
+            messageGenerator.updateUserList(onlineUsers, user.getSessionId());
             //One with all users
         }
     }
 
     private void checkStartingCondition() {
         if (onlineUsers.size() == 2) {
-            //startGame(users, sessionId);
+            //startGame();
         }
     }
 
@@ -153,7 +169,6 @@ public class GameLogic implements IGameLogic {
         }
         return false;
     }
-
 
     private void payRent(User user, Board board, Square s) {
         user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());

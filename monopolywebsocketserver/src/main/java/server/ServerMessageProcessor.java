@@ -24,5 +24,8 @@ public class ServerMessageProcessor implements IServerMessageProcessor {
         handler.handleMessage(data, sessionId);
     }
 
-    //public void handleDisconnect(String sessionId) { getGame().processClientDisconect(sessionId); }
+    @Override
+    public void handleDisconnect(String sessionId) {
+        getGame().processClientDisconnect(sessionId);
+    }
 }
