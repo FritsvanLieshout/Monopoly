@@ -5,9 +5,6 @@ import client_interface.IClientWebSocket;
 import messages.LoginMessage;
 import messages.MoveUserMessage;
 import messages.RegisterUserMessage;
-import messages.UsersInGameMessage;
-
-import java.util.List;
 
 public class ClientMessageGenerator implements IClientMessageGenerator {
 
@@ -27,9 +24,4 @@ public class ClientMessageGenerator implements IClientMessageGenerator {
 
     @Override
     public void moveUser(int dice) { clientWebSocket.send(new MoveUserMessage(dice)); }
-
-    @Override
-    public void usersInGame(List<String> usernameList) {
-        clientWebSocket.send(new UsersInGameMessage(usernameList));
-    }
 }

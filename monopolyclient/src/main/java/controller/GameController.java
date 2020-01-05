@@ -320,7 +320,6 @@ public class GameController implements Initializable, IClientGUI {
                 btnRegister.setDisable(true);
                 tfUsername.setDisable(true);
                 tfPassword.setDisable(true);
-                setDisable(false);
             }
         });
     }
@@ -329,8 +328,10 @@ public class GameController implements Initializable, IClientGUI {
     public void processMoveUserResponse(int dice, String sessionId) {
         Platform.runLater(() -> {
             User currentUser = getUser(sessionId);
-            movePawnOnBoard(currentUser.getUserId(), dice);
-            showAlert("Monopoly", "Great", sessionId);
+            movePawnOnBoard(currentUser.getCurrentPlace(), currentUser.getUserId());
+            String msg = currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName();
+            showAlert("Monopoly", msg, sessionId);
+            taLog.setText(msg);
         });
     }
 
@@ -351,6 +352,24 @@ public class GameController implements Initializable, IClientGUI {
                 else if (user.getUserId() == 3) { lblPlayer3.setText(user.getUsername()); }
                 else { lblPlayer4.setText(user.getUsername()); }
             }
+        });
+    }
+
+    @Override
+    public void processStartGameResponse() {
+        Platform.runLater(() -> {
+            String msg = "The Game starts now!";
+            showAlert("Monopoly", msg);
+            taLog.setText(msg);
+            setDisable(false);
+        });
+    }
+
+    @Override
+    public void processUpdateUser(int currentPlace, String sessionId) {
+        Platform.runLater(() -> {
+            User currentUser = getUser(sessionId);
+            currentUser.setPlace(currentPlace);
         });
     }
 
@@ -390,6 +409,7 @@ public class GameController implements Initializable, IClientGUI {
     public void processLoginOrRegistration(boolean isLogin) {
         String username = tfUsername.getText();
         String password = tfPassword.getText();
+        lblCurrentPlayerName.setText(username);
 
         if(username.equals("") || username == null)
         {
@@ -411,7 +431,7 @@ public class GameController implements Initializable, IClientGUI {
 
     private boolean varCheckForARedCard(User user) {
         if (user.getCurrentPlace() == 30) {
-            iGameLogic.redCard(user);
+            iGameLogic.redCard(user); //TODO -> getGameClient().redCard(user)
             movePawnOnBoard(10, user.getUserId());  // -> squareId 10 = Dressing Room
             return true;
         }
@@ -419,7 +439,7 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void buyFootballPlayer() {
-        iGameLogic.buyFootballPlayer(user, board);
+        iGameLogic.buyFootballPlayer(user, board); //TODO -> getGameClient().buyFootballPlayer(user, board)
         setOwnerOfSquareColor(user.getCurrentPlace(), user.getUserId());
     }
 
@@ -427,13 +447,13 @@ public class GameController implements Initializable, IClientGUI {
         //iGameLogic.switchTurn(board, users);
     }
 
-    private void setDisable(boolean result) {
-        btnThrowDice.setDisable(result);
-        btnEndTurn.setDisable(result);
-        btnPayRent.setDisable(result);
-        btnBuyPlayer.setDisable(result);
-        btnPlaceHotel.setDisable(result);
-        btnPlaceHouse.setDisable(result);
+    private void setDisable(boolean disable) {
+        btnThrowDice.setDisable(disable);
+        btnEndTurn.setDisable(disable);
+        btnPayRent.setDisable(disable);
+        btnBuyPlayer.setDisable(disable);
+        btnPlaceHotel.setDisable(disable);
+        btnPlaceHouse.setDisable(disable);
     }
 
     private User getUser(String sessionId) {

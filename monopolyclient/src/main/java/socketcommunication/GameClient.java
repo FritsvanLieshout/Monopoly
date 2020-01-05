@@ -43,4 +43,10 @@ public class GameClient implements IGameClient {
 
     @Override
     public void handleUserListResponse(List<User> users) { clientGUI.processUserListResponse(users); }
+
+    @Override
+    public void handleStartGameResponse() { clientGUI.processStartGameResponse(); }
+
+    @Override
+    public void handleUpdatePlaceOfCurrentUserResponse(int currentPlace, String sessionId) { clientGUI.processUpdateUser(currentPlace, sessionId); }
 }

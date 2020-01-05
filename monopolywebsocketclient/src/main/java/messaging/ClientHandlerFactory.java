@@ -5,6 +5,7 @@ import client_interface.IClientMessageHandler;
 import client_interface.IGameClient;
 import messages.RegisterUserMessage;
 import messages.RegistrationResultMessage;
+import messages.UpdatePlaceOfCurrentUserMessage;
 
 public class ClientHandlerFactory implements IClientHandlerFactory {
     public IClientMessageHandler getHandler(String classname, Object game) {
@@ -19,10 +20,12 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new LoginResultMessageHandler(gc);
             case "MoveUserResultMessage":
                 return new MoveUserResultMessageHandler(gc);
-            case "UsersInGameResultMessage":
-                return new UsersInGameResultMessageHandler(gc);
             case "UserListResultMessage":
                 return new UserListResultMessageHandler(gc);
+            case "StartGameMessage":
+                return new StartGameMessageHandler(gc);
+            case "UpdatePlaceOfCurrentUserMessage":
+                return new UpdatePlaceOfCurrentUserMessageHandler(gc);
             default:
                 return null;
         }

@@ -34,19 +34,23 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     @Override
     public void notifyMoveUserMessage(int dice, String sessionId) {
         MoveUserResultMessage msg = new MoveUserResultMessage(dice, sessionId);
-        serverWebSocket.sendTo(sessionId, msg);
+        serverWebSocket.broadcast(msg);
         //broadcast
-    }
-
-    @Override
-    public void updateUsersInGame(List<String> usernameList, String sessionId) {
-        UsersInGameResultMessage msg = new UsersInGameResultMessage(usernameList);
-        serverWebSocket.sendTo(sessionId, msg);
     }
 
     @Override
     public void updateUserList(List<User> onlineUsers, String sessionId) {
         UserListResultMessage msg = new UserListResultMessage(onlineUsers);
         serverWebSocket.sendTo(sessionId, msg);
+    }
+
+    @Override
+    public void notifyStartGame() {
+        serverWebSocket.broadcast(new StartGameMessage());
+    }
+
+    @Override
+    public void updatePlaceOfCurrentUser(int currentPlace, String sessionId) {
+        serverWebSocket.broadcast(new UpdatePlaceOfCurrentUserMessage(currentPlace, sessionId));
     }
 }

@@ -56,6 +56,7 @@ public class GameLogic implements IGameLogic {
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
             System.out.println(currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName());
+            messageGenerator.updatePlaceOfCurrentUser(currentUser.getCurrentPlace(), currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             if (checkIfSquareIsOwned(currentUser, board)) { }
         }
@@ -85,10 +86,10 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void switchTurn(Board board, ArrayList<User> users) {
+    public void switchTurn(Board board) {
         int current = board.getCurrentTurn();
-        if(++current >= users.size()){
-            board.setCurrentTurn(1);
+        if(++current >= onlineUsers.size()){
+            board.setCurrentTurn(current);
         }
     }
 
@@ -131,32 +132,31 @@ public class GameLogic implements IGameLogic {
     @Override
     public void processClientDisconnect(String sessionId)
     {
-        for(User user : onlineUsers) {
+        for (User user : onlineUsers) {
             if (user.getSessionId().equals(sessionId)) {
                 onlineUsers.remove(user);
             }
         }
     }
 
-    public void startGame() { }
+    public void getBoard() {
 
-    public void updateUsersInGame() {
-        List<String> usernameList = new ArrayList<>();
+    }
 
+    public void startGame() {
+        messageGenerator.notifyStartGame();
+    }
+
+    private void updateUsersInGame() {
         for (User user : onlineUsers) {
-            usernameList.add(user.getUsername());
-        }
-
-        for (User user : onlineUsers) {
-            messageGenerator.updateUsersInGame(usernameList, user.getSessionId());
             messageGenerator.updateUserList(onlineUsers, user.getSessionId());
             //One with all users
         }
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 2) {
-            //startGame();
+        if (onlineUsers.size() == 1) {
+            startGame();
         }
     }
 

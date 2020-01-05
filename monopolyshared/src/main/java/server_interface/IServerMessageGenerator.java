@@ -13,7 +13,9 @@ public interface IServerMessageGenerator {
 
     void notifyMoveUserMessage(int dice, String sessionId);
 
-    void updateUsersInGame(List<String> usernameList, String sessionId);
-
     void updateUserList(List<User> onlineUsers, String sessionId);
+
+    void notifyStartGame();
+
+    void updatePlaceOfCurrentUser(int currentPlace, String sessionId);
 }

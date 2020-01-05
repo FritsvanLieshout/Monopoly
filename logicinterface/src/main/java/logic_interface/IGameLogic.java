@@ -61,10 +61,9 @@ public interface IGameLogic {
      * If the user end his/her turn this method will be called in the
      * board logic class.
      * @param board
-     * @param users
      * The user his/her id is the current turn number.
      */
-    void switchTurn(Board board, ArrayList<User> users);
+    void switchTurn(Board board);
 
     /**
      *

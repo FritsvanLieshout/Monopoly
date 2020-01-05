@@ -25,13 +25,13 @@ public interface IGameClient {
     void registerUser(String username, String password);
 
     /**
-     *
+     * This method login a registered user.
      * @param username
      * @param password
      */
     void loginUser(String username, String password);
     /**
-     *
+     * This method gives the user an true or false back for the register method
      * @param success
      */
     void handleUserRegistrationResponse(boolean success);
@@ -62,6 +62,7 @@ public interface IGameClient {
     /**
      *
      * @param dice
+     * @param sessionId
      */
     void handleMoveUserResponse(int dice, String sessionId);
 
@@ -76,4 +77,16 @@ public interface IGameClient {
      * @param users
      */
     void handleUserListResponse(List<User> users);
+
+    /**
+     * This method call every user when the game will start if there are 4 users in the session.
+     */
+    void handleStartGameResponse();
+
+    /**
+     * This method updates the current place of the user. -> for the board.
+     * @param currentPlace
+     * @param sessionId
+     */
+    void handleUpdatePlaceOfCurrentUserResponse(int currentPlace, String sessionId);
 }
