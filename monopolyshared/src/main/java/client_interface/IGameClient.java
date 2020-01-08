@@ -1,10 +1,6 @@
 package client_interface;
 
-import models.Board;
-import models.Square;
 import models.User;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,7 +104,8 @@ public interface IGameClient {
 
     /**
      *
-     * @param user
+     * @param currentUser
+     * @param ownedUser
      */
-    void handlePayRentResponse(User user);
+    void handlePayRentResponse(User currentUser, User ownedUser);
 }

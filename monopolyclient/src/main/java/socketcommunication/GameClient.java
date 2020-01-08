@@ -58,5 +58,5 @@ public class GameClient implements IGameClient {
     public void handleUserIsOverStart() { clientGUI.processUserIsOverStartResponse(); }
 
     @Override
-    public void handlePayRentResponse(User user) { clientGUI.processPayRentResponse(user); }
+    public void handlePayRentResponse(User currentUser, User ownedUser) { clientGUI.processPayRentResponse(currentUser, ownedUser); }
 }

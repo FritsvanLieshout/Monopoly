@@ -24,5 +24,5 @@ public interface IServerMessageGenerator {
 
     void notifyUserOverStart(String sessionId);
 
-    void notifyPayRent(User user);
+    void notifyPayRent(User currentUser, User ownedUser);
 }

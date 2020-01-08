@@ -41,6 +41,13 @@ public class GameLogic implements IGameLogic {
         return null;
     }
 
+    public User getUserByUserId(int userId) {
+        for (User user : onlineUsers) {
+            if (user.getUserId() == userId) return user;
+        }
+        return null;
+    }
+
     @Override
     public Square moveUser(int dice, String sessionId) {
         User currentUser = getUser(sessionId);
@@ -173,12 +180,18 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private void payRent(User user, Board board, Square s) {
-        user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
-        board.getUser(s.getOwner()).getWallet().addMoneyToWallet(s.getRentPrice());
-        messageGenerator.notifyPayRent(user);
-        System.out.println(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
-        System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
+    private void payRent(User user, Board board) {
+        for (Square s : board.getSquares()) {
+            User currentUser = getUser(user.getSessionId());
+            if (s.getSquareId() == currentUser.getCurrentPlace()) {
+                currentUser.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
+                User ownedUser = getUserByUserId(s.getOwner());
+                ownedUser.getWallet().addMoneyToWallet(s.getRentPrice());
+                messageGenerator.notifyPayRent(currentUser, ownedUser);
+            }
+        }
+//        System.out.println(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
+//        System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
     }
 
     private boolean checkIfUserIsOverStart(User user, int dice) {
@@ -186,8 +199,6 @@ public class GameLogic implements IGameLogic {
             user.getWallet().addMoneyToWallet(2000);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
-            System.out.println(user.getUsername() + " is over start, €2000 added to " + user.getUsername() + "'s wallet");
-            System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
             return true;
         }
         return false;
@@ -203,7 +214,7 @@ public class GameLogic implements IGameLogic {
                 //Call another method for a check of some squares that you can't buy (Start, Red Car,d etc).
 
                 else if (s.getOwner() != user.getUserId()) {
-                    payRent(user, board, s);
+                    payRent(user, board);
                     return false;
                 }
             }

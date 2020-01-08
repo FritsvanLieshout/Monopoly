@@ -11,6 +11,6 @@ public class PayRentMessageHandler extends BaseClientMessageHandler<PayRentMessa
 
     @Override
     public void handleMessageInternal(PayRentMessage message, String messageId) {
-        gc.handlePayRentResponse(message.getUser());
+        gc.handlePayRentResponse(message.getCurrentUser(), message.getOwnedUser());
     }
 }

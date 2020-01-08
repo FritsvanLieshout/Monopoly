@@ -343,7 +343,7 @@ public class GameController implements Initializable, IClientGUI {
             currentUser.setInDressingRoom(user.isInDressingRoom());
             currentUser.setWallet(user.getWallet());
             //showAlert(user.getUsername(), user.getUsername() + " 's wallet has been updated -> € "+ user.getWallet().getMoney());
-            lvLog.getItems().add(getDate() + ": " + user.getUsername() + ", position on board: " + user.getCurrentPlace() + ", his/her wallet: " + user.getWallet().getMoney());
+            lvLog.getItems().add(getDate() + ": " + user.getUsername() + ", position on board: " + user.getCurrentPlace() + ", his/her has been updated -> €" + user.getWallet().getMoney());
         });
     }
 
@@ -376,18 +376,18 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     @Override
-    public void processPayRentResponse(User user) {
+    public void processPayRentResponse(User currentUser, User ownedUser) {
         Platform.runLater(() -> {
             for (Square s : squareList) {
-                if (s.getSquareId() == user.getCurrentPlace()) {
-                    User ownedUser = getUserByUserId(s.getOwner());
-                    lvLog.getItems().add(getDate() + ": " + user.getUsername() + " has to pay rent to " + ownedUser.getUsername());
+                if (s.getSquareId() == currentUser.getCurrentPlace()) {
+                    lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + " has to pay €" + s.getRentPrice() + " rent to " + ownedUser.getUsername());
                     User newOwnedUser = getUser(ownedUser.getSessionId());
-                    newOwnedUser.getWallet().setMoney(ownedUser.getWallet().getMoney());
-                    lvLog.getItems().add(getDate() + ": " + newOwnedUser.getUsername() + ", your wallet has been updated");
-                    User currentUser = getUser(user.getSessionId());
-                    currentUser.getWallet().setMoney(user.getWallet().getMoney());
-                    lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", your wallet has been updated");
+                    newOwnedUser.setWallet(ownedUser.getWallet());
+                    lvLog.getItems().add(getDate() + ": " + newOwnedUser.getUsername() + ", your wallet has been updated -> €" + newOwnedUser.getWallet().getMoney());
+                    User newCurrentUser = getUser(currentUser.getSessionId());
+                    newCurrentUser.setWallet(currentUser.getWallet());
+                    lvLog.getItems().add(getDate() + ": " + newCurrentUser.getUsername() + ", your wallet has been updated -> €" + newCurrentUser.getWallet().getMoney());
+                    break;
                 }
             }
         });

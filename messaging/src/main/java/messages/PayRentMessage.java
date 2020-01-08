@@ -4,11 +4,15 @@ import models.User;
 
 public class PayRentMessage {
 
-    private User user;
+    private User currentUser;
+    private User ownedUser;
 
-    public PayRentMessage(User user) {
-        this.user = user;
+    public PayRentMessage(User currentUser, User ownedUser) {
+        this.currentUser = currentUser;
+        this.ownedUser = ownedUser;
     }
 
-    public User getUser() { return user; }
+    public User getCurrentUser() { return currentUser; }
+
+    public User getOwnedUser() { return ownedUser; }
 }

@@ -76,8 +76,8 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     }
 
     @Override
-    public void notifyPayRent(User user) {
-        PayRentMessage msg = new PayRentMessage(user);
+    public void notifyPayRent(User currentUser, User ownedUser) {
+        PayRentMessage msg = new PayRentMessage(currentUser, ownedUser);
         serverWebSocket.broadcast(msg);
     }
 }
