@@ -4,6 +4,7 @@ import models.Board;
 import models.Square;
 import models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,12 +69,6 @@ public interface IGameClient {
 
     /**
      *
-     * @param usernameList
-     */
-    void handleUsersInGameResponse(List<String> usernameList);
-
-    /**
-     *
      * @param users
      */
     void handleUserListResponse(List<User> users);
@@ -84,9 +79,36 @@ public interface IGameClient {
     void handleStartGameResponse();
 
     /**
-     * This method updates the current place of the user. -> for the board.
-     * @param currentPlace
+     * This method gives an update of the user. -> for the controller.
+     * @param user
      * @param sessionId
      */
-    void handleUpdatePlaceOfCurrentUserResponse(int currentPlace, String sessionId);
+    void handleUpdateCurrentUser(User user, String sessionId);
+
+    /**
+     * This method gives the server a message to call the method in the game logic.
+     */
+    void buyFootballPlayer();
+
+    /**
+     *
+     * @param sessionId
+     */
+    void handleUpdateBoard(String sessionId);
+
+    /**
+     *
+     */
+    void handleNonValueSquareResponse();
+
+    /**
+     *
+     */
+    void handleUserIsOverStart();
+
+    /**
+     *
+     * @param user
+     */
+    void handlePayRentResponse(User user);
 }

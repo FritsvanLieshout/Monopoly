@@ -36,10 +36,9 @@ public interface IGameLogic {
      * on a square. The square has a price. If the user buy this square, Inside the square is a setter of the owner
      * if the square isn't owned by anyone is this -1.
      * If the square has an owner this integer set to his/her userId.
-     * @param user
-     * @param board
+     * @param sessionId
      */
-    void buyFootballPlayer(User user, Board board);
+    void buyFootballPlayer(String sessionId);
 
     /**
      * The user goes the steps forward that are given by the dice.

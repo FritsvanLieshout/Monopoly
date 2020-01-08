@@ -47,6 +47,8 @@ public class User {
 
     public void setUsername(String username) { this.username = username; }
 
+    public String setPassword() { return password; }
+
     public void setPassword(String password) { this.password = password; }
 
     public int getCurrentPlace() { return place; }
@@ -56,6 +58,8 @@ public class User {
     public Wallet getWallet() {
         return wallet;
     }
+
+    public void setWallet(Wallet wallet) { this.wallet = wallet; }
 
     public boolean isInDressingRoom() { return this.isInDressingRoom; }
 

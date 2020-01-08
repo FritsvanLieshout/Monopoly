@@ -2,7 +2,6 @@ package messaging;
 
 import logic_interface.IGameLogic;
 import messages.MoveUserMessage;
-import messages.MoveUserResultMessage;
 
 public class MoveUserMessageHandler extends BaseServerMessageHandler<MoveUserMessage> {
 

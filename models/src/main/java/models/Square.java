@@ -1,7 +1,7 @@
 package models;
 import javafx.scene.layout.StackPane;
 
-public abstract class Square extends StackPane {
+public class Square extends StackPane {
 
     private int squareId;
     private String squareName;

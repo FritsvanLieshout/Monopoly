@@ -1,7 +1,7 @@
 package user_test;
 
-import logic.UserLogic;
-import logic_interface.IUserLogic;
+import logic.GameLogic;
+import logic_interface.IGameLogic;
 import models.Board;
 import models.Dice;
 import models.User;
@@ -15,17 +15,17 @@ import org.junit.jupiter.api.Test;
  * @author frits
  */
 class UserLogicTest {
-    private IUserLogic userLogic;
     private Dice dice;
     private Board board;
     private User user;
+    private IGameLogic gameLogic;
 
     @BeforeEach
     void setup() {
-        userLogic = new UserLogic();
         dice = new Dice();
         board = new Board();
         user = new User();
+        gameLogic = new GameLogic();
     }
 
     @AfterEach
@@ -42,7 +42,7 @@ class UserLogicTest {
     void testLoginSuccessFull() {
         user.setUsername("Lisa");
         user.setPassword("Hacker");
-        userLogic.login(user);
+        gameLogic.login(user.getUsername(), user.getUsername(), user.getSessionId());
     }
 
     /**
@@ -55,7 +55,7 @@ class UserLogicTest {
     void testLoginFailed() {
         user.setUsername("Lisa");
         //empty password.
-        userLogic.login(user);
+        //gameLogic.login(user.getUsername(), "", user.getSessionId());
     }
 
     /**
@@ -69,7 +69,7 @@ class UserLogicTest {
         user.setUsername(null);
         user.setPassword(password);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userLogic.registerUser(user));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> gameLogic.registerNewUser(null, user.getUsername(), user.getSessionId()));
     }
 
     /**
@@ -83,7 +83,7 @@ class UserLogicTest {
         user.setUsername(name);
         user.setPassword(null);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userLogic.registerUser(user));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> gameLogic.registerNewUser(user.getUsername(), null, user.getSessionId()));
     }
 
     /**

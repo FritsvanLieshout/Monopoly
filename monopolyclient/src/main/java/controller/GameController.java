@@ -19,7 +19,9 @@ import logic_interface.*;
 import models.*;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -38,10 +40,9 @@ public class GameController implements Initializable, IClientGUI {
     public Button btnPlaceHouse;
     public Button btnPlaceHotel;
     public Button btnBuyPlayer;
-    public TextArea taLog;
+    public ListView lvLog;
     public Label lblCurrentPlayerName;
     public Button btnThrowDice;
-    public Button btnPayRent;
     public Button btnEndTurn;
     public GridPane gpMonopolyBoard;
     public TextField tfUsername;
@@ -54,8 +55,6 @@ public class GameController implements Initializable, IClientGUI {
     private LogicFactory logicFactory;
     private IBoardLogic iBoardLogic;
     private IGameLogic iGameLogic;
-
-    User user;
 
     private Board board;
     private ArrayList<User> users;
@@ -76,12 +75,12 @@ public class GameController implements Initializable, IClientGUI {
         iBoardLogic = logicFactory.getIBoardLogic();
         iGameLogic = logicFactory.getIGameLogic();
         users = new ArrayList<>();
-//        user = new User(1, "1", "Jan"); //TODO: this need the user that's logged in
-//        users.add(user);
         board = iBoardLogic.getBoard();
         boardSquares = new Square[11][11];
         squareList = iBoardLogic.getSquareList();
     }
+
+    public IGameClient getGameClient() { return gameClient; }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -97,12 +96,7 @@ public class GameController implements Initializable, IClientGUI {
         rec4.setStroke(Color.BLACK);
         setPawnOnBoard(0);
 
-        btnThrowDice.setDisable(true);
-        btnEndTurn.setDisable(true);
-        btnPayRent.setDisable(true);
-        btnBuyPlayer.setDisable(true);
-        btnPlaceHotel.setDisable(true);
-        btnPlaceHouse.setDisable(true);
+        setDisable(true);
 
         btnLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -121,26 +115,13 @@ public class GameController implements Initializable, IClientGUI {
         btnThrowDice.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-//                if (board.getCurrentTurn() == user.getUserId()) {
-                    moveUser();
-//                }
-//                else {
-//                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "It's not your turn!");
-//                    alert.show();
-//                }
+                moveUser();
             }
         });
 
         btnBuyPlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) {
-                buyFootballPlayer();
-            }
-        });
-
-        btnPayRent.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) { register(); }
+            public void handle(ActionEvent actionEvent) { buyFootballPlayer(); }
         });
 
         btnEndTurn.setOnAction(new EventHandler<ActionEvent>() {
@@ -218,9 +199,6 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void setPawnOnBoard(int squareId) {
-        //squareList.get(squareId).setStyle("-fx-border-color: RED; -fx-border-width: 5");
-        //TODO -> fix this with more users -> squareList.get(squareId).setStyle("-fx-border-color: YELLOW; -fx-border-width: 5");
-
         squareList.get(squareId).setMargin(rec1, new Insets(-30, -30, 0, 0));
         squareList.get(squareId).setMargin(rec2, new Insets(-30, 30, 0, 0));
         squareList.get(squareId).setMargin(rec3, new Insets(30, -30, 0, 0));
@@ -229,8 +207,6 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void movePawnOnBoard(int squareId, int playerNr) {
-        //playerNr = user.getUserId
-        //user.getColor();
         setPawn(squareId, playerNr);
     }
 
@@ -252,32 +228,26 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void setOwnerOfSquareColor(int squareId, int playerNr) {
-        //-> playerNr = user.getUserId -> user.getColor();
-        squareList.get(squareId).setStyle("-fx-background-color: RED; -fx-border-width: 1; -fx-border-color: BLACK");
+        Platform.runLater(() -> {
+            switch(playerNr) {
+                case 1:
+                    squareList.get(squareId).setStyle("-fx-background-color: RED; -fx-border-width: 1; -fx-border-color: BLACK");
+                    break;
+                case 2:
+                    squareList.get(squareId).setStyle("-fx-background-color: BLUE; -fx-border-width: 1; -fx-border-color: BLACK");
+                    break;
+                case 3:
+                    squareList.get(squareId).setStyle("-fx-background-color: YELLOW; -fx-border-width: 1; -fx-border-color: BLACK");
+                    break;
+                case 4:
+                    squareList.get(squareId).setStyle("-fx-background-color: ORANGE; -fx-border-width: 1; -fx-border-color: BLACK");
+                    break;
+            }
+        });
     }
 
-    //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game
+    //TODO -> This method checks if there are 2 to 4 user in the game. And set al the labels for the users in the game = in game logic
     private void startGame() { }
-
-//    @Override
-//    public void moveUser() {
-//        // if (board.getCurrentTurn() == user.getUserId())
-//        int dice1 = iGameLogic.getDice(dice);
-//        int dice2 = iGameLogic.getDice(dice);
-//        int noDice = dice1 + dice2;
-//        int oldPlace = user.getCurrentPlace();
-//
-//        lblDice1.setText(Integer.toString(dice1));
-//        lblDice2.setText(Integer.toString(dice2));
-//
-//        getGameClient().moveUser(noDice);
-//
-//        if (oldPlace != user.getCurrentPlace()) {
-//            movePawnOnBoard(user.getCurrentPlace(), user.getUserId());
-//        }
-//
-//        varCheckForARedCard(user);
-//    }
 
     @Override
     public void moveUser() {
@@ -288,7 +258,8 @@ public class GameController implements Initializable, IClientGUI {
         lblDice1.setText(Integer.toString(dice1));
         lblDice2.setText(Integer.toString(dice2));
 
-        getGameClient().moveUser(noDice);
+        //getGameClient().moveUser(noDice);
+        getGameClient().moveUser(8);
     }
 
     @Override
@@ -305,7 +276,8 @@ public class GameController implements Initializable, IClientGUI {
 
     @Override
     public void processUserRegistered(String username) {
-        showAlert("Monopoly", "User: " + username + " has been registered");
+        //showAlert("Monopoly", "User: " + username + " has been registered");
+        lvLog.getItems().add(getDate() + ": " +  username + " has been registered!");
     }
 
     @Override
@@ -330,15 +302,8 @@ public class GameController implements Initializable, IClientGUI {
             User currentUser = getUser(sessionId);
             movePawnOnBoard(currentUser.getCurrentPlace(), currentUser.getUserId());
             String msg = currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName();
-            showAlert("Monopoly", msg, sessionId);
-            taLog.setText(msg);
-        });
-    }
-
-    @Override
-    public void processUsersInGameResponse(List<String> usernameList) {
-        Platform.runLater(() -> {
-            //lblPlayer1.setText(usernameList.get(0));
+            //showAlert("Monopoly", msg, sessionId);
+            lvLog.getItems().add(getDate() + ": " + msg);
         });
     }
 
@@ -346,11 +311,18 @@ public class GameController implements Initializable, IClientGUI {
     public void processUserListResponse(List<User> users) {
         Platform.runLater(() -> {
             for (User user : users) {
-                this.users.add(user);
-                if (user.getUserId() == 1) { lblPlayer1.setText(user.getUsername()); }
-                else if (user.getUserId() == 2) { lblPlayer2.setText(user.getUsername()); }
-                else if (user.getUserId() == 3) { lblPlayer3.setText(user.getUsername()); }
-                else { lblPlayer4.setText(user.getUsername()); }
+                if (!checkUserNameAlreadyExists(user.getUsername())) {
+                    this.users.add(user);
+                    if (user.getUserId() == 1) {
+                        lblPlayer1.setText(user.getUsername());
+                    } else if (user.getUserId() == 2) {
+                        lblPlayer2.setText(user.getUsername());
+                    } else if (user.getUserId() == 3) {
+                        lblPlayer3.setText(user.getUsername());
+                    } else {
+                        lblPlayer4.setText(user.getUsername());
+                    }
+                }
             }
         });
     }
@@ -358,18 +330,66 @@ public class GameController implements Initializable, IClientGUI {
     @Override
     public void processStartGameResponse() {
         Platform.runLater(() -> {
-            String msg = "The Game starts now!";
-            showAlert("Monopoly", msg);
-            taLog.setText(msg);
+            lvLog.getItems().add(getDate() + ": The game starts now!");
             setDisable(false);
         });
     }
 
     @Override
-    public void processUpdateUser(int currentPlace, String sessionId) {
+    public void processUpdateUser(User user, String sessionId) {
         Platform.runLater(() -> {
             User currentUser = getUser(sessionId);
-            currentUser.setPlace(currentPlace);
+            currentUser.setPlace(user.getCurrentPlace());
+            currentUser.setInDressingRoom(user.isInDressingRoom());
+            currentUser.setWallet(user.getWallet());
+            //showAlert(user.getUsername(), user.getUsername() + " 's wallet has been updated -> € "+ user.getWallet().getMoney());
+            lvLog.getItems().add(getDate() + ": " + user.getUsername() + ", position on board: " + user.getCurrentPlace() + ", his/her wallet: " + user.getWallet().getMoney());
+        });
+    }
+
+    @Override
+    public void processUpdateBoardResponse(String sessionId) {
+        Platform.runLater(() -> {
+            User currentUser = getUser(sessionId);
+            for (Square s : squareList) {
+                if (s.getSquareId() == currentUser.getCurrentPlace()) {
+                    s.setOwner(currentUser.getUserId());
+                    setOwnerOfSquareColor(currentUser.getCurrentPlace(), currentUser.getUserId());
+                    lvLog.getItems().add(getDate() + ": " + s.getSquareName() + " has been added to " + currentUser.getUsername() + "'s club!");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void processNonValueSquareResponse() {
+        Platform.runLater(() -> {
+            showAlert("Monopoly", "The square where you became is a non value square");
+        });
+    }
+
+    @Override
+    public void processUserIsOverStartResponse() {
+        Platform.runLater(() -> {
+            lvLog.getItems().add(getDate() + ": " + " You are over start, €2000 added to your wallet");
+        });
+    }
+
+    @Override
+    public void processPayRentResponse(User user) {
+        Platform.runLater(() -> {
+            for (Square s : squareList) {
+                if (s.getSquareId() == user.getCurrentPlace()) {
+                    User ownedUser = getUserByUserId(s.getOwner());
+                    lvLog.getItems().add(getDate() + ": " + user.getUsername() + " has to pay rent to " + ownedUser.getUsername());
+                    User newOwnedUser = getUser(ownedUser.getSessionId());
+                    newOwnedUser.getWallet().setMoney(ownedUser.getWallet().getMoney());
+                    lvLog.getItems().add(getDate() + ": " + newOwnedUser.getUsername() + ", your wallet has been updated");
+                    User currentUser = getUser(user.getSessionId());
+                    currentUser.getWallet().setMoney(user.getWallet().getMoney());
+                    lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", your wallet has been updated");
+                }
+            }
         });
     }
 
@@ -378,10 +398,10 @@ public class GameController implements Initializable, IClientGUI {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                User currentUser = getUser(sessionId);
+               // User currentUser = getUser(sessionId);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(header);
-                alert.setHeaderText("Message for " + currentUser.getUsername());
+               // alert.setHeaderText("Message for " + currentUser.getUsername());
                 alert.setContentText(content);
                 alert.showAndWait();
             }
@@ -395,7 +415,6 @@ public class GameController implements Initializable, IClientGUI {
             public void run() {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle(header);
-                //alert.setHeaderText("Message for " + currentUser.getUsername());
                 alert.setContentText(content);
                 alert.showAndWait();
             }
@@ -427,8 +446,7 @@ public class GameController implements Initializable, IClientGUI {
         }
     }
 
-    public IGameClient getGameClient() { return gameClient; }
-
+    //TODO -> this method in game logic, if the user became here the other user will be notified and his new position (10) will be set
     private boolean varCheckForARedCard(User user) {
         if (user.getCurrentPlace() == 30) {
             iGameLogic.redCard(user); //TODO -> getGameClient().redCard(user)
@@ -439,18 +457,16 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void buyFootballPlayer() {
-        iGameLogic.buyFootballPlayer(user, board); //TODO -> getGameClient().buyFootballPlayer(user, board)
-        setOwnerOfSquareColor(user.getCurrentPlace(), user.getUserId());
+        getGameClient().buyFootballPlayer();
     }
 
     private void endTurn() {
-        //iGameLogic.switchTurn(board, users);
+        //iGameLogic.switchTurn(board, users); //TODO -> to server
     }
 
     private void setDisable(boolean disable) {
         btnThrowDice.setDisable(disable);
         btnEndTurn.setDisable(disable);
-        btnPayRent.setDisable(disable);
         btnBuyPlayer.setDisable(disable);
         btnPlaceHotel.setDisable(disable);
         btnPlaceHouse.setDisable(disable);
@@ -461,6 +477,29 @@ public class GameController implements Initializable, IClientGUI {
             if (user.getSessionId().equals(sessionId)) return user;
         }
         return null;
+    }
+
+    private User getUserByUserId(int userId) {
+        for (User user : users) {
+            if (user.getUserId() == userId) return user;
+        }
+        return null;
+    }
+
+    private boolean checkUserNameAlreadyExists(String username)
+    {
+        for(User u : users) {
+            if (u.getUsername().equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getDate() {
+        SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        Date date = new Date(System.currentTimeMillis());
+        return formatter.format(date);
     }
     //ArrayList met Change and Community Chests -> Add Money, Withdraw Money and Go to a specific square
 }

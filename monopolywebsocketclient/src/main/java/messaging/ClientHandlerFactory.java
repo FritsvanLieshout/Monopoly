@@ -3,9 +3,6 @@ package messaging;
 import client_interface.IClientHandlerFactory;
 import client_interface.IClientMessageHandler;
 import client_interface.IGameClient;
-import messages.RegisterUserMessage;
-import messages.RegistrationResultMessage;
-import messages.UpdatePlaceOfCurrentUserMessage;
 
 public class ClientHandlerFactory implements IClientHandlerFactory {
     public IClientMessageHandler getHandler(String classname, Object game) {
@@ -24,8 +21,16 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new UserListResultMessageHandler(gc);
             case "StartGameMessage":
                 return new StartGameMessageHandler(gc);
-            case "UpdatePlaceOfCurrentUserMessage":
-                return new UpdatePlaceOfCurrentUserMessageHandler(gc);
+            case "UpdateCurrentUserMessage":
+                return new UpdateCurrentUserMessageHandler(gc);
+            case "UpdateBoardMessage":
+                return new UpdateBoardMessageHandler(gc);
+            case "NonValueSquareMessage":
+                return new NonValueSquareMessageHandler(gc);
+            case "UserIsOverStartMessage":
+                return new UserIsOverStartMessageHandler(gc);
+            case "PayRentMessage":
+                return new PayRentMessageHandler(gc);
             default:
                 return null;
         }

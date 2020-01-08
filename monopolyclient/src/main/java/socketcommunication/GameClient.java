@@ -3,8 +3,6 @@ package socketcommunication;
 import client_interface.IClientGUI;
 import client_interface.IClientMessageGenerator;
 import client_interface.IGameClient;
-import models.Board;
-import models.Square;
 import models.User;
 
 import java.util.List;
@@ -39,14 +37,26 @@ public class GameClient implements IGameClient {
     public void handleMoveUserResponse(int dice, String sessionId) { clientGUI.processMoveUserResponse(dice, sessionId); }
 
     @Override
-    public void handleUsersInGameResponse(List<String> usernameList) { clientGUI.processUsersInGameResponse(usernameList); }
-
-    @Override
     public void handleUserListResponse(List<User> users) { clientGUI.processUserListResponse(users); }
 
     @Override
     public void handleStartGameResponse() { clientGUI.processStartGameResponse(); }
 
     @Override
-    public void handleUpdatePlaceOfCurrentUserResponse(int currentPlace, String sessionId) { clientGUI.processUpdateUser(currentPlace, sessionId); }
+    public void handleUpdateCurrentUser(User user, String sessionId) { clientGUI.processUpdateUser(user, sessionId); }
+
+    @Override
+    public void buyFootballPlayer() { messageGenerator.buyFootballPlayer(); }
+
+    @Override
+    public void handleUpdateBoard(String sessionId) { clientGUI.processUpdateBoardResponse(sessionId); }
+
+    @Override
+    public void handleNonValueSquareResponse() { clientGUI.processNonValueSquareResponse(); }
+
+    @Override
+    public void handleUserIsOverStart() { clientGUI.processUserIsOverStartResponse(); }
+
+    @Override
+    public void handlePayRentResponse(User user) { clientGUI.processPayRentResponse(user); }
 }

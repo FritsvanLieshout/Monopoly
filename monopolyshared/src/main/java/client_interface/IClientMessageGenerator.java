@@ -1,9 +1,10 @@
 package client_interface;
 
-import java.util.List;
+import models.Board;
 
 public interface IClientMessageGenerator {
     void registerUserOnServer(String username, String password);
     void login(String username, String password);
     void moveUser(int dice);
+    void buyFootballPlayer();
 }

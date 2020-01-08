@@ -31,16 +31,16 @@ public class MonopolyRestService {
 
         //Find user
         int userId = Integer.parseInt(userIdAsString);
-        User userFromSeaBattle = Monopoly.getInstance().getUser(userId);
+        User userFromMonopoly = Monopoly.getInstance().getUser(userId);
 
         //Check if the user exist
-        if (userFromSeaBattle == null) {
+        if (userFromMonopoly == null) {
             //Client error 400 - Bad Request
             return Response.status(400).entity(RestResponseHelper.getErrorResponseString()).build();
         }
 
         //Define response
-        return Response.status(200).entity(RestResponseHelper.getSingleUserResponse(userFromSeaBattle)).build();
+        return Response.status(200).entity(RestResponseHelper.getSingleUserResponse(userFromMonopoly)).build();
     }
 
     /**
@@ -55,10 +55,10 @@ public class MonopolyRestService {
         log.info("[Server getAllUsers]");
 
         // Get all users from monopoly game
-        List<User> allUsersFromSeaBattle = Monopoly.getInstance().getAllUsers();
+        List<User> allUserFromMonopoly = Monopoly.getInstance().getAllUsers();
 
         // Define response
-        return Response.status(200).entity(RestResponseHelper.getAllUsersResponse(RestResponseHelper.getUserDtoList(allUsersFromSeaBattle))).build();
+        return Response.status(200).entity(RestResponseHelper.getAllUsersResponse(RestResponseHelper.getUserDtoList(allUserFromMonopoly))).build();
     }
 
     /**

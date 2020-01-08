@@ -2,9 +2,11 @@ package client;
 
 import client_interface.IClientMessageGenerator;
 import client_interface.IClientWebSocket;
+import messages.BuyFootballPlayerMessage;
 import messages.LoginMessage;
 import messages.MoveUserMessage;
 import messages.RegisterUserMessage;
+import models.Board;
 
 public class ClientMessageGenerator implements IClientMessageGenerator {
 
@@ -24,4 +26,7 @@ public class ClientMessageGenerator implements IClientMessageGenerator {
 
     @Override
     public void moveUser(int dice) { clientWebSocket.send(new MoveUserMessage(dice)); }
+
+    @Override
+    public void buyFootballPlayer() { clientWebSocket.send(new BuyFootballPlayerMessage()); }
 }

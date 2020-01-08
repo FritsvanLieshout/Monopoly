@@ -43,6 +43,8 @@ public class MonopolyWebSocketServer {
         ServerConnector connector = new ServerConnector(webSocketServer);
         connector.setPort(PORT);
         webSocketServer.addConnector(connector);
+        //webSocketServer.setStopAtShutdown(true);
+        //webSocketServer.setStopTimeout(2000000);
 
         // Setup the basic application "context" for this application at "/"
         // This is also known as the handler tree (in jetty speak)

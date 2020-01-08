@@ -1,7 +1,6 @@
 package client_interface;
 
 import models.User;
-
 import java.util.List;
 
 public interface IClientGUI {
@@ -38,12 +37,6 @@ public interface IClientGUI {
 
     /**
      *
-     * @param usernameList
-     */
-    void processUsersInGameResponse(List<String> usernameList);
-
-    /**
-     *
      * @param users
      */
     void processUserListResponse(List<User> users);
@@ -56,5 +49,26 @@ public interface IClientGUI {
     /**
      *
      */
-    void processUpdateUser(int currentPlace, String sessionId);
+    void processUpdateUser(User user, String sessionId);
+
+    /**
+     *
+     * @param sessionId
+     */
+    void processUpdateBoardResponse(String sessionId);
+
+    /**
+     *
+     */
+    void processNonValueSquareResponse();
+
+    /**
+     *
+     */
+    void processUserIsOverStartResponse();
+
+    /**
+     *
+     */
+    void processPayRentResponse(User user);
 }

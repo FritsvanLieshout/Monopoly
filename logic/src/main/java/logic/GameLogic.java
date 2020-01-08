@@ -4,17 +4,12 @@ import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
 import models.*;
 import restclient.MonopolyRestClient;
+import restshared.MonopolyResponse;
 import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
 
 import java.util.ArrayList;
-import java.util.List;
 
-/*
-THIS CLASS IS ONLY RESPONSIBLE FOR HANDLING GAME LOGIC / RULES
-THE METHODS ARE CALLED FROM THE MESSAGE HANDLERS
-WHEN A MESSAGE NEEDS TO BE SENT TO CLIENTS, THE MESSAGE GENERATOR CLASS IS USED
- */
 public class GameLogic implements IGameLogic {
 
     private ArrayList<User> onlineUsers = new ArrayList<>();
@@ -22,7 +17,7 @@ public class GameLogic implements IGameLogic {
     private static MonopolyRestClient monopolyRestClient;
 
     private Board board;
-    private BoardLogic boardLogic;
+    private IBoardLogic boardLogic;
 
     public GameLogic(IServerMessageGenerator messageGenerator) {
         this.messageGenerator = messageGenerator;
@@ -56,7 +51,7 @@ public class GameLogic implements IGameLogic {
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
             System.out.println(currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName());
-            messageGenerator.updatePlaceOfCurrentUser(currentUser.getCurrentPlace(), currentUser.getSessionId());
+            messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             if (checkIfSquareIsOwned(currentUser, board)) { }
         }
@@ -71,15 +66,27 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void buyFootballPlayer(User user, Board board) {
+    public void buyFootballPlayer(String sessionId) {
+        User currentUser = getUser(sessionId);
+        ArrayList<Square> squares = boardLogic.getSquareList();
         for (Square s : board.getSquares()) {
-            if (s.getOwner() < 0) {
-                if (s.getSquareId() == user.getCurrentPlace()) {
-                    user.getWallet().withDrawMoneyOfWallet(s.getPrice());
-                    s.setOwner(user.getUserId());
-                    System.out.println(s.getSquareName() + " has been added to " + user.getUsername() + "'s club!");
-                    System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
-                    break;
+            if (s.getSquareId() == currentUser.getCurrentPlace()) {
+                //Dit moet netter
+                if (s.getSquareId() == 0 || s.getSquareId() == 2 || s.getSquareId() == 4 || s.getSquareId() == 7 || s.getSquareId() == 10 ||
+                        s.getSquareId() == 12 || s.getSquareId() == 17 || s.getSquareId() == 20 || s.getSquareId() == 22 || s.getSquareId() == 28 ||
+                        s.getSquareId() == 30 || s.getSquareId() == 33 || s.getSquareId() == 36 || s.getSquareId() == 38) {
+                    messageGenerator.notifyNonValueSquare(sessionId);
+                } else {
+                    if (s.getOwner() < 0) {
+                        currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
+                        s.setOwner(currentUser.getUserId());
+
+                        messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
+                        messageGenerator.updateBoard(currentUser.getSessionId());
+
+                        System.out.println(s.getSquareName() + " has been added to " + currentUser.getUsername() + "'s club!");
+                        System.out.println(currentUser.getUsername() + "'s wallet has been updated -> €" + currentUser.getWallet().getMoney());
+                    }
                 }
             }
         }
@@ -100,6 +107,7 @@ public class GameLogic implements IGameLogic {
         System.out.println("Register a new user: ");
         UserDto userDto = monopolyRestClient.registerUser(username, password);
 
+        //if (response.isSucces) {
         if (userDto != null) {
             System.out.println("User " + userDto + " added to monopoly game!");
             System.out.println("\n");
@@ -139,10 +147,6 @@ public class GameLogic implements IGameLogic {
         }
     }
 
-    public void getBoard() {
-
-    }
-
     public void startGame() {
         messageGenerator.notifyStartGame();
     }
@@ -150,12 +154,11 @@ public class GameLogic implements IGameLogic {
     private void updateUsersInGame() {
         for (User user : onlineUsers) {
             messageGenerator.updateUserList(onlineUsers, user.getSessionId());
-            //One with all users
         }
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 1) {
+        if (onlineUsers.size() == 2) {
             startGame();
         }
     }
@@ -173,6 +176,7 @@ public class GameLogic implements IGameLogic {
     private void payRent(User user, Board board, Square s) {
         user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
         board.getUser(s.getOwner()).getWallet().addMoneyToWallet(s.getRentPrice());
+        messageGenerator.notifyPayRent(user);
         System.out.println(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
         System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
     }
@@ -180,6 +184,8 @@ public class GameLogic implements IGameLogic {
     private boolean checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
             user.getWallet().addMoneyToWallet(2000);
+            messageGenerator.notifyUserOverStart(user.getSessionId());
+            messageGenerator.updateCurrentUser(user, user.getSessionId());
             System.out.println(user.getUsername() + " is over start, €2000 added to " + user.getUsername() + "'s wallet");
             System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
             return true;
@@ -209,6 +215,7 @@ public class GameLogic implements IGameLogic {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
+            //messageGenerator.notifyUserIsInDressingRoom()
             System.out.println(user.getUsername() + " stays this round at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
             return true;
         }

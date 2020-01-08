@@ -1,7 +1,6 @@
 package server_interface;
 
 import models.User;
-
 import java.util.List;
 
 public interface IServerMessageGenerator {
@@ -17,5 +16,13 @@ public interface IServerMessageGenerator {
 
     void notifyStartGame();
 
-    void updatePlaceOfCurrentUser(int currentPlace, String sessionId);
+    void updateCurrentUser(User user, String sessionId);
+
+    void updateBoard(String sessionId);
+
+    void notifyNonValueSquare(String sessionId);
+
+    void notifyUserOverStart(String sessionId);
+
+    void notifyPayRent(User user);
 }

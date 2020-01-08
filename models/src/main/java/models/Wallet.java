@@ -16,6 +16,8 @@ public class Wallet {
         return money;
     }
 
+    public void setMoney(int money) { this.money = money; }
+
     public void addMoneyToWallet(int amount) {
         money += amount;
     }
