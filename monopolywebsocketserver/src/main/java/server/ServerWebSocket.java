@@ -1,5 +1,7 @@
 package server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import server_interface.IServerMessageProcessor;
 import server_interface.IServerWebSocket;
 import messages.SocketMessage;
@@ -15,6 +17,9 @@ import java.util.ArrayList;
 @Singleton
 @ServerEndpoint(value="/monopoly/")
 public class ServerWebSocket implements IServerWebSocket {
+
+    private static final Logger log = LoggerFactory.getLogger(ServerWebSocket.class);
+
     private static ServerWebSocket instance = null;
 
     public static ServerWebSocket getInstance(){
@@ -58,7 +63,7 @@ public class ServerWebSocket implements IServerWebSocket {
 
     @OnError
     public void onError(Throwable cause, Session session) {
-        System.out.println(cause.getMessage());
+        log.info(cause.getMessage());
     }
 
     public void sendTo(String sessionId, Object object)
@@ -99,7 +104,7 @@ public class ServerWebSocket implements IServerWebSocket {
         try {
             session.getBasicRemote().sendText(message);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.info(e.getMessage());
         }
     }
 }

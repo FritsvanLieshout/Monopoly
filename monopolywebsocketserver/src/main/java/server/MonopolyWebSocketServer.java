@@ -43,8 +43,6 @@ public class MonopolyWebSocketServer {
         ServerConnector connector = new ServerConnector(webSocketServer);
         connector.setPort(PORT);
         webSocketServer.addConnector(connector);
-        //webSocketServer.setStopAtShutdown(true);
-        //webSocketServer.setStopTimeout(2000000);
 
         // Setup the basic application "context" for this application at "/"
         // This is also known as the handler tree (in jetty speak)
@@ -55,14 +53,6 @@ public class MonopolyWebSocketServer {
         try {
             // Initialize javax.websocket layer
             ServerContainer wscontainer = WebSocketServerContainerInitializer.configureContext(webSocketContext);
-//
-//            // Add WebSocket endpoint to javax.websocket layer
-//            wscontainer.addEndpoint(ServerWebSocket.class);
-//
-//            webSocketServer.start();
-//            //server.dump(System.err);
-//
-//            webSocketServer.join();
             ServerEndpointConfig config = ServerEndpointConfig.Builder.create(socket.getClass(), socket.getClass().getAnnotation(ServerEndpoint.class).value()).configurator(new ServerEndpointConfig.Configurator() {
                 @Override
                 public <T> T getEndpointInstance(Class<T> endpointClass) {

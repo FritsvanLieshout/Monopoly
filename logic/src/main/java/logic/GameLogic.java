@@ -3,6 +3,8 @@ package logic;
 import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
 import models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import restclient.MonopolyRestClient;
 import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
@@ -10,6 +12,8 @@ import server_interface.IServerMessageGenerator;
 import java.util.ArrayList;
 
 public class GameLogic implements IGameLogic {
+
+    private static final Logger log = LoggerFactory.getLogger(GameLogic.class);
 
     private ArrayList<User> onlineUsers = new ArrayList<>();
     private IServerMessageGenerator messageGenerator;
@@ -51,26 +55,24 @@ public class GameLogic implements IGameLogic {
     public Square moveUser(int dice, String sessionId) {
         User currentUser = getUser(sessionId);
         int newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(currentUser, board)) { }
+        if (checkIfUserIsInDressingRoom(currentUser, board)) {}
         else {
-            if (checkIfUserIsOverStart(currentUser, dice)) { }
+            if (checkIfUserIsOverStart(currentUser, dice)) {}
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
-            System.out.println(currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName());
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
-            if (checkIfSquareIsOwned(currentUser, board)) { }
-            if (varChecksRedCard(currentUser)) { }
+            if (checkIfSquareIsOwned(currentUser, board)) {}
+            if (varChecksRedCard(currentUser)) {}
         }
         return board.getSquares()[newPlace];
     }
 
     @Override
     public void redCard(User user) {
-        user.setPlace(10); //Need the coordinates of the dressing room.
+        user.setPlace(10);
         user.setInDressingRoom(true);
         messageGenerator.notifyUserHasARedCard(user);
-        System.out.println(user.getUsername() + " receives a RED Card! and has to go to the dressing room!");
     }
 
     @Override
@@ -78,7 +80,6 @@ public class GameLogic implements IGameLogic {
         User currentUser = getUser(sessionId);
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == currentUser.getCurrentPlace()) {
-                //Dit moet netter
                 if (s.getSquareId() == 0 || s.getSquareId() == 2 || s.getSquareId() == 4 || s.getSquareId() == 7 || s.getSquareId() == 10 ||
                         s.getSquareId() == 12 || s.getSquareId() == 17 || s.getSquareId() == 20 || s.getSquareId() == 22 || s.getSquareId() == 28 ||
                         s.getSquareId() == 30 || s.getSquareId() == 33 || s.getSquareId() == 36 || s.getSquareId() == 38) {
@@ -104,14 +105,11 @@ public class GameLogic implements IGameLogic {
 
     @Override
     public void registerNewUser(String username, String password, String sessionId) {
-        System.out.println("\n");
-        System.out.println("Register a new user: ");
+        log.info("[Register a new user]");
         UserDto userDto = monopolyRestClient.registerUser(username, password);
 
-        //if (response.isSuccess) {
         if (userDto != null) {
-            System.out.println("User " + userDto + " added to monopoly game!");
-            System.out.println("\n");
+            log.info("[User " + userDto + " added to monopoly game] \n");
             messageGenerator.notifyRegisterResult(sessionId, true);
             login(username, password, sessionId);
         }
@@ -128,7 +126,6 @@ public class GameLogic implements IGameLogic {
                 return;
             }
 
-            //UserDto userDto = monopolyRestClient.loginUser(username, password);
             messageGenerator.notifyLoginResult(sessionId, "Token");
             User user = new User(Integer.parseInt(sessionId), sessionId, username);
             onlineUsers.add(user);
@@ -194,7 +191,6 @@ public class GameLogic implements IGameLogic {
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == user.getCurrentPlace()) {
                 if (s.getOwner() < 0) {
-                    //messageGenerator.notifyIfPlayerHasAnOwner(user.getSessionId(), false)
                     return true;
                 }
                 else if (s.getOwner() != user.getUserId()) {
@@ -211,7 +207,6 @@ public class GameLogic implements IGameLogic {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
             messageGenerator.notifyUserIsInDressingRoom(user);
-            System.out.println(user.getUsername() + " stays this round at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
             return true;
         }
         return false;

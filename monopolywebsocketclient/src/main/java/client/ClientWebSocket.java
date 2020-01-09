@@ -2,9 +2,10 @@ package client;
 
 import client_interface.IClientMessageProcessor;
 import client_interface.IClientWebSocket;
-import client_interface.IGameClient;
 import messages.SocketMessage;
 import messages.SocketMessageGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import serialization.Serializer;
 
 import javax.websocket.*;
@@ -14,6 +15,8 @@ import java.net.URISyntaxException;
 
 @ClientEndpoint
 public class ClientWebSocket implements IClientWebSocket {
+
+    private static final Logger log = LoggerFactory.getLogger(ClientWebSocket.class);
 
     private String uri = "ws://localhost:8050/monopoly/";
 
@@ -25,8 +28,6 @@ public class ClientWebSocket implements IClientWebSocket {
 
     private IClientMessageProcessor messageProcessor;
 
-    private IGameClient gameClient;
-
     public static ClientWebSocket getInstance() {
         if (instance == null) {
             instance = new ClientWebSocket();
@@ -36,7 +37,7 @@ public class ClientWebSocket implements IClientWebSocket {
 
     @Override
     public void start() {
-        System.out.println("[WebSocket Client start connection]");
+        log.info("[WebSocket Client start connection]");
         if (!isRunning) {
             startClient();
             isRunning = true;
@@ -45,7 +46,7 @@ public class ClientWebSocket implements IClientWebSocket {
 
     @Override
     public void stop() {
-        System.out.println("[WebSocket Client stop]");
+        log.info("[WebSocket Client stop]");
         if (isRunning) {
             stopClient();
             isRunning = false;
@@ -56,13 +57,12 @@ public class ClientWebSocket implements IClientWebSocket {
      * Start a WebSocket client.
      */
     private void startClient() {
-        System.out.println("[WebSocket Client start]");
+        log.info("[WebSocket Client start]");
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, new URI(uri));
 
         } catch (IOException | URISyntaxException | DeploymentException ex) {
-            // do something useful eventually
             ex.printStackTrace();
         }
     }
@@ -71,11 +71,10 @@ public class ClientWebSocket implements IClientWebSocket {
      * Stop the client when it is running.
      */
     private void stopClient(){
-        System.out.println("[WebSocket Client stop]");
+        log.info("[WebSocket Client stop]");
         try {
             session.close();
         } catch (IOException ex){
-            // do something useful eventually
             ex.printStackTrace();
         }
     }
@@ -105,13 +104,13 @@ public class ClientWebSocket implements IClientWebSocket {
 
     @OnError
     public void onWebSocketError(Session session, Throwable cause) {
-        System.out.println("[WebSocket Client connection error] " + cause.toString());
+        log.info("[WebSocket Client connection error] " + cause.toString());
     }
 
     @OnClose
     public void onWebSocketClose(CloseReason reason){
-        System.out.print("[WebSocket Client close session] " + session.getRequestURI());
-        System.out.println(" for reason " + reason);
+        log.info("[WebSocket Client close session] " + session.getRequestURI());
+        log.info(" for reason " + reason);
         session = null;
     }
 
@@ -120,7 +119,7 @@ public class ClientWebSocket implements IClientWebSocket {
         try {
             session.getBasicRemote().sendText(message);
         } catch (IOException ex) {
-            System.out.print("[WebSocket Client couldn't send to server] " + session.getRequestURI());
+            log.info("[WebSocket Client couldn't send to server] " + session.getRequestURI());
         }
     }
 

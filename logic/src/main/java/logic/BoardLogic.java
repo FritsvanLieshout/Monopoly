@@ -92,18 +92,11 @@ public class BoardLogic implements IBoardLogic {
     }
 
     private void initFootballPlayerSquare(Square[] squares, String[] squareNames, int i) {
-        //TODO: Fix calculating for the price of the player.
         int price = i * 50;
         squares[i] = new FootballPlayerSquare(squareNames[i], price, -1,price / 50 * 10 );
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
         squareList.add(squares[i]);
-    }
-
-    @Override
-    public Square[] getSquares() {
-        squares = board.getSquares();
-        return squares;
     }
 
     @Override

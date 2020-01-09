@@ -58,7 +58,7 @@ public class GameController implements Initializable, IClientGUI {
     private Board board;
     private ArrayList<User> users;
     private Square[][] boardSquares;
-    private ArrayList<Square> squareList;
+    private static ArrayList<Square> squareList;
 
     private int playerTurn = 0;
 
@@ -225,6 +225,9 @@ public class GameController implements Initializable, IClientGUI {
             case 4:
                 squareList.get(squareId).getChildren().add(rec4);
                 break;
+            default:
+                showAlert("Player number doesn't exist");
+                break;
         }
     }
 
@@ -243,6 +246,9 @@ public class GameController implements Initializable, IClientGUI {
                 case 4:
                     squareList.get(squareId).setStyle("-fx-background-color: ORANGE; -fx-border-width: 1; -fx-border-color: BLACK");
                     break;
+                default:
+                    showAlert("Player number doesn't exist");
+                    break;
             }
         });
     }
@@ -257,17 +263,16 @@ public class GameController implements Initializable, IClientGUI {
         lblDice2.setText(Integer.toString(dice2));
 
         getGameClient().moveUser(noDice);
-        //getGameClient().moveUser(10);
     }
 
     @Override
     public void processRegistrationResponse(boolean response) {
         Platform.runLater(() -> {
             if (response) {
-                showAlert("Monopoly", "Registration success!");
+                showAlert("Registration success!");
             }
             else {
-                showAlert("Monopoly", "Registration failed, please try again!");
+                showAlert("Registration failed, please try again!");
             }
         });
     }
@@ -281,10 +286,10 @@ public class GameController implements Initializable, IClientGUI {
     public void processLoginResponse(String token) {
         Platform.runLater(() -> {
             if (token == null || token.equals("")) {
-                showAlert("Monopoly", "Login Failed");
+                showAlert("Login Failed");
             }
             else {
-                showAlert("Monopoly", "Login Success, waiting for other opponent(s)");
+                showAlert("Login Success, waiting for other opponent(s)");
                 btnLogin.setDisable(true);
                 btnRegister.setDisable(true);
                 tfUsername.setDisable(true);
@@ -360,7 +365,7 @@ public class GameController implements Initializable, IClientGUI {
     @Override
     public void processNonValueSquareResponse() {
         Platform.runLater(() -> {
-            showAlert("Monopoly", "The square where you became is a non value square");
+            showAlert("The square where you became is a non value square");
         });
     }
 
@@ -375,13 +380,14 @@ public class GameController implements Initializable, IClientGUI {
     public void processPayRentResponse(User currentUser, User ownedUser) {
         Platform.runLater(() -> {
             Square s = getSquare(currentUser.getCurrentPlace());
+            var msg = ", your waller has been updated -> €";
             lvLog.getItems().add(getDate() + " -> " + currentUser.getUsername() + " has to pay €" + s.getRentPrice() + " rent to " + ownedUser.getUsername());
             User newOwnedUser = getUserBySessionId(ownedUser.getSessionId());
             newOwnedUser.setWallet(ownedUser.getWallet());
-            lvLog.getItems().add(getDate() + " -> " + newOwnedUser.getUsername() + ", your wallet has been updated -> €" + newOwnedUser.getWallet().getMoney());
+            lvLog.getItems().add(getDate() + " -> " + newOwnedUser.getUsername() + msg + newOwnedUser.getWallet().getMoney());
             User newCurrentUser = getUserBySessionId(currentUser.getSessionId());
             newCurrentUser.setWallet(currentUser.getWallet());
-            lvLog.getItems().add(getDate() + " -> " + newCurrentUser.getUsername() + ", your wallet has been updated -> €" + newCurrentUser.getWallet().getMoney());
+            lvLog.getItems().add(getDate() + " -> " + newCurrentUser.getUsername() + msg + newCurrentUser.getWallet().getMoney());
         });
     }
 
@@ -413,13 +419,13 @@ public class GameController implements Initializable, IClientGUI {
         });
     }
 
-    private void showAlert(String header, String content)
+    private void showAlert(String content)
     {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle(header);
+                alert.setTitle("Monopoly");
                 alert.setContentText(content);
                 alert.showAndWait();
             }
@@ -435,12 +441,12 @@ public class GameController implements Initializable, IClientGUI {
         String password = tfPassword.getText();
         lblCurrentPlayerName.setText(username);
 
-        if(username.equals("") || username == null)
+        if(username.equals(""))
         {
-            showAlert("Monopoly", "Invalid username");
+            showAlert("Invalid username");
         }
-        else if (password.equals("") || password == null) {
-            showAlert("Monopoly", "Invalid password");
+        else if (password.equals("")) {
+            showAlert("Invalid password");
         }
         else {
             if (!isLogin) {
@@ -502,5 +508,4 @@ public class GameController implements Initializable, IClientGUI {
         }
         return null;
     }
-    //ArrayList met Change and Community Chests -> Add Money, Withdraw Money and Go to a specific square
 }

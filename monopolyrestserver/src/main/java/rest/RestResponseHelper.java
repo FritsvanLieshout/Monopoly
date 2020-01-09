@@ -12,15 +12,16 @@ import java.util.List;
 
 public class RestResponseHelper {
 
-    private static final Logger log = LoggerFactory.getLogger(MonopolyRestService.class);
+    private static final Logger log = LoggerFactory.getLogger(RestResponseHelper.class);
     private static final Gson gson = new Gson();
+    static final String serverResponse = "[Server response] ";
 
     static String getErrorResponseString()
     {
         MonopolyResponse response = new MonopolyResponse();
         response.setSuccess(false);
         String output = gson.toJson(response);
-        log.info("[Server response] " + output);
+        log.info(serverResponse + output);
         return output;
     }
 
@@ -33,7 +34,7 @@ public class RestResponseHelper {
         users.add(player);
         response.setUsers(users);
         String output = gson.toJson(response);
-        log.info("[Server response] " + output);
+        log.info(serverResponse + output);
         return output;
     }
 
@@ -42,7 +43,7 @@ public class RestResponseHelper {
         MonopolyResponse response = new MonopolyResponse();
         response.setSuccess(success);
         String output = gson.toJson(response);
-        log.info("[Server response] " + output);
+        log.info(serverResponse + output);
         return output;
     }
 
@@ -52,7 +53,7 @@ public class RestResponseHelper {
         response.setSuccess(true);
         response.setUsers(allUsers);
         String output = gson.toJson(response);
-        log.info("[Server response] " + output);
+        log.info(serverResponse + output);
         return output;
     }
 

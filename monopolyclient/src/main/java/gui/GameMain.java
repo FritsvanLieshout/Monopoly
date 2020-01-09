@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import messaging.ClientHandlerFactory;
 import socketcommunication.GameClient;
 
-
 public class GameMain extends Application {
 
     IGameClient gameClient;
@@ -49,7 +48,6 @@ public class GameMain extends Application {
         this.primaryStage.setTitle("Monopoly Game");
         this.primaryStage.setScene(new Scene(root, 1400, 800));
         this.primaryStage.show();
-
     }
 
     public static void main(String[] args) {

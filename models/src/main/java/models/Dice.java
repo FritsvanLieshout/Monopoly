@@ -6,7 +6,7 @@ public class Dice {
 
     private int noDice;
 
-    public void Dice(int noDice) {
+    public Dice(int noDice) {
         this.noDice = noDice;
     }
 

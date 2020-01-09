@@ -3,7 +3,6 @@ package client;
 import client_interface.IClientHandlerFactory;
 import client_interface.IClientMessageProcessor;
 import client_interface.IGameClient;
-import messaging.ClientHandlerFactory;
 import client_interface.IClientMessageHandler;
 
 public class ClientMessageProcessor implements IClientMessageProcessor {
@@ -18,7 +17,6 @@ public class ClientMessageProcessor implements IClientMessageProcessor {
     public void processMessage(String sessionId, String type, String data) {
         String classname = type.split("\\.")[type.split("\\.").length - 1];
 
-        ClientHandlerFactory factory = new ClientHandlerFactory();
         IClientMessageHandler handler = factory.getHandler(classname, gc);
         handler.handleMessage(data, sessionId);
     }
