@@ -33,6 +33,7 @@ class GameLogicTest {
         dice = new Dice();
         board = boardLogic.getBoard();
         user = new User(1, "1", "Kevin");
+        System.out.println("[Begin test: Game Tests]");
     }
 
     @AfterEach
@@ -74,7 +75,7 @@ class GameLogicTest {
         int noDice1 = gameLogic.getDice(dice);
         int noDice2 = gameLogic.getDice(dice);
         //gameLogic.moveUser(user, board, (noDice1 + noDice2));
-        int newPlace = user.getCurrentPlace();
+        int newPlace = user.getCurrentPlace() + (noDice1 + noDice2);
 
         Assertions.assertNotEquals(oldPlace, newPlace);
     }
