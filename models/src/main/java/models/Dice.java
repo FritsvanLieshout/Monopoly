@@ -6,6 +6,8 @@ public class Dice {
 
     private int noDice;
 
+    public Dice() {}
+
     public Dice(int noDice) {
         this.noDice = noDice;
     }

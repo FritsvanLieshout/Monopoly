@@ -25,9 +25,9 @@ public class MonopolyRestClient {
 
     private static final Logger log = LoggerFactory.getLogger(MonopolyRestClient.class);
 
-    private static final String url = "http://localhost:8049/monopoly";
+    private final String url = "http://localhost:8049/monopoly";
     private final Gson gson = new Gson();
-    private static final int NOTDEFINED = -1;
+    private final int NOTDEFINED = -1;
 
     /**
      * Get user with given user id.

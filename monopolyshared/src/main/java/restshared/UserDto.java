@@ -12,6 +12,8 @@ public class UserDto {
         this.password = password;
     }
 
+    public UserDto() {}
+
     public int getUserId() {
         return userId;
     }
