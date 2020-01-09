@@ -1,16 +1,13 @@
 package server;
 
 import messages.*;
-import models.Board;
-import models.Square;
 import models.User;
 import server_interface.IServerMessageGenerator;
 import server_interface.IServerWebSocket;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServerMessageGenerator implements IServerMessageGenerator {
+
     private IServerWebSocket serverWebSocket;
 
     public ServerMessageGenerator(IServerWebSocket serverWebSocket) { this.serverWebSocket = serverWebSocket; }
@@ -78,6 +75,24 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     @Override
     public void notifyPayRent(User currentUser, User ownedUser) {
         PayRentMessage msg = new PayRentMessage(currentUser, ownedUser);
+        serverWebSocket.broadcast(msg);
+    }
+
+    @Override
+    public void notifyUserHasARedCard(User currentUser) {
+        UserHasARedCardMessage msg = new UserHasARedCardMessage(currentUser);
+        serverWebSocket.broadcast(msg);
+    }
+
+    @Override
+    public void notifyUserIsInDressingRoom(User currentUser) {
+        UserIsInDressingRoomMessage msg = new UserIsInDressingRoomMessage(currentUser);
+        serverWebSocket.broadcast(msg);
+    }
+
+    @Override
+    public void notifySwitchTurn(int playerTurn) {
+        EndTurnMessage msg = new EndTurnMessage(playerTurn);
         serverWebSocket.broadcast(msg);
     }
 }

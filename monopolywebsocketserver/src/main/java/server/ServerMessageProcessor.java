@@ -4,7 +4,6 @@ import logic_interface.IGameLogic;
 import server_interface.IServerHandlerFactory;
 import server_interface.IServerMessageHandler;
 import server_interface.IServerMessageProcessor;
-import messaging.ServerHandlerFactory;
 
 public class ServerMessageProcessor implements IServerMessageProcessor {
 

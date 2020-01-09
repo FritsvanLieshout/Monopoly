@@ -11,10 +11,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import messaging.ClientHandlerFactory;
-import org.slf4j.Logger;
 import socketcommunication.GameClient;
 
-import java.lang.reflect.Constructor;
 
 public class GameMain extends Application {
 
@@ -32,14 +30,6 @@ public class GameMain extends Application {
         socket.setMessageProcessor(processor);
         socket.start();
         processor.registerGameClient(gameClient);
-
-//        Parent root = FXMLLoader.load(getClass().getResource("/MonopolyGame.fxml"));
-//        primaryStage.setTitle("Monopoly");
-//        primaryStage.setScene(new Scene(root, 1400, 800));
-//        primaryStage.setFullScreen(false);
-//        primaryStage.setMaximized(false);
-//        primaryStage.show();
-
         loadFxml("/MonopolyGame.fxml", gameClient, primaryStage);
     }
 
@@ -61,8 +51,6 @@ public class GameMain extends Application {
         this.primaryStage.show();
 
     }
-
-
 
     public static void main(String[] args) {
         launch(args);

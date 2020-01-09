@@ -28,4 +28,10 @@ public interface IClientGUI {
     void processUserIsOverStartResponse();
 
     void processPayRentResponse(User currentUser, User ownedUser);
+
+    void processUserHasARedCardResponse(User currentUser);
+
+    void processUserIsInDressingRoomResponse(User currentUser);
+
+    void processSwitchTurnResponse(int playerTurn);
 }

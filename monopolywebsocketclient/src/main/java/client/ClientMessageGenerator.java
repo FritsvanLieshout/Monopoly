@@ -6,7 +6,7 @@ import messages.BuyFootballPlayerMessage;
 import messages.LoginMessage;
 import messages.MoveUserMessage;
 import messages.RegisterUserMessage;
-import models.Board;
+import messages.EndTurnMessage;
 
 public class ClientMessageGenerator implements IClientMessageGenerator {
 
@@ -29,4 +29,7 @@ public class ClientMessageGenerator implements IClientMessageGenerator {
 
     @Override
     public void buyFootballPlayer() { clientWebSocket.send(new BuyFootballPlayerMessage()); }
+
+    @Override
+    public void endTurn(int playerTurn) { clientWebSocket.send(new EndTurnMessage(playerTurn)); }
 }

@@ -31,6 +31,12 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new UserIsOverStartMessageHandler(gc);
             case "PayRentMessage":
                 return new PayRentMessageHandler(gc);
+            case "UserHasARedCardMessage":
+                return new UserHasARedCardMessageHandler(gc);
+            case "UserIsInDressingRoomMessage":
+                return new UserIsInDressingRoomMessageHandler(gc);
+            case "SwitchTurnResultMessage":
+                return new SwitchTurnResultMessageHandler(gc);
             default:
                 return null;
         }

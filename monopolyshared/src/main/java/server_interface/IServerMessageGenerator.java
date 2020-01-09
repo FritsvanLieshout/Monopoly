@@ -4,6 +4,7 @@ import models.User;
 import java.util.List;
 
 public interface IServerMessageGenerator {
+
     void notifyUserAdded(String sessionId, String playerName);
 
     void notifyRegisterResult(String sessionId, boolean success);
@@ -25,4 +26,10 @@ public interface IServerMessageGenerator {
     void notifyUserOverStart(String sessionId);
 
     void notifyPayRent(User currentUser, User ownedUser);
+
+    void notifyUserHasARedCard(User currentUser);
+
+    void notifyUserIsInDressingRoom(User currentUser);
+
+    void notifySwitchTurn(int playerTurn);
 }

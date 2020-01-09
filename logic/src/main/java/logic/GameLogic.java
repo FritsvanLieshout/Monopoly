@@ -4,7 +4,6 @@ import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
 import models.*;
 import restclient.MonopolyRestClient;
-import restshared.MonopolyResponse;
 import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
 
@@ -61,6 +60,7 @@ public class GameLogic implements IGameLogic {
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             if (checkIfSquareIsOwned(currentUser, board)) { }
+            if (varChecksRedCard(currentUser)) { }
         }
         return board.getSquares()[newPlace];
     }
@@ -69,13 +69,13 @@ public class GameLogic implements IGameLogic {
     public void redCard(User user) {
         user.setPlace(10); //Need the coordinates of the dressing room.
         user.setInDressingRoom(true);
+        messageGenerator.notifyUserHasARedCard(user);
         System.out.println(user.getUsername() + " receives a RED Card! and has to go to the dressing room!");
     }
 
     @Override
     public void buyFootballPlayer(String sessionId) {
         User currentUser = getUser(sessionId);
-        ArrayList<Square> squares = boardLogic.getSquareList();
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == currentUser.getCurrentPlace()) {
                 //Dit moet netter
@@ -87,12 +87,8 @@ public class GameLogic implements IGameLogic {
                     if (s.getOwner() < 0) {
                         currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
                         s.setOwner(currentUser.getUserId());
-
                         messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
                         messageGenerator.updateBoard(currentUser.getSessionId());
-
-                        System.out.println(s.getSquareName() + " has been added to " + currentUser.getUsername() + "'s club!");
-                        System.out.println(currentUser.getUsername() + "'s wallet has been updated -> €" + currentUser.getWallet().getMoney());
                     }
                 }
             }
@@ -100,21 +96,19 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void switchTurn(Board board) {
-        int current = board.getCurrentTurn();
-        if(++current >= onlineUsers.size()){
-            board.setCurrentTurn(current);
-        }
+    public void switchTurn(int playerTurn) {
+        int turn = playerTurn++;
+        if (turn > onlineUsers.size()) messageGenerator.notifySwitchTurn(1);
+        else messageGenerator.notifySwitchTurn(turn);
     }
 
     @Override
     public void registerNewUser(String username, String password, String sessionId) {
-       // boolean success = restClient.register(username, password);
         System.out.println("\n");
         System.out.println("Register a new user: ");
         UserDto userDto = monopolyRestClient.registerUser(username, password);
 
-        //if (response.isSucces) {
+        //if (response.isSuccess) {
         if (userDto != null) {
             System.out.println("User " + userDto + " added to monopoly game!");
             System.out.println("\n");
@@ -148,9 +142,7 @@ public class GameLogic implements IGameLogic {
     public void processClientDisconnect(String sessionId)
     {
         for (User user : onlineUsers) {
-            if (user.getSessionId().equals(sessionId)) {
-                onlineUsers.remove(user);
-            }
+            if (user.getSessionId().equals(sessionId)) onlineUsers.remove(user);
         }
     }
 
@@ -165,17 +157,13 @@ public class GameLogic implements IGameLogic {
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 2) {
-            startGame();
-        }
+        if (onlineUsers.size() == 2) startGame();
     }
 
     private boolean checkUserNameAlreadyExists(String username)
     {
         for(User u : onlineUsers) {
-            if (u.getUsername().equals(username)) {
-                return true;
-            }
+            if (u.getUsername().equals(username)) return true;
         }
         return false;
     }
@@ -190,8 +178,6 @@ public class GameLogic implements IGameLogic {
                 messageGenerator.notifyPayRent(currentUser, ownedUser);
             }
         }
-//        System.out.println(user.getUsername() + " has to pay rent to " + board.getUser(s.getOwner()));
-//        System.out.println(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
     }
 
     private boolean checkIfUserIsOverStart(User user, int dice) {
@@ -208,11 +194,9 @@ public class GameLogic implements IGameLogic {
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == user.getCurrentPlace()) {
                 if (s.getOwner() < 0) {
-                    System.out.println(s.getSquareName() + " is not owned by another user!");
+                    //messageGenerator.notifyIfPlayerHasAnOwner(user.getSessionId(), false)
                     return true;
                 }
-                //Call another method for a check of some squares that you can't buy (Start, Red Car,d etc).
-
                 else if (s.getOwner() != user.getUserId()) {
                     payRent(user, board);
                     return false;
@@ -226,8 +210,16 @@ public class GameLogic implements IGameLogic {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
-            //messageGenerator.notifyUserIsInDressingRoom()
+            messageGenerator.notifyUserIsInDressingRoom(user);
             System.out.println(user.getUsername() + " stays this round at " + board.getSquares()[user.getCurrentPlace()].getSquareName() + " and need to pay €500");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean varChecksRedCard(User user) {
+        if (user.getCurrentPlace() == 30) {
+            redCard(user);
             return true;
         }
         return false;

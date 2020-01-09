@@ -8,6 +8,7 @@ import models.User;
 import java.util.List;
 
 public class GameClient implements IGameClient {
+
     private IClientMessageGenerator messageGenerator;
     private IClientGUI clientGUI;
 
@@ -59,4 +60,16 @@ public class GameClient implements IGameClient {
 
     @Override
     public void handlePayRentResponse(User currentUser, User ownedUser) { clientGUI.processPayRentResponse(currentUser, ownedUser); }
+
+    @Override
+    public void handleUserHasARedCardResponse(User currentUser) { clientGUI.processUserHasARedCardResponse(currentUser); }
+
+    @Override
+    public void handleUserIsInDressingRoomResponse(User currentUser) { clientGUI.processUserIsInDressingRoomResponse(currentUser); }
+
+    @Override
+    public void endTurn(int playerTurn) { messageGenerator.endTurn(playerTurn); }
+
+    @Override
+    public void handleSwitchTurnResponse(int playerTurn) { clientGUI.processSwitchTurnResponse(playerTurn); }
 }

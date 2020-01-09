@@ -19,6 +19,8 @@ public class ServerHandlerFactory implements IServerHandlerFactory {
                 return new MoveUserMessageHandler(iGame);
             case "BuyFootballPlayerMessage":
                 return new BuyFootballPlayerMessageHandler(iGame);
+            case "EndTurnMessage":
+                return new EndTurnMessageHandler(iGame);
             default:
                 return null;
         }

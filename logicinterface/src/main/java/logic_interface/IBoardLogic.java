@@ -1,7 +1,5 @@
 package logic_interface;
 
-
-import javafx.scene.layout.GridPane;
 import models.Board;
 import models.Square;
 

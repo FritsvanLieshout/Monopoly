@@ -108,4 +108,26 @@ public interface IGameClient {
      * @param ownedUser
      */
     void handlePayRentResponse(User currentUser, User ownedUser);
+
+    /**
+     *
+     * @param currentUser
+     */
+    void handleUserHasARedCardResponse(User currentUser);
+
+    /**
+     *
+     * @param currentUser
+     */
+    void handleUserIsInDressingRoomResponse(User currentUser);
+
+    /**
+     *
+     */
+    void endTurn(int playerTurn);
+
+    /**
+     *
+     */
+    void handleSwitchTurnResponse(int playerTurn);
 }

@@ -1,12 +1,8 @@
 package logic_interface;
 
-import models.Board;
 import models.Dice;
 import models.Square;
 import models.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Interface provided by the GameLogic class
@@ -57,12 +53,12 @@ public interface IGameLogic {
     Square moveUser(int dice, String sessionId);
 
     /**
-     * If the user end his/her turn this method will be called in the
-     * board logic class.
-     * @param board
+     * If the user end his/her turn
      * The user his/her id is the current turn number.
+     * After this method the turn is + 1 with a limit of the size of list with users
+     * @param playerTurn
      */
-    void switchTurn(Board board);
+    void switchTurn(int playerTurn);
 
     /**
      *

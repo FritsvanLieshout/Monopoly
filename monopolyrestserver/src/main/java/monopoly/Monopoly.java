@@ -84,16 +84,4 @@ public class Monopoly {
         //Return new user
         return user;
     }
-
-    /**
-     * Login for a registered user
-     * @param username
-     * @param password
-     * @return the user with the given username and password
-     */
-//    public User loginUser(String username, String password) {
-//        if (users.get(0).getUsername().equals(username) && users.get(0).getPassword().equals(password)) {
-//
-//        }
-//    }
 }
