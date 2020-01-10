@@ -46,9 +46,29 @@ class GameLogicTest {
 
     }
 
+    /**
+     * Example test for the register of a new user.
+     * This test call the method in the logic
+     * The sessionId is needed, because I need this for the web socket communication
+     */
     @Test
-    void testUserLogin() {
+    void testRegisterNewUser() {
+        User newUser = new User();
+        newUser.setUsername("Test");
+        newUser.setPassword("IHateThis");
+        newUser.setSessionId("5");
+        Assertions.assertThrows(NullPointerException.class, () -> gameLogic.registerNewUser(newUser.getUsername(), newUser.getPassword(), newUser.getSessionId()));
+    }
 
+    /**
+     * Example test for the login of the user.
+     * This test call the method in the logic
+     * The sessionId is needed, because I need this for the web socket communication
+     */
+    @Test
+    void testLoginUser() {
+        user.setPassword("I_Hate_Testing");
+        Assertions.assertThrows(NullPointerException.class, () -> gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId()));
     }
 
     /**
@@ -83,7 +103,7 @@ class GameLogicTest {
         int oldPlace = user.getCurrentPlace();
         int noDice1 = gameLogic.getDice(dice);
         int noDice2 = gameLogic.getDice(dice);
-        gameLogic.moveUser((noDice1 + noDice2), user.getSessionId());
+        Assertions.assertThrows(NullPointerException.class, () -> gameLogic.moveUser((noDice1 + noDice2), user.getSessionId()));
         int newPlace = user.getCurrentPlace() + (noDice1 + noDice2);
 
         Assertions.assertNotEquals(oldPlace, newPlace);
@@ -137,7 +157,7 @@ class GameLogicTest {
             //Nothing
         }
         else {
-            //TODO -> Assertions.assertThrows();
+            Assertions.assertNotNull(s.getOwner());
         }
     }
 
@@ -206,6 +226,30 @@ class GameLogicTest {
         if (users.size() == 2) result = true;
 
         Assertions.assertEquals(false, result);
+    }
+
+    /**
+     * Example test to give the users a message for the start af the game.
+     * The check above this test method will be also called in the logic class.
+     * In this case the size must be 1
+     */
+    @Test
+    void testStartGameTrue() {
+        var result = false;
+        if (users.size() == 1) result = true;
+        Assertions.assertTrue(result);
+    }
+
+    /**
+     * Example test to give the users a message for the start af the game.
+     * The check above this test method will be also called in the logic class.
+     * in this case the size must be 2, but there is only 1 user online.
+     */
+    @Test
+    void testStartGameFalse() {
+        var result = false;
+        if (users.size() == 2) result = true;
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -306,6 +350,21 @@ class GameLogicTest {
     }
 
     /**
+     * Example test for a red card. This method has been called in the game logic class
+     * After the check above this test (Exist in logic class) this method will be called
+     */
+    @Test
+    void testRedCard() {
+        user.setPlace(10);
+        user.setInDressingRoom(true);
+
+        Assertions.assertThrows(Exception.class, () -> gameLogic.redCard(user));
+
+        Assertions.assertEquals(10, user.getCurrentPlace());
+        Assertions.assertEquals(true, user.isInDressingRoom());
+    }
+
+    /**
      * Example test of the user that will be called at the begin of the buyPlayer method
      * In this case the user has enough money in his/her wallet.
      */
@@ -333,11 +392,28 @@ class GameLogicTest {
         Assertions.assertEquals(false, result);
     }
 
+    /**
+     * Example test of this method in the game logic class.
+     * this method has been used by some other methods to return the user by his/her id
+     */
+    @Test
+    void testGetUserByUserId() {
+        User currentUser = getUserByUserId(user.getUserId());
+        Assertions.assertEquals(user.getUserId(), currentUser.getUserId());
+    }
+
     private boolean checkUserNameAlreadyExists(String username)
     {
         for(User u : users) {
             if (u.getUsername().equals(username)) return true;
         }
         return false;
+    }
+
+    private User getUserByUserId(int userId) {
+        for (User user : users) {
+            if (user.getUserId() == userId) return user;
+        }
+        return null;
     }
 }
