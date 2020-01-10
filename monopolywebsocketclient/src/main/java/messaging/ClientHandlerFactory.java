@@ -37,6 +37,8 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new UserIsInDressingRoomMessageHandler(gc);
             case "SwitchTurnResultMessage":
                 return new SwitchTurnResultMessageHandler(gc);
+            case "NotEnoughMoneyMessage":
+                return new NotEnoughMoneyMessageHandler(gc);
             default:
                 return null;
         }

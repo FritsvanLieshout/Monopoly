@@ -16,7 +16,6 @@
         <module>dal</module>
         <module>logic</module>
         <module>logicinterface</module>
-        <module>factory</module>
         <module>monopolywebsocketclient</module>
         <module>messaging</module>
         <module>monopolywebsocketserver</module>

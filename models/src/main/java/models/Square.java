@@ -9,6 +9,8 @@ public class Square extends StackPane {
     private int owner = -1;
     private int rentPrice;
 
+    public Square() {}
+
     public Square(String squareName) { this.squareName = squareName; }
 
     public Square(String squareName, int price, int owner, int rentPrice) {
@@ -28,10 +30,13 @@ public class Square extends StackPane {
 
     public int getPrice() { return price; }
 
+    public void setPrice(int price) { this.price = price; }
+
     public int getOwner() { return owner; }
 
     public void setOwner(int owner) { this.owner = owner; }
 
     public int getRentPrice() { return rentPrice; }
 
+    public void setRentPrice(int rentPrice) { this.rentPrice = rentPrice; }
 }

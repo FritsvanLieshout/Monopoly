@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+
 /**
  * Unit tests for Monopoly game -> game tests.
  * @author frits
@@ -22,6 +24,7 @@ class GameLogicTest {
 
     private IGameLogic gameLogic;
     private IBoardLogic boardLogic;
+    ArrayList<User> users;
     Dice dice;
     Board board;
     User user;
@@ -32,12 +35,19 @@ class GameLogicTest {
         boardLogic = new BoardLogic();
         dice = new Dice();
         board = boardLogic.getBoard();
+        users = new ArrayList<>();
         user = new User(1, "1", "Kevin");
+        users.add(user);
         System.out.println("[Begin test: Game Tests]");
     }
 
     @AfterEach
     void tearDown() {
+
+    }
+
+    @Test
+    void testUserLogin() {
 
     }
 
@@ -59,7 +69,6 @@ class GameLogicTest {
         int noDice = 0;
         int noDice1 = gameLogic.getDice(dice);
         Assertions.assertNotEquals(noDice, noDice1);
-        //Assertions.assertThrows(NullPointerException.class, () -> gameLogic.getDice(dice));
     }
 
     /**
@@ -74,7 +83,7 @@ class GameLogicTest {
         int oldPlace = user.getCurrentPlace();
         int noDice1 = gameLogic.getDice(dice);
         int noDice2 = gameLogic.getDice(dice);
-        //gameLogic.moveUser(user, board, (noDice1 + noDice2));
+        gameLogic.moveUser((noDice1 + noDice2), user.getSessionId());
         int newPlace = user.getCurrentPlace() + (noDice1 + noDice2);
 
         Assertions.assertNotEquals(oldPlace, newPlace);
@@ -145,7 +154,7 @@ class GameLogicTest {
     @Test
     void payRent() {
         //User 2
-        User user2 = new User(2, "1", "PayRentPls");
+        User user2 = new User(2, "2", "PayRentPls");
         int position2 = user2.getCurrentPlace();
         int newPosition2 = position2 + 8;
 
@@ -155,7 +164,7 @@ class GameLogicTest {
         int oldUser2Wallet = user2.getWallet().getMoney();
 
         if (board.getSquares()[newPosition2].getOwner() == user2.getUserId()) {
-            LOG.debug(user2.getUsername() + " is the owner of " + board.getSquares()[newPosition2].getSquareName());
+            LOG.info(user2.getUsername() + " is the owner of " + board.getSquares()[newPosition2].getSquareName());
         }
 
         //User 1
@@ -167,6 +176,8 @@ class GameLogicTest {
         if (owner == board.getSquares()[8].getOwner()) {
             user.getWallet().withDrawMoneyOfWallet(rentPrice);
             user2.getWallet().addMoneyToWallet(rentPrice);
+            LOG.info(user.getUsername() + " has to pay €" + board.getSquares()[8].getRentPrice() + " to " + user2.getUsername());
+
         }
 
         Assertions.assertNotEquals(oldUser1Wallet, user.getWallet().getMoney());
@@ -174,17 +185,159 @@ class GameLogicTest {
     }
 
     /**
-     * Example test for pay rent to the user that owns the square.
-     * The user that became on this square needs to pay some rent.
-     * The owned user gets the rent of user 1.
-     * The user starts at square 0. If he throws the dice the user goes
-     * to a new position on the board.
-     * @throws IllegalArgumentException user 1 cannot pay rent if the square isn't owned.
-     * TODO
+     * Example test by starting a game, to check the size of the user that are online
+     * This check will be called at the end of the login method.
      */
-
     @Test
-    void payRentIfSquareIsNotOwned() {
+    void testCheckStartingConditionSuccess() {
+        var result = false;
+        if (users.size() == 1) result = true;
 
+        Assertions.assertEquals(true, result);
+    }
+
+    /**
+     * Example test by starting a game, to check the size of the user that are online
+     * This check will be called at the end of the login method.
+     */
+    @Test
+    void testCheckStartingConditionFalse() {
+        var result = false;
+        if (users.size() == 2) result = true;
+
+        Assertions.assertEquals(false, result);
+    }
+
+    /**
+     * Example test before the register method.
+     * This is an check if the username already exist in current session
+     */
+    @Test
+    void testCheckIfUsernameAlreadyExists() {
+        User currentUser = new User(3, "3", "Kevin");
+        var result = checkUserNameAlreadyExists(currentUser.getUsername());
+
+        Assertions.assertEquals(true, result);
+    }
+
+    /**
+     * Example test before the register method.
+     * This is an check if the username already exist in current session
+     */
+    @Test
+    void testCheckIfUsernameAlreadyDoesNotExists() {
+        User currentUser = new User(4, "4", "Willem");
+        var result = checkUserNameAlreadyExists(currentUser.getUsername());
+
+        Assertions.assertEquals(false, result);
+    }
+
+    /**
+     * Example test called by the move user method in the logic
+     * This check gives the user a money bonus if he / she is over start
+     * In this test has the user became over the start.
+     */
+    @Test
+    void testIfUserIsOverStart() {
+        var oldWallet = user.getWallet().getMoney();
+        user.setPlace(36);
+        var dice = 10;
+        var result = false;
+        var checkStart = user.getCurrentPlace() + dice;
+        if (checkStart >= 40) {
+            result = true;
+            user.getWallet().addMoneyToWallet(2000); //Start bonus
+        }
+
+        Assertions.assertEquals(true, result);
+        Assertions.assertNotEquals(oldWallet, user.getWallet().getMoney());
+        Assertions.assertEquals(5500, user.getWallet().getMoney());
+    }
+
+    /**
+     * Example test called by the move user method in the logic
+     * This check gives the user a money bonus if he / she is over start
+     * This test is if user the is not over start
+     */
+    @Test
+    void testIfUserIsNotOverStart() {
+        var oldWallet = user.getWallet().getMoney();
+        user.setPlace(36);
+        var dice = 3;
+        var result = false;
+        var checkStart = user.getCurrentPlace() + dice;
+        if (checkStart >= 40) {
+            result = true;
+            user.getWallet().addMoneyToWallet(2000); //Start bonus
+        }
+
+        Assertions.assertNotEquals(true, result);
+        Assertions.assertEquals(oldWallet, user.getWallet().getMoney());
+    }
+
+    /**
+     * Example test that will be called at the end of the moveUser method.
+     * If the user became on the red card square (in this case squareNr 30)
+     * The user will be redirect to the dressing room square (squareNr 10)
+     * In this case the user became at this square.
+     */
+    @Test
+    void testVARCheckRedCardTrue() {
+        user.setPlace(30);
+        var result = false;
+        if (user.getCurrentPlace() == 30) result = true;
+
+        Assertions.assertEquals(true, result);
+    }
+
+    /**
+     * Example test that will be called at the end of the moveUser method.
+     * If the user became on the red card square (in this case squareNr 30)
+     * The user will be redirect to the dressing room square (squareNr 10)
+     * In this case the user became at this square.
+     */
+    @Test
+    void testVARCheckRedCardFalse() {
+        user.setPlace(22);
+        var result = false;
+        if (user.getCurrentPlace() == 30) result = true;
+
+        Assertions.assertEquals(false, result);
+    }
+
+    /**
+     * Example test of the user that will be called at the begin of the buyPlayer method
+     * In this case the user has enough money in his/her wallet.
+     */
+    @Test
+    void testIfUserHasEnoughMoney() {
+        var result = false;
+        var price = 1000;
+        if (user.getWallet().getMoney() - price <= 0) result = false;
+        else result = true;
+
+        Assertions.assertNotEquals(false, result);
+    }
+
+    /**
+     * Example test of the user that will be called at the begin of the buyPlayer method
+     * In this case the user does't have enough money in his/her wallet.
+     */
+    @Test
+    void testIfUserDoesNotHaveEnoughMoney() {
+        var result = false;
+        var price = 5000;
+        if (user.getWallet().getMoney() - price <= 0) result = false;
+        else result = true;
+
+        Assertions.assertEquals(false, result);
+    }
+
+    private boolean checkUserNameAlreadyExists(String username)
+    {
+        for(User u : users) {
+            if (u.getUsername().equals(username)) return true;
+        }
+        return false;
     }
 }

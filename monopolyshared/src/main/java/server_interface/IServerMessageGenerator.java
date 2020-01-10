@@ -32,4 +32,6 @@ public interface IServerMessageGenerator {
     void notifyUserIsInDressingRoom(User currentUser);
 
     void notifySwitchTurn(int playerTurn);
+
+    void notifyNotEnoughMoney(String sessionId);
 }

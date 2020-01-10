@@ -130,4 +130,9 @@ public interface IGameClient {
      *
      */
     void handleSwitchTurnResponse(int playerTurn);
+
+    /**
+     *
+     */
+    void handleNotEnoughMoneyResponse();
 }

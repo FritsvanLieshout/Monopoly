@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
 import javafx.scene.shape.Rectangle;
-import logic_factory.LogicFactory;
+import logic.BoardLogic;
 import logic_interface.*;
 import models.*;
 
@@ -52,7 +52,6 @@ public class GameController implements Initializable, IClientGUI {
 
     Dice dice = new Dice();
 
-    private LogicFactory logicFactory;
     private IBoardLogic iBoardLogic;
 
     private Board board;
@@ -72,8 +71,7 @@ public class GameController implements Initializable, IClientGUI {
     public GameController(IGameClient gameClient) {
         this.gameClient = gameClient;
         getGameClient().registerClientGUI(this);
-        logicFactory = new LogicFactory();
-        iBoardLogic = logicFactory.getIBoardLogic();
+        iBoardLogic = new BoardLogic();
         users = new ArrayList<>();
         board = iBoardLogic.getBoard();
         boardSquares = new Square[11][11];
@@ -388,6 +386,7 @@ public class GameController implements Initializable, IClientGUI {
             User newCurrentUser = getUserBySessionId(currentUser.getSessionId());
             newCurrentUser.setWallet(currentUser.getWallet());
             lvLog.getItems().add(getDate() + " -> " + newCurrentUser.getUsername() + msg + newCurrentUser.getWallet().getMoney());
+            btnBuyPlayer.setDisable(true);
         });
     }
 
@@ -416,6 +415,13 @@ public class GameController implements Initializable, IClientGUI {
             User currentUser = getUserByUserId(playerTurn);
             if (currentUser.getUserId() == playerTurn) setDisable(false);
             else setDisable(true);
+        });
+    }
+
+    @Override
+    public void processNotEnoughMoneyResponse() {
+        Platform.runLater(() -> {
+            showAlert("You don't have enough money to buy this property");
         });
     }
 

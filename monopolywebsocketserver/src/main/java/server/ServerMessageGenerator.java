@@ -95,4 +95,10 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
         EndTurnMessage msg = new EndTurnMessage(playerTurn);
         serverWebSocket.broadcast(msg);
     }
+
+    @Override
+    public void notifyNotEnoughMoney(String sessionId) {
+        NotEnoughMoneyMessage msg = new NotEnoughMoneyMessage();
+        serverWebSocket.sendTo(sessionId, msg);
+    }
 }

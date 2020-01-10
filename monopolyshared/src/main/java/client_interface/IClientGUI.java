@@ -34,4 +34,6 @@ public interface IClientGUI {
     void processUserIsInDressingRoomResponse(User currentUser);
 
     void processSwitchTurnResponse(int playerTurn);
+
+    void processNotEnoughMoneyResponse();
 }

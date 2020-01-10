@@ -55,7 +55,7 @@ public class GameLogic implements IGameLogic {
     public Square moveUser(int dice, String sessionId) {
         User currentUser = getUser(sessionId);
         int newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(currentUser, board)) {}
+        if (checkIfUserIsInDressingRoom(currentUser)) {}
         else {
             if (checkIfUserIsOverStart(currentUser, dice)) {}
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
@@ -86,10 +86,13 @@ public class GameLogic implements IGameLogic {
                     messageGenerator.notifyNonValueSquare(sessionId);
                 } else {
                     if (s.getOwner() < 0) {
-                        currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
-                        s.setOwner(currentUser.getUserId());
-                        messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
-                        messageGenerator.updateBoard(currentUser.getSessionId());
+                        if (checkForEnoughMoney(currentUser, s.getPrice())) {}
+                        else {
+                            currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
+                            s.setOwner(currentUser.getUserId());
+                            messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
+                            messageGenerator.updateBoard(currentUser.getSessionId());
+                        }
                     }
                 }
             }
@@ -202,7 +205,7 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private boolean checkIfUserIsInDressingRoom(User user, Board board) {
+    private boolean checkIfUserIsInDressingRoom(User user) {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
@@ -218,5 +221,13 @@ public class GameLogic implements IGameLogic {
             return true;
         }
         return false;
+    }
+
+    private boolean checkForEnoughMoney(User currentUser, int priceOfSquare) {
+        if (currentUser.getWallet().getMoney() - priceOfSquare <= 0) {
+            messageGenerator.notifyNotEnoughMoney(currentUser.getSessionId());
+            return false;
+        }
+        return true;
     }
 }

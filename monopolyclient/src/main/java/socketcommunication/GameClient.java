@@ -72,4 +72,7 @@ public class GameClient implements IGameClient {
 
     @Override
     public void handleSwitchTurnResponse(int playerTurn) { clientGUI.processSwitchTurnResponse(playerTurn); }
+
+    @Override
+    public void handleNotEnoughMoneyResponse() { clientGUI.processNotEnoughMoneyResponse(); }
 }
