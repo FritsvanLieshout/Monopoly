@@ -55,15 +55,15 @@ public class GameLogic implements IGameLogic {
     public Square moveUser(int dice, String sessionId) {
         User currentUser = getUser(sessionId);
         int newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(currentUser)) {}
+        if (checkIfUserIsInDressingRoom(currentUser)) { /*Nothing*/ }
         else {
-            if (checkIfUserIsOverStart(currentUser, dice)) {}
+            if (checkIfUserIsOverStart(currentUser, dice)) { /*Nothing*/ }
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
-            if (checkIfSquareIsOwned(currentUser, board)) {}
-            if (varChecksRedCard(currentUser)) {}
+            if (checkIfSquareIsOwned(currentUser, board)) { /*Nothing*/ }
+            if (varChecksRedCard(currentUser)) { /*Nothing*/ }
         }
         return board.getSquares()[newPlace];
     }
@@ -86,8 +86,7 @@ public class GameLogic implements IGameLogic {
                     messageGenerator.notifyNonValueSquare(sessionId);
                 } else {
                     if (s.getOwner() < 0) {
-                        if (checkForEnoughMoney(currentUser, s.getPrice())) {}
-                        else {
+                        if (checkForEnoughMoney(currentUser, s.getPrice())) {
                             currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
                             s.setOwner(currentUser.getUserId());
                             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
