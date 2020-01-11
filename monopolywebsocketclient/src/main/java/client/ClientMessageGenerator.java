@@ -15,9 +15,7 @@ public class ClientMessageGenerator implements IClientMessageGenerator {
     public ClientMessageGenerator(IClientWebSocket clientWebSocket) { this.clientWebSocket = clientWebSocket; }
 
     @Override
-    public void registerUserOnServer(String username, String password) {
-        clientWebSocket.send(new RegisterUserMessage(username, password));
-    }
+    public void registerUserOnServer(String username, String password) { clientWebSocket.send(new RegisterUserMessage(username, password)); }
 
     @Override
     public void login(String username, String password) {

@@ -11,6 +11,6 @@ public class EndTurnMessageHandler extends BaseServerMessageHandler<EndTurnMessa
 
     @Override
     public void handleMessageInternal(EndTurnMessage message, String sessionId) {
-        game.switchTurn(message.getPlayerTurn());
+        game.switchTurn(message.getPlayerTurn(), sessionId);
     }
 }

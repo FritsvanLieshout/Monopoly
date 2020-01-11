@@ -11,6 +11,6 @@ public class LoginResultMessageHandler extends BaseClientMessageHandler<LoginRes
 
     @Override
     public void handleMessageInternal(LoginResultMessage message, String sessionId) {
-        gc.handleLoginResponse(message.getToken());
+        gc.handleLoginResponse(message.getUserId());
     }
 }

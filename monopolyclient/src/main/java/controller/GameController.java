@@ -60,6 +60,7 @@ public class GameController implements Initializable, IClientGUI {
     private static ArrayList<Square> squareList;
 
     private int playerTurn = 0;
+    private int playerNr = 0;
 
     Rectangle rec1 = new Rectangle(25, 25, Color.RED);
     Rectangle rec2 = new Rectangle(25, 25, Color.BLUE);
@@ -253,14 +254,16 @@ public class GameController implements Initializable, IClientGUI {
 
     @Override
     public void moveUser() {
-        int dice1 = dice.getNofDice();
-        int dice2 = dice.getNofDice();
-        int noDice = dice1 + dice2;
+        if (playersTurn()) {
+            int dice1 = dice.getNofDice();
+            int dice2 = dice.getNofDice();
+            int noDice = dice1 + dice2;
 
-        lblDice1.setText(Integer.toString(dice1));
-        lblDice2.setText(Integer.toString(dice2));
+            lblDice1.setText(Integer.toString(dice1));
+            lblDice2.setText(Integer.toString(dice2));
 
-        getGameClient().moveUser(noDice);
+            getGameClient().moveUser(noDice);
+        }
     }
 
     @Override
@@ -281,18 +284,14 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     @Override
-    public void processLoginResponse(String token) {
+    public void processLoginResponse(int userId) {
         Platform.runLater(() -> {
-            if (token == null || token.equals("")) {
-                showAlert("Login Failed");
-            }
-            else {
-                showAlert("Login Success, waiting for other opponent(s)");
-                btnLogin.setDisable(true);
-                btnRegister.setDisable(true);
-                tfUsername.setDisable(true);
-                tfPassword.setDisable(true);
-            }
+            showAlert("Login Success, waiting for other opponent(s)");
+            btnLogin.setDisable(true);
+            btnRegister.setDisable(true);
+            tfUsername.setDisable(true);
+            tfPassword.setDisable(true);
+            this.playerNr = userId;
         });
     }
 
@@ -303,6 +302,7 @@ public class GameController implements Initializable, IClientGUI {
             movePawnOnBoard(currentUser.getCurrentPlace(), currentUser.getUserId());
             String msg = currentUser.getUsername() + " has dice " + dice + " and goes to " + board.getSquares()[currentUser.getCurrentPlace()].getSquareName();
             lvLog.getItems().add(getDate() + ": " + msg);
+            btnThrowDice.setDisable(true);
         });
     }
 
@@ -331,8 +331,7 @@ public class GameController implements Initializable, IClientGUI {
         Platform.runLater(() -> {
             lvLog.getItems().add(getDate() + ": The game starts now!");
             playerTurn = 1;
-            User currentUser = getUserByUserId(playerTurn);
-            if (currentUser.getUserId() == playerTurn) setDisable(false);
+            if (playerNr == playerTurn) setDisable(false);
             else setDisable(true);
         });
     }
@@ -378,7 +377,7 @@ public class GameController implements Initializable, IClientGUI {
     public void processPayRentResponse(User currentUser, User ownedUser) {
         Platform.runLater(() -> {
             Square s = getSquare(currentUser.getCurrentPlace());
-            var msg = ", your waller has been updated -> €";
+            var msg = ", your wallet has been updated -> €";
             lvLog.getItems().add(getDate() + " -> " + currentUser.getUsername() + " has to pay €" + s.getRentPrice() + " rent to " + ownedUser.getUsername());
             User newOwnedUser = getUserBySessionId(ownedUser.getSessionId());
             newOwnedUser.setWallet(ownedUser.getWallet());
@@ -386,7 +385,6 @@ public class GameController implements Initializable, IClientGUI {
             User newCurrentUser = getUserBySessionId(currentUser.getSessionId());
             newCurrentUser.setWallet(currentUser.getWallet());
             lvLog.getItems().add(getDate() + " -> " + newCurrentUser.getUsername() + msg + newCurrentUser.getWallet().getMoney());
-            btnBuyPlayer.setDisable(true);
         });
     }
 
@@ -409,11 +407,13 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     @Override
-    public void processSwitchTurnResponse(int playerTurn) {
+    public synchronized void processSwitchTurnResponse(int playerTurn, String sessionId) {
         Platform.runLater(() -> {
             this.playerTurn = playerTurn;
             User currentUser = getUserByUserId(playerTurn);
-            if (currentUser.getUserId() == playerTurn) setDisable(false);
+            lvLog.getItems().add("");
+            lvLog.getItems().add(getDate() + " -> " + currentUser.getUsername() + " it's your turn!");
+            if (playerNr == playerTurn) setDisable(false);
             else setDisable(true);
         });
     }
@@ -422,6 +422,13 @@ public class GameController implements Initializable, IClientGUI {
     public void processNotEnoughMoneyResponse() {
         Platform.runLater(() -> {
             showAlert("You don't have enough money to buy this property");
+        });
+    }
+
+    @Override
+    public void processAlreadyOwnedResponse() {
+        Platform.runLater(() -> {
+            showAlert("This property is already owned by your opponents or yourself!");
         });
     }
 
@@ -464,12 +471,17 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     private void buyFootballPlayer() {
-        getGameClient().buyFootballPlayer();
+        if (playersTurn()) {
+            getGameClient().buyFootballPlayer();
+        }
     }
 
-    private synchronized void endTurn() {
-        getGameClient().endTurn(playerTurn);
-        setDisable(true);
+    private void endTurn() {
+        if (playersTurn()) {
+            getGameClient().endTurn(playerTurn);
+            switchTurn();
+            setDisable(true);
+        }
     }
 
     private void setDisable(boolean disable) {
@@ -514,4 +526,8 @@ public class GameController implements Initializable, IClientGUI {
         }
         return null;
     }
+
+    private synchronized void switchTurn() { if (++playerTurn > users.size()) playerTurn = 1; }
+
+    private synchronized boolean playersTurn() { return playerNr == playerTurn; }
 }

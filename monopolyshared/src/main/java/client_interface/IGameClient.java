@@ -41,9 +41,9 @@ public interface IGameClient {
 
     /**
      *
-     * @param token
+     * @param userId
      */
-    void handleLoginResponse(String token);
+    void handleLoginResponse(int userId);
 
     /**
      * The user goes the steps forward that are given by the dice.
@@ -129,10 +129,15 @@ public interface IGameClient {
     /**
      *
      */
-    void handleSwitchTurnResponse(int playerTurn);
+    void handleSwitchTurnResponse(int playerTurn, String sessionId);
 
     /**
      *
      */
     void handleNotEnoughMoneyResponse();
+
+    /**
+     *
+     */
+    void handlePropertyAlreadyOwnedResponse();
 }

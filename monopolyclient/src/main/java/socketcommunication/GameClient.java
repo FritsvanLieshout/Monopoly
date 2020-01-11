@@ -29,7 +29,7 @@ public class GameClient implements IGameClient {
     public void handleUserRegistered(String username) { clientGUI.processUserRegistered(username);}
 
     @Override
-    public void handleLoginResponse(String token) { clientGUI.processLoginResponse(token); }
+    public void handleLoginResponse(int userId) { clientGUI.processLoginResponse(userId); }
 
     @Override
     public void moveUser(int dice) { messageGenerator.moveUser(dice); }
@@ -71,8 +71,11 @@ public class GameClient implements IGameClient {
     public void endTurn(int playerTurn) { messageGenerator.endTurn(playerTurn); }
 
     @Override
-    public void handleSwitchTurnResponse(int playerTurn) { clientGUI.processSwitchTurnResponse(playerTurn); }
+    public void handleSwitchTurnResponse(int playerTurn, String sessionId) { clientGUI.processSwitchTurnResponse(playerTurn, sessionId); }
 
     @Override
     public void handleNotEnoughMoneyResponse() { clientGUI.processNotEnoughMoneyResponse(); }
+
+    @Override
+    public void handlePropertyAlreadyOwnedResponse() { clientGUI.processAlreadyOwnedResponse(); }
 }

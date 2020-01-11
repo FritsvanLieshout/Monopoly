@@ -11,7 +11,7 @@ public interface IClientGUI {
 
     void processUserRegistered(String username);
 
-    void processLoginResponse(String token);
+    void processLoginResponse(int userId);
 
     void processMoveUserResponse(int dice, String sessionId);
 
@@ -33,7 +33,9 @@ public interface IClientGUI {
 
     void processUserIsInDressingRoomResponse(User currentUser);
 
-    void processSwitchTurnResponse(int playerTurn);
+    void processSwitchTurnResponse(int playerTurn, String sessionId);
 
     void processNotEnoughMoneyResponse();
+
+    void processAlreadyOwnedResponse();
 }

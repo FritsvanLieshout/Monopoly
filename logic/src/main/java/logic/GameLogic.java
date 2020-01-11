@@ -55,15 +55,14 @@ public class GameLogic implements IGameLogic {
     public Square moveUser(int dice, String sessionId) {
         User currentUser = getUser(sessionId);
         int newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace());
-        if (checkIfUserIsInDressingRoom(currentUser)) { /*Nothing*/ }
-        else {
-            if (checkIfUserIsOverStart(currentUser, dice)) { /*Nothing*/ }
+        if (!checkIfUserIsInDressingRoom(currentUser)) {
+            checkIfUserIsOverStart(currentUser, dice);
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
-            if (checkIfSquareIsOwned(currentUser, board)) { /*Nothing*/ }
-            if (varChecksRedCard(currentUser)) { /*Nothing*/ }
+            checkIfSquareIsOwned(currentUser, board);
+            varChecksRedCard(currentUser);
         }
         return board.getSquares()[newPlace];
     }
@@ -80,9 +79,7 @@ public class GameLogic implements IGameLogic {
         User currentUser = getUser(sessionId);
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == currentUser.getCurrentPlace()) {
-                if (s.getSquareId() == 0 || s.getSquareId() == 2 || s.getSquareId() == 4 || s.getSquareId() == 7 || s.getSquareId() == 10 ||
-                        s.getSquareId() == 12 || s.getSquareId() == 17 || s.getSquareId() == 20 || s.getSquareId() == 22 || s.getSquareId() == 28 ||
-                        s.getSquareId() == 30 || s.getSquareId() == 33 || s.getSquareId() == 36 || s.getSquareId() == 38) {
+                if (s.getPrice() == 0) {
                     messageGenerator.notifyNonValueSquare(sessionId);
                 } else {
                     if (s.getOwner() < 0) {
@@ -93,16 +90,18 @@ public class GameLogic implements IGameLogic {
                             messageGenerator.updateBoard(currentUser.getSessionId());
                         }
                     }
+                    else {
+                        messageGenerator.notifyPropertyIsAlreadyOwned(sessionId);
+                    }
                 }
             }
         }
     }
 
     @Override
-    public void switchTurn(int playerTurn) {
-        int turn = playerTurn++;
-        if (turn > onlineUsers.size()) messageGenerator.notifySwitchTurn(1);
-        else messageGenerator.notifySwitchTurn(turn);
+    public void switchTurn(int playerTurn, String sessionId) {
+        if (++playerTurn > onlineUsers.size()) messageGenerator.notifySwitchTurn(1, sessionId);
+        else messageGenerator.notifySwitchTurn(playerTurn, sessionId);
     }
 
     @Override
@@ -128,8 +127,8 @@ public class GameLogic implements IGameLogic {
                 return;
             }
 
-            messageGenerator.notifyLoginResult(sessionId, "Token");
             User user = new User(Integer.parseInt(sessionId), sessionId, username);
+            messageGenerator.notifyLoginResult(sessionId, user.getUserId());
             onlineUsers.add(user);
             messageGenerator.notifyUserAdded(sessionId, username);
             updateUsersInGame();
@@ -156,7 +155,7 @@ public class GameLogic implements IGameLogic {
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 2) startGame();
+        if (onlineUsers.size() == 4) startGame();
     }
 
     private boolean checkUserNameAlreadyExists(String username)
@@ -179,14 +178,12 @@ public class GameLogic implements IGameLogic {
         }
     }
 
-    private boolean checkIfUserIsOverStart(User user, int dice) {
+    private void checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
             user.getWallet().addMoneyToWallet(2000);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
-            return true;
         }
-        return false;
     }
 
     private boolean checkIfSquareIsOwned(User user, Board board) {

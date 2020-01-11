@@ -25,8 +25,8 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     }
 
     @Override
-    public void notifyLoginResult(String sessionId, String token) {
-        LoginResultMessage msg = new LoginResultMessage(token);
+    public void notifyLoginResult(String sessionId, int userId) {
+        LoginResultMessage msg = new LoginResultMessage(userId);
         serverWebSocket.sendTo(sessionId, msg);
     }
 
@@ -91,14 +91,20 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     }
 
     @Override
-    public void notifySwitchTurn(int playerTurn) {
-        EndTurnMessage msg = new EndTurnMessage(playerTurn);
+    public void notifySwitchTurn(int playerTurn, String sessionId) {
+        SwitchTurnResultMessage msg = new SwitchTurnResultMessage(playerTurn, sessionId);
         serverWebSocket.broadcast(msg);
     }
 
     @Override
     public void notifyNotEnoughMoney(String sessionId) {
         NotEnoughMoneyMessage msg = new NotEnoughMoneyMessage();
+        serverWebSocket.sendTo(sessionId, msg);
+    }
+
+    @Override
+    public void notifyPropertyIsAlreadyOwned(String sessionId) {
+        PropertyAlreadyOwnedMessage msg = new PropertyAlreadyOwnedMessage();
         serverWebSocket.sendTo(sessionId, msg);
     }
 }

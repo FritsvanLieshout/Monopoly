@@ -57,8 +57,9 @@ public interface IGameLogic {
      * The user his/her id is the current turn number.
      * After this method the turn is + 1 with a limit of the size of list with users
      * @param playerTurn
+     * @param sessionId
      */
-    void switchTurn(int playerTurn);
+    void switchTurn(int playerTurn, String sessionId);
 
     /**
      *

@@ -39,6 +39,8 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new SwitchTurnResultMessageHandler(gc);
             case "NotEnoughMoneyMessage":
                 return new NotEnoughMoneyMessageHandler(gc);
+            case "PropertyAlreadyOwnedMessage":
+                return new PropertyAlreadyOwnedMessageHandler(gc);
             default:
                 return null;
         }

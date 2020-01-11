@@ -2,11 +2,9 @@ package messages;
 
 public class LoginResultMessage {
 
-    private String token;
+    private int userId;
 
-    public LoginResultMessage(String token) { this.token = token; }
+    public LoginResultMessage(int userId) { this.userId = userId; }
 
-    public String getToken() { return this.token; }
-
-    public void setToken(String token) { this.token = token; }
+    public int getUserId() { return userId; }
 }

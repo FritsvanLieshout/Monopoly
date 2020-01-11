@@ -11,6 +11,6 @@ public class SwitchTurnResultMessageHandler extends BaseClientMessageHandler<Swi
 
     @Override
     public void handleMessageInternal(SwitchTurnResultMessage message, String messageId) {
-        gc.handleSwitchTurnResponse(message.getPlayerTurn());
+        gc.handleSwitchTurnResponse(message.getPlayerTurn(), message.getSessionId());
     }
 }

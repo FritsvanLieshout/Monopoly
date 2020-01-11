@@ -9,7 +9,7 @@ public interface IServerMessageGenerator {
 
     void notifyRegisterResult(String sessionId, boolean success);
 
-    void notifyLoginResult(String sessionId, String token);
+    void notifyLoginResult(String sessionId, int userId);
 
     void notifyMoveUserMessage(int dice, String sessionId);
 
@@ -31,7 +31,9 @@ public interface IServerMessageGenerator {
 
     void notifyUserIsInDressingRoom(User currentUser);
 
-    void notifySwitchTurn(int playerTurn);
+    void notifySwitchTurn(int playerTurn, String sessionId);
 
     void notifyNotEnoughMoney(String sessionId);
+
+    void notifyPropertyIsAlreadyOwned(String sessionId);
 }

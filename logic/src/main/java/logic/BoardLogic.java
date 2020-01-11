@@ -27,7 +27,7 @@ public class BoardLogic implements IBoardLogic {
             else if (i == 10) { initDressingRoomSquare(squares, squareNames, i); }
             else if (i == 20) { initGoalBonusSquare(squares, squareNames, i); }
             else if (i == 30) { initRedCardSquare(squares, squareNames, i); }
-            else if (i == 2 || i == 27 || i == 33) { initCommunityChestSquare(squares, squareNames, i); }
+            else if (i == 2 || i == 17 || i == 33) { initCommunityChestSquare(squares, squareNames, i); }
             else if (i == 7 || i == 22 || i == 36) { initChangeSquare(squares, squareNames, i); }
             else if (i == 4 || i == 12 || i == 28 || i == 38) { initSquare(squares, squareNames, i); }
             else if (i == 5 || i == 15 || i == 25 || i == 35) { initStadiumSquare(squares, squareNames, i); }
