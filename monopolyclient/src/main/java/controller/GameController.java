@@ -37,8 +37,6 @@ public class GameController implements Initializable, IClientGUI {
     public Label lblPlayer4;
     public Label lblDice1;
     public Label lblDice2;
-    public Button btnPlaceHouse;
-    public Button btnPlaceHotel;
     public Button btnBuyPlayer;
     public ListView lvLog;
     public Label lblCurrentPlayerName;
@@ -230,6 +228,26 @@ public class GameController implements Initializable, IClientGUI {
         }
     }
 
+    private void removePawn(int squareId, int playerNr) {
+        switch(playerNr) {
+            case 1:
+                squareList.get(squareId).getChildren().remove(rec1);
+                break;
+            case 2:
+                squareList.get(squareId).getChildren().remove(rec2);
+                break;
+            case 3:
+                squareList.get(squareId).getChildren().remove(rec3);
+                break;
+            case 4:
+                squareList.get(squareId).getChildren().remove(rec4);
+                break;
+            default:
+                showAlert("Player number doesn't exist");
+                break;
+        }
+    }
+
     private void setOwnerOfSquareColor(int squareId, int playerNr) {
         Platform.runLater(() -> {
             switch(playerNr) {
@@ -280,7 +298,9 @@ public class GameController implements Initializable, IClientGUI {
 
     @Override
     public void processUserRegistered(String username) {
-        lvLog.getItems().add(getDate() + ": " +  username + " has been registered!");
+        Platform.runLater(() -> {
+            lvLog.getItems().add(getDate() + ": " +  username + " has been registered!");
+        });
     }
 
     @Override
@@ -343,8 +363,8 @@ public class GameController implements Initializable, IClientGUI {
             currentUser.setPlace(user.getCurrentPlace());
             currentUser.setInDressingRoom(user.isInDressingRoom());
             currentUser.setWallet(user.getWallet());
-            Square s = getSquare(currentUser.getCurrentPlace());
-            lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", position on board: " + s.getSquareName());
+            currentUser.setBroke(user.isBroke());
+            lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", has been updated. Money: " + currentUser.getWallet().getMoney());
         });
     }
 
@@ -426,9 +446,26 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     @Override
-    public void processAlreadyOwnedResponse() {
+    public void processAlreadyOwnedResponse(int owner) {
         Platform.runLater(() -> {
-            showAlert("This property is already owned by your opponents or yourself!");
+            User ownedUser = getUserByUserId(owner);
+            showAlert("This property is already owned by " + ownedUser.getUsername());
+        });
+    }
+
+    @Override
+    public void processCardMessageResponse(User user, String message) {
+        Platform.runLater(() -> {
+            lvLog.getItems().add("");
+            lvLog.getItems().add(getDate() + " -> Message for: " + user.getUsername() + ": " + message);
+        });
+    }
+
+    @Override
+    public void processUserIsBrokeResponse(User user) {
+        Platform.runLater(() -> {
+            removePawn(user.getCurrentPlace(), user.getUserId());
+            lvLog.getItems().add(getDate() + " -> " + user.getUsername() + " game over for you bro");
         });
     }
 
@@ -488,8 +525,6 @@ public class GameController implements Initializable, IClientGUI {
         btnThrowDice.setDisable(disable);
         btnEndTurn.setDisable(disable);
         btnBuyPlayer.setDisable(disable);
-        btnPlaceHotel.setDisable(disable);
-        btnPlaceHouse.setDisable(disable);
     }
 
     private User getUserBySessionId(String sessionId) {

@@ -103,8 +103,20 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     }
 
     @Override
-    public void notifyPropertyIsAlreadyOwned(String sessionId) {
-        PropertyAlreadyOwnedMessage msg = new PropertyAlreadyOwnedMessage();
+    public void notifyPropertyIsAlreadyOwned(int owner, String sessionId) {
+        PropertyAlreadyOwnedMessage msg = new PropertyAlreadyOwnedMessage(owner);
         serverWebSocket.sendTo(sessionId, msg);
+    }
+
+    @Override
+    public void notifyCardMessage(User user, String message) {
+        CardMessage msg = new CardMessage(user, message);
+        serverWebSocket.broadcast(msg);
+    }
+
+    @Override
+    public void notifyUserIsBroke(User user) {
+        BrokeMessage msg = new BrokeMessage(user);
+        serverWebSocket.broadcast(msg);
     }
 }

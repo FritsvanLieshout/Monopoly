@@ -9,6 +9,7 @@ import restclient.MonopolyRestClient;
 import restshared.UserDto;
 import server_interface.IServerMessageGenerator;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 
 public class GameLogic implements IGameLogic {
@@ -22,11 +23,20 @@ public class GameLogic implements IGameLogic {
     private Board board;
     private IBoardLogic boardLogic;
 
+    private int communityChestCardNr;
+    private int changeCardNr;
+
+    private SecureRandom random = new SecureRandom();
+
+    private int pot = 750;
+
     public GameLogic(IServerMessageGenerator messageGenerator) {
         this.messageGenerator = messageGenerator;
         monopolyRestClient = new MonopolyRestClient();
         boardLogic = new BoardLogic();
         board = boardLogic.getBoard();
+        communityChestCardNr = random.nextInt(8);
+        changeCardNr = random.nextInt(6);
     }
 
     public GameLogic() { }
@@ -59,10 +69,13 @@ public class GameLogic implements IGameLogic {
             checkIfUserIsOverStart(currentUser, dice);
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
+            if (newPlace == 2 || newPlace == 17 || newPlace == 33) doCommunityChestCardAction(currentUser);
+            if (newPlace == 7 || newPlace == 22 || newPlace == 36) doChangeCardAction(currentUser);
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             checkIfSquareIsOwned(currentUser, board);
             varChecksRedCard(currentUser);
+            checkIfUserIsBroke(currentUser);
         }
         return board.getSquares()[newPlace];
     }
@@ -90,9 +103,7 @@ public class GameLogic implements IGameLogic {
                             messageGenerator.updateBoard(currentUser.getSessionId());
                         }
                     }
-                    else {
-                        messageGenerator.notifyPropertyIsAlreadyOwned(sessionId);
-                    }
+                    else messageGenerator.notifyPropertyIsAlreadyOwned(s.getOwner(), sessionId);
                 }
             }
         }
@@ -180,7 +191,7 @@ public class GameLogic implements IGameLogic {
 
     private void checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
-            user.getWallet().addMoneyToWallet(2000);
+            user.getWallet().addMoneyToWallet(1);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
         }
@@ -225,5 +236,104 @@ public class GameLogic implements IGameLogic {
             return false;
         }
         return true;
+    }
+
+    private void checkIfUserIsBroke(User user) {
+        if (user.getWallet().getMoney() < 0) {
+            messageGenerator.notifyUserIsBroke(user);
+            user.setBroke(true);
+            messageGenerator.updateCurrentUser(user, user.getSessionId());
+        }
+    }
+
+    private void doCommunityChestCardAction(User user) {
+        String message = "";
+        switch (communityChestCardNr) {
+            case 1:
+                message = "Advance to Go -> Collect €2000";
+                user.setPlace(0);
+                user.getWallet().addMoneyToWallet(2000);
+                break;
+            case 2:
+                message = "Bank error in your favor -> Collect €1000";
+                user.getWallet().addMoneyToWallet(1000);
+                break;
+            case 3:
+                message = "Pay school fees of €2100";
+                user.getWallet().withDrawMoneyOfWallet(2100);
+                break;
+            case 4:
+                message = "Receive €250 consultancy fee";
+                user.getWallet().addMoneyToWallet(250);
+                break;
+            case 5:
+                message = "Pay hospital fees of €750";
+                user.getWallet().withDrawMoneyOfWallet(750);
+                break;
+            case 6:
+                message = "You have won second price in a beauty contest -> Collect €100";
+                user.getWallet().addMoneyToWallet(100);
+                break;
+            case 7:
+                message = "Go to Dressing Room. If you pass Go, you don't collect €2000!";
+                user.setPlace(10);
+                user.setInDressingRoom(true);
+                break;
+            case 8:
+                message = "You receives a yellow card, pay fees of €500";
+                user.getWallet().withDrawMoneyOfWallet(500);
+                break;
+        }
+
+        messageGenerator.notifyCardMessage(user, message);
+
+        if (communityChestCardNr == 8) communityChestCardNr = 1;
+        else communityChestCardNr++;
+    }
+
+    private void doChangeCardAction(User user) {
+        String message = "";
+        switch (changeCardNr) {
+            case 1:
+                message = "Advance to Go -> Collect €2000";
+                user.setPlace(0);
+                user.getWallet().addMoneyToWallet(2000);
+                break;
+            case 2:
+                message = "Take a walk to Neymar";
+                user.setPlace(39);
+                break;
+            case 3:
+                message = "Advance to Rashford -> if you pass Go, collect €2000";
+                if (user.getCurrentPlace() > 11) user.getWallet().addMoneyToWallet(2000);
+                user.setPlace(11);
+                break;
+            case 4:
+                message = "Go back 3 spaces";
+                user.setPlace(user.getCurrentPlace() - 3);
+                break;
+            case 5:
+                message = "Back pays you dividend of €500";
+                user.getWallet().addMoneyToWallet(500);
+                break;
+            case 6:
+                message = "You have won a crossword competition -> Collect €200";
+                user.getWallet().addMoneyToWallet(200);
+                break;
+            case 7:
+                message = "Go directly to Dressing Room. If you pass Go, you don't collect €2000!";
+                user.setPlace(10);
+                user.setInDressingRoom(true);
+                break;
+            case 8:
+                message = "Pay poor tax of €375";
+                user.getWallet().withDrawMoneyOfWallet(375);
+                break;
+        }
+
+        messageGenerator.notifyCardMessage(user, message);
+
+        if (changeCardNr == 8) changeCardNr = 1;
+        else changeCardNr++;
     }
 }

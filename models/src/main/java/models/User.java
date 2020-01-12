@@ -9,9 +9,10 @@ public class User {
     private int place;
     private Wallet wallet;
     boolean isInDressingRoom;
+    boolean isBroke;
 
     public User() {
-        this.wallet = new Wallet(3500);
+        this.wallet = new Wallet(6000);
     }
 
     public User(int userId, String sessionId, String username, String password) {
@@ -20,8 +21,9 @@ public class User {
         this.sessionId = sessionId;
         this.username = username;
         this.password = password;
-        this.wallet = new Wallet(3500);
+        this.wallet = new Wallet(6000);
         this.isInDressingRoom = false;
+        this.isBroke = false;
     }
 
     public User(int userId, String sessionId, String username) {
@@ -29,8 +31,9 @@ public class User {
         this.place = 0;
         this.sessionId = sessionId;
         this.username = username;
-        this.wallet = new Wallet(3500);
+        this.wallet = new Wallet(6000);
         this.isInDressingRoom = false;
+        this.isBroke = false;
     }
 
     public int getUserId() { return userId; }
@@ -64,4 +67,8 @@ public class User {
     public boolean isInDressingRoom() { return this.isInDressingRoom; }
 
     public void setInDressingRoom(boolean isInDressingRoom) { this.isInDressingRoom = isInDressingRoom; }
+
+    public boolean isBroke() { return isBroke; }
+
+    public void setBroke(boolean isBroke) { this.isBroke = isBroke; }
 }

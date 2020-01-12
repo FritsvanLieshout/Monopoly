@@ -77,5 +77,11 @@ public class GameClient implements IGameClient {
     public void handleNotEnoughMoneyResponse() { clientGUI.processNotEnoughMoneyResponse(); }
 
     @Override
-    public void handlePropertyAlreadyOwnedResponse() { clientGUI.processAlreadyOwnedResponse(); }
+    public void handlePropertyAlreadyOwnedResponse(int owner) { clientGUI.processAlreadyOwnedResponse(owner); }
+
+    @Override
+    public void handleCardMessageResponse(User user, String message) { clientGUI.processCardMessageResponse(user, message); }
+
+    @Override
+    public void handleUserIsBrokeResponse(User user) { clientGUI.processUserIsBrokeResponse(user); }
 }

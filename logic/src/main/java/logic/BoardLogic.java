@@ -85,7 +85,7 @@ public class BoardLogic implements IBoardLogic {
     }
 
     private void initStadiumSquare(Square[] squares, String[] squareNames, int i) {
-        squares[i] = new StadiumSquare(squareNames[i], 2000, -1, 500);
+        squares[i] = new StadiumSquare(squareNames[i], 1000, -1, 500);
         squares[i].setSquareId(i);
         squares[i].setSquareName(squareNames[i]);
         squareList.add(squares[i]);

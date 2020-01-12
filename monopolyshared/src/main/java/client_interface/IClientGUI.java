@@ -37,5 +37,9 @@ public interface IClientGUI {
 
     void processNotEnoughMoneyResponse();
 
-    void processAlreadyOwnedResponse();
+    void processAlreadyOwnedResponse(int owner);
+
+    void processCardMessageResponse(User user, String message);
+
+    void processUserIsBrokeResponse(User user);
 }

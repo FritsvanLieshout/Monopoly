@@ -288,14 +288,15 @@ class GameLogicTest {
         var dice = 10;
         var result = false;
         var checkStart = user.getCurrentPlace() + dice;
+        var bonus = 2000;
         if (checkStart >= 40) {
             result = true;
-            user.getWallet().addMoneyToWallet(2000); //Start bonus
+            user.getWallet().addMoneyToWallet(bonus); //Start bonus
         }
 
         Assertions.assertEquals(true, result);
         Assertions.assertNotEquals(oldWallet, user.getWallet().getMoney());
-        Assertions.assertEquals(5500, user.getWallet().getMoney());
+        Assertions.assertEquals(oldWallet + bonus, user.getWallet().getMoney());
     }
 
     /**
@@ -385,7 +386,7 @@ class GameLogicTest {
     @Test
     void testIfUserDoesNotHaveEnoughMoney() {
         var result = false;
-        var price = 5000;
+        var price = 8000;
         if (user.getWallet().getMoney() - price <= 0) result = false;
         else result = true;
 

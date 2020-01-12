@@ -11,6 +11,6 @@ public class PropertyAlreadyOwnedMessageHandler extends BaseClientMessageHandler
 
     @Override
     public void handleMessageInternal(PropertyAlreadyOwnedMessage message, String messageId) {
-        gc.handlePropertyAlreadyOwnedResponse();
+        gc.handlePropertyAlreadyOwnedResponse(message.getOwnerId());
     }
 }

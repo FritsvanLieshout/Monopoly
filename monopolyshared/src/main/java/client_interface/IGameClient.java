@@ -139,5 +139,16 @@ public interface IGameClient {
     /**
      *
      */
-    void handlePropertyAlreadyOwnedResponse();
+    void handlePropertyAlreadyOwnedResponse(int onwer);
+
+    /**
+     *
+     */
+    void handleCardMessageResponse(User user, String message);
+
+    /**
+     *
+     * @param user
+     */
+    void handleUserIsBrokeResponse(User user);
 }

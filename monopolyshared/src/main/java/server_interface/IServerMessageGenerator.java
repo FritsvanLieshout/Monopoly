@@ -35,5 +35,9 @@ public interface IServerMessageGenerator {
 
     void notifyNotEnoughMoney(String sessionId);
 
-    void notifyPropertyIsAlreadyOwned(String sessionId);
+    void notifyPropertyIsAlreadyOwned(int owner, String sessionId);
+
+    void notifyCardMessage(User user, String message);
+
+    void notifyUserIsBroke(User user);
 }

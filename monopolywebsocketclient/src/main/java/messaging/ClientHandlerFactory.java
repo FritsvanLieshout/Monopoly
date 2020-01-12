@@ -41,6 +41,10 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new NotEnoughMoneyMessageHandler(gc);
             case "PropertyAlreadyOwnedMessage":
                 return new PropertyAlreadyOwnedMessageHandler(gc);
+            case "CardMessage":
+                return new CardMessageHandler(gc);
+            case "BrokeMessage":
+                return new BrokeMessageHandler(gc);
             default:
                 return null;
         }

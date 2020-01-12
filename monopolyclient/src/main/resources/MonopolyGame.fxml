@@ -146,7 +146,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Button fx:id="btnThrowDice" maxWidth="120.0" minWidth="120.0" mnemonicParsing="false" prefWidth="120.0" text="Throw Dice" StackPane.alignment="TOP_RIGHT">
+                  <Button fx:id="btnThrowDice" maxWidth="125.0" minWidth="125.0" mnemonicParsing="false" prefWidth="125.0" text="Throw Dice" StackPane.alignment="TOP_RIGHT">
                      <StackPane.margin>
                         <Insets right="15.0" top="40.0" />
                      </StackPane.margin>
@@ -160,22 +160,6 @@
                      </font>
                      <StackPane.margin>
                         <Insets bottom="15.0" right="15.0" />
-                     </StackPane.margin>
-                  </Button>
-                  <Button fx:id="btnPlaceHouse" maxWidth="125.0" minWidth="120.0" mnemonicParsing="false" prefWidth="120.0" text="Place House" StackPane.alignment="TOP_RIGHT">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets right="15.0" top="250.0" />
-                     </StackPane.margin>
-                  </Button>
-                  <Button fx:id="btnPlaceHotel" maxWidth="125.0" minWidth="125.0" mnemonicParsing="false" prefWidth="125.0" text="Place Hotel" StackPane.alignment="TOP_RIGHT">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                     <StackPane.margin>
-                        <Insets right="15.0" top="300.0" />
                      </StackPane.margin>
                   </Button>
                   <ListView fx:id="lvLog" maxHeight="440.0" maxWidth="300.0" minHeight="440.0" minWidth="250.0" prefHeight="440.0" prefWidth="300.0" StackPane.alignment="BOTTOM_LEFT">
