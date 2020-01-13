@@ -28,7 +28,7 @@ public class GameLogic implements IGameLogic {
 
     private SecureRandom random = new SecureRandom();
 
-    private int pot = 750;
+    private int goalBonus = 750;
 
     public GameLogic(IServerMessageGenerator messageGenerator) {
         this.messageGenerator = messageGenerator;
@@ -166,7 +166,7 @@ public class GameLogic implements IGameLogic {
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 2) startGame();
+        if (onlineUsers.size() == 4) startGame();
     }
 
     private boolean checkUserNameAlreadyExists(String username)
@@ -191,7 +191,7 @@ public class GameLogic implements IGameLogic {
 
     private void checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
-            user.getWallet().addMoneyToWallet(1);
+            user.getWallet().addMoneyToWallet(2000);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
         }
@@ -253,6 +253,27 @@ public class GameLogic implements IGameLogic {
         }
     }
 
+    private void checkRandomSquares(User user, int newPlace) {
+        String message = "";
+        switch (newPlace) {
+            case 4:
+                message = "Pay income tax of €400";
+                user.getWallet().withDrawMoneyOfWallet(200);
+                break;
+            case 20:
+                message = "You won €" + goalBonus + ", because you scored against Ajax an important goal!";
+                user.getWallet().addMoneyToWallet(goalBonus);
+                this.goalBonus = 500;
+                break;
+            case 38:
+                message = "Pay additional tax of €200";
+                user.getWallet().withDrawMoneyOfWallet(400);
+                break;
+        }
+
+        messageGenerator.notifyCardMessage(user, message);
+    }
+
     private void doCommunityChestCardAction(User user) {
         String message = "";
         switch (communityChestCardNr) {
@@ -262,12 +283,13 @@ public class GameLogic implements IGameLogic {
                 user.getWallet().addMoneyToWallet(2000);
                 break;
             case 2:
-                message = "Bank error in your favor -> Collect €1000";
-                user.getWallet().addMoneyToWallet(1000);
+                message = "Bank error in your favor -> Collect €1500";
+                user.getWallet().addMoneyToWallet(1500);
                 break;
             case 3:
                 message = "Pay school fees of €2100";
                 user.getWallet().withDrawMoneyOfWallet(2100);
+                goalBonus =+ 2100;
                 break;
             case 4:
                 message = "Receive €250 consultancy fee";
@@ -276,6 +298,7 @@ public class GameLogic implements IGameLogic {
             case 5:
                 message = "Pay hospital fees of €750";
                 user.getWallet().withDrawMoneyOfWallet(750);
+                goalBonus =+ 750;
                 break;
             case 6:
                 message = "You have won second price in a beauty contest -> Collect €100";
@@ -289,6 +312,10 @@ public class GameLogic implements IGameLogic {
             case 8:
                 message = "You receives a yellow card, pay fees of €500";
                 user.getWallet().withDrawMoneyOfWallet(500);
+                goalBonus =+ 500;
+                break;
+            default:
+                message = "Invalid";
                 break;
         }
 
@@ -335,6 +362,10 @@ public class GameLogic implements IGameLogic {
             case 8:
                 message = "Pay poor tax of €375";
                 user.getWallet().withDrawMoneyOfWallet(375);
+                goalBonus =+ 375;
+                break;
+            default:
+                message = "Invalid";
                 break;
         }
 

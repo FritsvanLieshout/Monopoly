@@ -56,6 +56,7 @@ public class GameController implements Initializable, IClientGUI {
     private ArrayList<User> users;
     private Square[][] boardSquares;
     private static ArrayList<Square> squareList;
+    private ArrayList<User> brokeUsers;
 
     private int playerTurn = 0;
     private int playerNr = 0;
@@ -75,6 +76,7 @@ public class GameController implements Initializable, IClientGUI {
         board = iBoardLogic.getBoard();
         boardSquares = new Square[11][11];
         squareList = iBoardLogic.getSquareList();
+        brokeUsers = new ArrayList<>();
     }
 
     public IGameClient getGameClient() { return gameClient; }
@@ -364,7 +366,8 @@ public class GameController implements Initializable, IClientGUI {
             currentUser.setInDressingRoom(user.isInDressingRoom());
             currentUser.setWallet(user.getWallet());
             currentUser.setBroke(user.isBroke());
-            lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", has been updated. Money: " + currentUser.getWallet().getMoney());
+            lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", Money: " + currentUser.getWallet().getMoney() + ",");
+            lvLog.getItems().add("\t Is in dressing room? " + user.isInDressingRoom() + ", Is broke? " + user.isBroke());
         });
     }
 
@@ -433,7 +436,14 @@ public class GameController implements Initializable, IClientGUI {
             User currentUser = getUserByUserId(playerTurn);
             lvLog.getItems().add("");
             lvLog.getItems().add(getDate() + " -> " + currentUser.getUsername() + " it's your turn!");
-            if (playerNr == playerTurn) setDisable(false);
+            if (playerNr == playerTurn) {
+                if (currentUser.isBroke()) {
+                    btnThrowDice.setDisable(true);
+                    btnBuyPlayer.setDisable(true);
+                    btnEndTurn.setDisable(false);
+                }
+                else setDisable(false);
+            }
             else setDisable(true);
         });
     }
@@ -465,6 +475,7 @@ public class GameController implements Initializable, IClientGUI {
     public void processUserIsBrokeResponse(User user) {
         Platform.runLater(() -> {
             removePawn(user.getCurrentPlace(), user.getUserId());
+            brokeUsers.add(user);
             for (Square s : squareList) {
                 if (s.getOwner() == user.getUserId()) {
                     squareList.get(s.getSquareId()).setStyle("-fx-background-color: c8e0ca; -fx-border-width: 1; -fx-border-color: BLACK");
@@ -472,7 +483,18 @@ public class GameController implements Initializable, IClientGUI {
                 }
             }
             lvLog.getItems().add(getDate() + " -> " + user.getUsername() + " game over for you bro");
+            checkWinner();
         });
+    }
+
+    private void checkWinner() {
+        if (brokeUsers.size() == 3) {
+            for (User user : users) {
+                if (!user.isBroke()) {
+                    showAlert(user.getUsername() + " is the winner of this game!");
+                }
+            }
+        }
     }
 
     private void showAlert(String content)
