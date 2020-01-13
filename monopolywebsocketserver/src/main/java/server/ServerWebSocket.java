@@ -13,11 +13,14 @@ import javax.websocket.server.ServerEndpoint;
 import javax.websocket.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Singleton
 @ServerEndpoint(value="/monopoly/")
 public class ServerWebSocket implements IServerWebSocket {
 
+    private ExecutorService executorService = Executors.newScheduledThreadPool(10);
     private static final Logger log = LoggerFactory.getLogger(ServerWebSocket.class);
 
     private static ServerWebSocket instance = null;
@@ -52,7 +55,12 @@ public class ServerWebSocket implements IServerWebSocket {
         String sessionId = session.getId();
         Serializer ser = Serializer.getSerializer();
         SocketMessage msg = ser.deserialize(message, SocketMessage.class);
-        getMessageProcessor().processMessage(sessionId, msg.getMessageType(), msg.getMessageData());
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                getMessageProcessor().processMessage(sessionId, msg.getMessageType(), msg.getMessageData());
+            }
+        });
     }
 
     @OnClose

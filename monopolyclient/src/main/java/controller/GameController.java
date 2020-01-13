@@ -465,6 +465,12 @@ public class GameController implements Initializable, IClientGUI {
     public void processUserIsBrokeResponse(User user) {
         Platform.runLater(() -> {
             removePawn(user.getCurrentPlace(), user.getUserId());
+            for (Square s : squareList) {
+                if (s.getOwner() == user.getUserId()) {
+                    squareList.get(s.getSquareId()).setStyle("-fx-background-color: c8e0ca; -fx-border-width: 1; -fx-border-color: BLACK");
+                    s.setOwner(-1);
+                }
+            }
             lvLog.getItems().add(getDate() + " -> " + user.getUsername() + " game over for you bro");
         });
     }

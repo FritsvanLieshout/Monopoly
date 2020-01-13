@@ -75,7 +75,7 @@ public class GameLogic implements IGameLogic {
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             checkIfSquareIsOwned(currentUser, board);
             varChecksRedCard(currentUser);
-            checkIfUserIsBroke(currentUser);
+            checkIfUserIsBroke(currentUser, board);
         }
         return board.getSquares()[newPlace];
     }
@@ -166,7 +166,7 @@ public class GameLogic implements IGameLogic {
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 4) startGame();
+        if (onlineUsers.size() == 2) startGame();
     }
 
     private boolean checkUserNameAlreadyExists(String username)
@@ -238,10 +238,17 @@ public class GameLogic implements IGameLogic {
         return true;
     }
 
-    private void checkIfUserIsBroke(User user) {
+    private void checkIfUserIsBroke(User user, Board board) {
         if (user.getWallet().getMoney() < 0) {
             messageGenerator.notifyUserIsBroke(user);
             user.setBroke(true);
+
+            for (Square s : board.getSquares()) {
+                if (s.getOwner() == user.getUserId()) {
+                    s.setOwner(-1);
+                }
+            }
+
             messageGenerator.updateCurrentUser(user, user.getSessionId());
         }
     }
