@@ -37,7 +37,7 @@ public interface IServerMessageGenerator {
 
     void notifyPropertyIsAlreadyOwned(int owner, String sessionId);
 
-    void notifyCardMessage(User user, String message);
+    void notifyCardMessage(User user, String message, boolean result);
 
     void notifyUserIsBroke(User user);
 }

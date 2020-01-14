@@ -35,8 +35,8 @@ public class GameLogic implements IGameLogic {
         monopolyRestClient = new MonopolyRestClient();
         boardLogic = new BoardLogic();
         board = boardLogic.getBoard();
-        communityChestCardNr = random.nextInt(8);
-        changeCardNr = random.nextInt(6);
+        communityChestCardNr = 1 + random.nextInt(7);
+        changeCardNr = 1 + random.nextInt(7);
     }
 
     public GameLogic() { }
@@ -74,6 +74,7 @@ public class GameLogic implements IGameLogic {
             messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             checkIfSquareIsOwned(currentUser, board);
+            checkRandomSquares(currentUser, newPlace);
             varChecksRedCard(currentUser);
             checkIfUserIsBroke(currentUser, board);
         }
@@ -166,7 +167,7 @@ public class GameLogic implements IGameLogic {
     }
 
     private void checkStartingCondition() {
-        if (onlineUsers.size() == 4) startGame();
+        if (onlineUsers.size() == 1) startGame();
     }
 
     private boolean checkUserNameAlreadyExists(String username)
@@ -270,8 +271,7 @@ public class GameLogic implements IGameLogic {
                 user.getWallet().withDrawMoneyOfWallet(400);
                 break;
         }
-
-        messageGenerator.notifyCardMessage(user, message);
+        //messageGenerator.notifyCardMessage(user, message);
     }
 
     private void doCommunityChestCardAction(User user) {
@@ -283,7 +283,7 @@ public class GameLogic implements IGameLogic {
                 user.getWallet().addMoneyToWallet(2000);
                 break;
             case 2:
-                message = "Bank error in your favor -> Collect €1500";
+                message = "Bank error in your favor. Collect €1500";
                 user.getWallet().addMoneyToWallet(1500);
                 break;
             case 3:
@@ -301,7 +301,7 @@ public class GameLogic implements IGameLogic {
                 goalBonus =+ 750;
                 break;
             case 6:
-                message = "You have won second price in a beauty contest -> Collect €100";
+                message = "You have won second price in a beauty contest. Collect €100";
                 user.getWallet().addMoneyToWallet(100);
                 break;
             case 7:
@@ -319,7 +319,7 @@ public class GameLogic implements IGameLogic {
                 break;
         }
 
-        messageGenerator.notifyCardMessage(user, message);
+        messageGenerator.notifyCardMessage(user, message, true);
 
         if (communityChestCardNr == 8) communityChestCardNr = 1;
         else communityChestCardNr++;
@@ -338,7 +338,7 @@ public class GameLogic implements IGameLogic {
                 user.setPlace(39);
                 break;
             case 3:
-                message = "Advance to Rashford -> if you pass Go, collect €2000";
+                message = "Advance to Rashford -> if you pass Go. Collect €2000";
                 if (user.getCurrentPlace() > 11) user.getWallet().addMoneyToWallet(2000);
                 user.setPlace(11);
                 break;
@@ -351,7 +351,7 @@ public class GameLogic implements IGameLogic {
                 user.getWallet().addMoneyToWallet(500);
                 break;
             case 6:
-                message = "You have won a crossword competition -> Collect €200";
+                message = "You have won a crossword competition. Collect €200";
                 user.getWallet().addMoneyToWallet(200);
                 break;
             case 7:
@@ -369,7 +369,7 @@ public class GameLogic implements IGameLogic {
                 break;
         }
 
-        messageGenerator.notifyCardMessage(user, message);
+        messageGenerator.notifyCardMessage(user, message, false);
 
         if (changeCardNr == 8) changeCardNr = 1;
         else changeCardNr++;

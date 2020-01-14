@@ -6,7 +6,10 @@ import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -14,10 +17,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.fxml.Initializable;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import logic.BoardLogic;
 import logic_interface.*;
 import models.*;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -116,12 +121,16 @@ public class GameController implements Initializable, IClientGUI {
             @Override
             public void handle(ActionEvent actionEvent) {
                 moveUser();
+                btnThrowDice.setDisable(true);
             }
         });
 
         btnBuyPlayer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
-            public void handle(ActionEvent actionEvent) { buyFootballPlayer(); }
+            public void handle(ActionEvent actionEvent) {
+                buyFootballPlayer();
+                btnBuyPlayer.setDisable(true);
+            }
         });
 
         btnEndTurn.setOnAction(new EventHandler<ActionEvent>() {
@@ -282,7 +291,8 @@ public class GameController implements Initializable, IClientGUI {
             lblDice1.setText(Integer.toString(dice1));
             lblDice2.setText(Integer.toString(dice2));
 
-            getGameClient().moveUser(noDice);
+            //getGameClient().moveUser(noDice);
+            getGameClient().moveUser(2);
         }
     }
 
@@ -464,10 +474,10 @@ public class GameController implements Initializable, IClientGUI {
     }
 
     @Override
-    public void processCardMessageResponse(User user, String message) {
+    public void processCardMessageResponse(User user, String message, boolean result) {
         Platform.runLater(() -> {
-            lvLog.getItems().add("");
-            lvLog.getItems().add(getDate() + " -> Message for: " + user.getUsername() + ": " + message);
+            if (result) popupCommunityChest(user.getUsername(), message);
+            else popupChange(user.getUsername(), message);
         });
     }
 
@@ -593,4 +603,44 @@ public class GameController implements Initializable, IClientGUI {
     private synchronized void switchTurn() { if (++playerTurn > users.size()) playerTurn = 1; }
 
     private synchronized boolean playersTurn() { return playerNr == playerTurn; }
+
+    private void popupCommunityChest(String username, String message) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/CommunityChestPopup.fxml"));
+            fxmlLoader.setControllerFactory(c -> {
+                return new CommunityChestPopupController(username, message);
+            });
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Community Chest Message");
+            stage.setScene(new Scene(root, 800, 300));
+            stage.centerOnScreen();
+            stage.setMinWidth(800);
+            stage.setMinHeight(300);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void popupChange(String username, String message) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ChangePopup.fxml"));
+            fxmlLoader.setControllerFactory(c -> {
+                return new ChangePopupController(username, message);
+            });
+            Parent root = fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Change Message");
+            stage.setScene(new Scene(root, 800, 300));
+            stage.centerOnScreen();
+            stage.setMinWidth(800);
+            stage.setMinHeight(300);
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

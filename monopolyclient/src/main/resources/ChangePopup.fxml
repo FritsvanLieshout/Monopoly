@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="800.0" style="-fx-border-color: #ECA05F; -fx-border-radius: 25; -fx-border-width: 10; -fx-background-radius: 25;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChangePopupController">
+    <top>
+        <ImageView fx:id="ivChange" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets top="15.0" />
+            </BorderPane.margin>
+            <image>
+                <Image url="@Change.gif" />
+            </image></ImageView>
+    </top>
+    <center>
+        <StackPane maxWidth="750.0" minWidth="575.0" prefHeight="175.0" prefWidth="750.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="lblMessage" text="Label" StackPane.alignment="CENTER">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Label>
+                <Label fx:id="lblUsername" text="_Username_" StackPane.alignment="TOP_CENTER">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                    <StackPane.margin>
+                        <Insets top="10.0" />
+                    </StackPane.margin>
+                </Label>
+            </children>
+        </StackPane>
+    </center>
+</BorderPane>

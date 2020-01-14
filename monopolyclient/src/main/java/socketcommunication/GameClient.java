@@ -80,7 +80,7 @@ public class GameClient implements IGameClient {
     public void handlePropertyAlreadyOwnedResponse(int owner) { clientGUI.processAlreadyOwnedResponse(owner); }
 
     @Override
-    public void handleCardMessageResponse(User user, String message) { clientGUI.processCardMessageResponse(user, message); }
+    public void handleCardMessageResponse(User user, String message, boolean result) { clientGUI.processCardMessageResponse(user, message, result); }
 
     @Override
     public void handleUserIsBrokeResponse(User user) { clientGUI.processUserIsBrokeResponse(user); }

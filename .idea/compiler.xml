@@ -7,14 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="monopolyshared" />
-        <module name="dal" />
         <module name="logicinterface" />
         <module name="models" />
         <module name="dalinterface" />
+        <module name="monopolywebsocketclient" />
         <module name="messaging" />
         <module name="monopolyclient" />
         <module name="monopolyrestserver" />
-        <module name="monopolywebsocketclient" />
+        <module name="dal" />
         <module name="monopolyrestclient" />
         <module name="monopolywebsocketserver" />
         <module name="logic" />

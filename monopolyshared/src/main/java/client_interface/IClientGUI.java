@@ -39,7 +39,7 @@ public interface IClientGUI {
 
     void processAlreadyOwnedResponse(int owner);
 
-    void processCardMessageResponse(User user, String message);
+    void processCardMessageResponse(User user, String message, boolean result);
 
     void processUserIsBrokeResponse(User user);
 }

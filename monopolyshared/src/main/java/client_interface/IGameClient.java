@@ -139,12 +139,12 @@ public interface IGameClient {
     /**
      *
      */
-    void handlePropertyAlreadyOwnedResponse(int onwer);
+    void handlePropertyAlreadyOwnedResponse(int owner);
 
     /**
      *
      */
-    void handleCardMessageResponse(User user, String message);
+    void handleCardMessageResponse(User user, String message, boolean result);
 
     /**
      *

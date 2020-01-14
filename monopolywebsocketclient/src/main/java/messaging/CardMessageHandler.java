@@ -11,6 +11,6 @@ public class CardMessageHandler extends BaseClientMessageHandler<CardMessage> {
 
     @Override
     public void handleMessageInternal(CardMessage message, String messageId) {
-        gc.handleCardMessageResponse(message.getUser(), message.getMessage());
+        gc.handleCardMessageResponse(message.getUser(), message.getMessage(), message.isResult());
     }
 }
