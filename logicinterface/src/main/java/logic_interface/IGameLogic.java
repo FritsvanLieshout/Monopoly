@@ -1,5 +1,6 @@
 package logic_interface;
 
+import models.Board;
 import models.Dice;
 import models.Square;
 import models.User;
@@ -62,30 +63,119 @@ public interface IGameLogic {
     void switchTurn(int playerTurn, String sessionId);
 
     /**
-     *
+     * Register method for a new user.
      * @param username
      * @param password
      * @param sessionId
      */
-    void registerNewUser(String username, String password, String sessionId);
+    boolean registerNewUser(String username, String password, String sessionId);
 
     /**
-     *
+     * Login method for a registered user.
      * @param username
      * @param password
      * @param sessionId
      */
-    void login(String username, String password, String sessionId);
+    boolean login(String username, String password, String sessionId);
 
     /**
-     *
+     * Handle method for disconnected client.
      * @param sessionId
-     * @return user
-     */
-    User getUser(String sessionId);
-
-    /**
-     *
      */
     void processClientDisconnect(String sessionId);
+
+    /**
+     * Method for start a game if there are 4 users.
+     */
+    void startGame();
+
+    /**
+     * Update method to update the user for the controller.
+     */
+    void updateUsersInGame();
+
+    /**
+     * Method to check the starting condition after every login.
+     */
+    boolean checkStartingCondition();
+
+    /**
+     * Check for if the username already exist.
+     * @param username
+     * @return
+     */
+    boolean checkUserNameAlreadyExists(String username);
+
+    /**
+     * Pay rent to the user that owns that specific square.
+     * @param user
+     * @param board
+     */
+    void payRent(User user, Board board);
+
+    /**
+     * Check if the user is over start
+     * If this is true, the user get €2000.
+     * @param user
+     * @param dice
+     */
+    boolean checkIfUserIsOverStart(User user, int dice);
+
+    /**
+     * A check for if the square is owned by another user of by yourself.
+     * @param user
+     * @param board
+     * @return
+     */
+    boolean checkIfSquareIsOwned(User user, Board board);
+
+    /**
+     * A check if the user is in dressing room (in jail).
+     * @param user
+     * @return
+     */
+    boolean checkIfUserIsInDressingRoom(User user);
+
+    /**
+     * The VAR checks if the user gets a red card after his / her charge to an opponent.
+     * @param user
+     * @return
+     */
+    boolean varChecksRedCard(User user);
+
+    /**
+     * Check if the user has enough money to buy this property (football player or stadium)
+     * @param currentUser
+     * @param priceOfSquare
+     * @return
+     */
+    boolean checkForEnoughMoney(User currentUser, int priceOfSquare);
+
+    /**
+     * A check for the user if he or she is broke.
+     * @param user
+     * @param board
+     */
+    boolean checkIfUserIsBroke(User user, Board board);
+
+    /**
+     * A check if the user became on one of this squares.
+     * @param user
+     * @param newPlace
+     */
+    void checkRandomSquares(User user, int newPlace);
+
+    /**
+     * If the user became on one of the community chest squares.
+     * There will be send a message to the user with the action of the card (like go to start).
+     * @param user
+     */
+    void doCommunityChestCardAction(User user);
+
+    /**
+     * If the user became on one of the change squares.
+     * There will be send a message to the user with the action of the card (like go to start).
+     * @param user
+     */
+    void doChangeCardAction(User user);
 }

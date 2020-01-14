@@ -19,5 +19,7 @@
         </dependency>
     </dependencies>
 
-
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
 </project>

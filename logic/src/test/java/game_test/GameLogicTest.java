@@ -4,6 +4,7 @@ import logic.BoardLogic;
 import logic.GameLogic;
 import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
+import mock.MessageGeneratorMock;
 import models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import server_interface.IServerMessageGenerator;
 import java.util.ArrayList;
 
 /**
@@ -28,16 +29,26 @@ class GameLogicTest {
     Dice dice;
     Board board;
     User user;
+    User user2;
+
+    private IServerMessageGenerator messageGenerator = new MessageGeneratorMock();
 
     @BeforeEach
     void setup() {
-        gameLogic = new GameLogic();
+        gameLogic = new GameLogic(messageGenerator);
         boardLogic = new BoardLogic();
         dice = new Dice();
         board = boardLogic.getBoard();
         users = new ArrayList<>();
         user = new User(1, "1", "Kevin");
+        user2 = new User(2, "2", "Lisa");
+        user.setPassword("I_Hate_Testing");
+        user2.setPassword("I-Like");
+        user2.getWallet().setMoney(-100);
         users.add(user);
+        users.add(user2);
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
         System.out.println("[Begin test] :");
     }
 
@@ -53,11 +64,11 @@ class GameLogicTest {
      */
     @Test
     void testRegisterNewUser() {
-        User newUser = new User();
-        newUser.setUsername("Test");
-        newUser.setPassword("IHateThis");
-        newUser.setSessionId("5");
-        //Assertions.assertThrows(NullPointerException.class, () -> gameLogic.registerNewUser(newUser.getUsername(), newUser.getPassword(), newUser.getSessionId()));
+        /**
+         * Server needs to run.
+         * var result = gameLogic.registerNewUser(user.getUsername(), user.getPassword(), user.getSessionId());
+         * Assertions.assertTrue(result);
+         */
     }
 
     /**
@@ -67,8 +78,8 @@ class GameLogicTest {
      */
     @Test
     void testLoginUser() {
-        user.setPassword("I_Hate_Testing");
-        //Assertions.assertThrows(NullPointerException.class, () -> gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId()));
+        var result = gameLogic.login("John", "Doe", "3");
+        Assertions.assertTrue(result);
     }
 
     /**
@@ -76,7 +87,9 @@ class GameLogicTest {
      */
     @Test
     void testGetNoDice() {
+        Dice dice = new Dice();
         int noDice = gameLogic.getDice(dice);
+
         Assertions.assertNotNull(noDice);
     }
 
@@ -88,6 +101,7 @@ class GameLogicTest {
     void testNoDiceIsNull() {
         int noDice = 0;
         int noDice1 = gameLogic.getDice(dice);
+
         Assertions.assertNotEquals(noDice, noDice1);
     }
 
@@ -99,26 +113,15 @@ class GameLogicTest {
      */
 
     @Test
-    void testMoveUser() {
-        int oldPlace = user.getCurrentPlace();
-        int noDice1 = gameLogic.getDice(dice);
-        int noDice2 = gameLogic.getDice(dice);
-        //Assertions.assertThrows(NullPointerException.class, () -> gameLogic.moveUser((noDice1 + noDice2), user.getSessionId()));
-        int newPlace = user.getCurrentPlace() + (noDice1 + noDice2);
+    void testMoveUserFailed() {
+        int dice = 9;
+        Square square = gameLogic.moveUser(dice, user.getSessionId());
+        int position = square.getSquareId();
+        String expect = board.getSquares()[dice].getSquareName();
+        String actual = board.getSquares()[position].getSquareName();
 
-        Assertions.assertNotEquals(oldPlace, newPlace);
-    }
-
-    /**
-     * Example test to set and get an owner of a square
-     * Set the owner.
-     * In the assert I will return the square owner and compare this with the userId.
-     */
-    @Test
-    void testGetAndSetOwnerOfSquare() {
-        Square square = new FootballPlayerSquare("Messi", 500, -1, 100);
-        square.setOwner(user.getUserId());
-        Assertions.assertEquals(square.getOwner(), user.getUserId());
+        Assertions.assertEquals(expect, actual);
+        Assertions.assertEquals(dice, position);
     }
 
     /**
@@ -129,36 +132,42 @@ class GameLogicTest {
      */
     @Test
     void testBuyFootballPlayer() {
-        Square s = new FootballPlayerSquare("Neymar", 1000, -1, 250);
-        int actualOwner = s.getOwner();
-        int actualMoney = user.getWallet().getMoney();
-        if (s.getOwner() < 0) {
-            user.getWallet().withDrawMoneyOfWallet(s.getPrice());
-            s.setOwner(user.getUserId());
-            LOG.debug(s.getSquareName() + " has been added to " + user.getUsername() + "'s club!");
-            LOG.debug(user.getUsername() + "'s wallet has been updated -> €" + user.getWallet().getMoney());
-        }
+        int oldWallet = user.getWallet().getMoney();
+        Square square = gameLogic.moveUser(11, user.getSessionId());
+        gameLogic.buyFootballPlayer(user.getSessionId());
 
-        int expectedOwner = s.getOwner();
-        int expectedMoney = user.getWallet().getMoney();
-        Assertions.assertNotEquals(actualOwner, expectedOwner);
-        Assertions.assertNotEquals(actualMoney, expectedMoney);
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == square.getSquareId()) {
+                user.getWallet().withDrawMoneyOfWallet(s.getPrice());
+                s.setOwner(user.getUserId());
+                Assertions.assertEquals(s.getOwner(), user.getUserId());
+            }
+        }
+        int actualWallet = user.getWallet().getMoney();
+        Assertions.assertNotEquals(oldWallet, actualWallet);
     }
 
     /**
      * Example test for to buy a square(aka: football player)
-     * @throws IllegalArgumentException user cannot buy this square.
      */
     @Test
     void testBuyFootballPlayerThatIsOwned() {
-        Square s = new FootballPlayerSquare("Neymar", 1000, -1, 250);
-        s.setOwner(user.getUserId());
-        if (s.getOwner() < 0) {
-            //Nothing
+        int oldWallet = user.getWallet().getMoney();
+        Square square = gameLogic.moveUser(11, user.getSessionId());
+        gameLogic.buyFootballPlayer(user.getSessionId());
+
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == square.getSquareId()) {
+                s.setOwner(2);
+                if (s.getOwner() < 0) {
+                    user.getWallet().withDrawMoneyOfWallet(s.getPrice());
+                    s.setOwner(user.getUserId());
+                    Assertions.assertNotEquals(s.getOwner(), user.getUserId());
+                }
+            }
         }
-        else {
-            Assertions.assertNotNull(s.getOwner());
-        }
+        int actualWallet = user.getWallet().getMoney();
+        Assertions.assertEquals(oldWallet, actualWallet);
     }
 
     /**
@@ -173,82 +182,50 @@ class GameLogicTest {
 
     @Test
     void payRent() {
-        //User 2
-        User user2 = new User(2, "2", "PayRentPls");
-        int position2 = user2.getCurrentPlace();
-        int newPosition2 = position2 + 8;
+        int oldWalletUser = user.getWallet().getMoney();
+        int oldWalletNewUser = user2.getWallet().getMoney();
 
-        board.getSquares()[newPosition2].setOwner(user2.getUserId());
-        user2.getWallet().withDrawMoneyOfWallet(board.getSquares()[newPosition2].getPrice());
+        Square square = gameLogic.moveUser(6, user.getSessionId());
+        user.setPlace(square.getSquareId());
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == user.getCurrentPlace()) {
+                s.setOwner(2);
+                gameLogic.payRent(user, board);
+                user.getWallet().withDrawMoneyOfWallet(s.getRentPrice());
+                user2.getWallet().addMoneyToWallet(s.getRentPrice());
 
-        int oldUser2Wallet = user2.getWallet().getMoney();
-
-        if (board.getSquares()[newPosition2].getOwner() == user2.getUserId()) {
-            LOG.info(user2.getUsername() + " is the owner of " + board.getSquares()[newPosition2].getSquareName());
+                Assertions.assertEquals(s.getOwner(), user2.getUserId());
+            }
         }
 
-        //User 1
-        int oldUser1Wallet = user.getWallet().getMoney();
-        int position = user.getCurrentPlace();
-        int newPosition = position + 8;
-        int owner = board.getSquares()[newPosition].getOwner();
-        int rentPrice = board.getSquares()[newPosition].getRentPrice();
-        if (owner == board.getSquares()[8].getOwner()) {
-            user.getWallet().withDrawMoneyOfWallet(rentPrice);
-            user2.getWallet().addMoneyToWallet(rentPrice);
-            LOG.info(user.getUsername() + " has to pay €" + board.getSquares()[8].getRentPrice() + " to " + user2.getUsername());
-
-        }
-
-        Assertions.assertNotEquals(oldUser1Wallet, user.getWallet().getMoney());
-        Assertions.assertNotEquals(oldUser2Wallet, user2.getWallet().getMoney());
+        Assertions.assertNotEquals(oldWalletUser, user.getWallet().getMoney());
+        Assertions.assertNotEquals(oldWalletNewUser, user2.getWallet().getMoney());
     }
 
     /**
      * Example test by starting a game, to check the size of the user that are online
      * This check will be called at the end of the login method.
+     * In this case there are 4 users in the list of users in the game logic.
+     * If there are 4 users the startGame method will be called.
+     * @throws IllegalArgumentException
      */
     @Test
     void testCheckStartingConditionSuccess() {
-        var result = false;
-        if (users.size() == 1) result = true;
-
-        Assertions.assertEquals(true, result);
-    }
-
-    /**
-     * Example test by starting a game, to check the size of the user that are online
-     * This check will be called at the end of the login method.
-     */
-    @Test
-    void testCheckStartingConditionFalse() {
-        var result = false;
-        if (users.size() == 2) result = true;
-
-        Assertions.assertEquals(false, result);
-    }
-
-    /**
-     * Example test to give the users a message for the start af the game.
-     * The check above this test method will be also called in the logic class.
-     * In this case the size must be 1
-     */
-    @Test
-    void testStartGameTrue() {
-        var result = false;
-        if (users.size() == 1) result = true;
+        gameLogic.login("Frits", "Lies", "3");
+        gameLogic.login("Bart", "Liesje", "4");
+        var result = gameLogic.checkStartingCondition();
         Assertions.assertTrue(result);
     }
 
     /**
-     * Example test to give the users a message for the start af the game.
-     * The check above this test method will be also called in the logic class.
-     * in this case the size must be 2, but there is only 1 user online.
+     * Example test by starting a game, to check the size of the user that are online
+     * This check will be called at the end of the login method.
+     * In this case there not enough users to start the game. There are only 2 users
+     * instead of the required 4 users.
      */
     @Test
-    void testStartGameFalse() {
-        var result = false;
-        if (users.size() == 2) result = true;
+    void testCheckStartingConditionFalse() {
+        var result = gameLogic.checkStartingCondition();
         Assertions.assertFalse(result);
     }
 
@@ -258,10 +235,10 @@ class GameLogicTest {
      */
     @Test
     void testCheckIfUsernameAlreadyExists() {
-        User currentUser = new User(3, "3", "Kevin");
-        var result = checkUserNameAlreadyExists(currentUser.getUsername());
+        String username = "Lisa";
+        var result = gameLogic.checkUserNameAlreadyExists(username);
 
-        Assertions.assertEquals(true, result);
+        Assertions.assertTrue(result);
     }
 
     /**
@@ -270,10 +247,10 @@ class GameLogicTest {
      */
     @Test
     void testCheckIfUsernameAlreadyDoesNotExists() {
-        User currentUser = new User(4, "4", "Willem");
-        var result = checkUserNameAlreadyExists(currentUser.getUsername());
+        String username = "Jan";
+        var result = gameLogic.checkUserNameAlreadyExists(username);
 
-        Assertions.assertEquals(false, result);
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -283,20 +260,20 @@ class GameLogicTest {
      */
     @Test
     void testIfUserIsOverStart() {
-        var oldWallet = user.getWallet().getMoney();
-        user.setPlace(36);
-        var dice = 10;
-        var result = false;
-        var checkStart = user.getCurrentPlace() + dice;
-        var bonus = 2000;
-        if (checkStart >= 40) {
-            result = true;
-            user.getWallet().addMoneyToWallet(bonus); //Start bonus
+        int oldWallet = user.getWallet().getMoney();
+        int dice = 50;
+        Square square = gameLogic.moveUser(dice, user.getSessionId());
+
+        if (user.getCurrentPlace() + dice >= 40) {
+            user.getWallet().addMoneyToWallet(2000);
+            user.setPlace((user.getCurrentPlace() + dice) - 40);
         }
 
-        Assertions.assertEquals(true, result);
-        Assertions.assertNotEquals(oldWallet, user.getWallet().getMoney());
-        Assertions.assertEquals(oldWallet + bonus, user.getWallet().getMoney());
+        int actualWallet = user.getWallet().getMoney();
+        getLogInformation(user);
+
+        Assertions.assertEquals(square.getSquareId(), user.getCurrentPlace());
+        Assertions.assertNotEquals(oldWallet, actualWallet);
     }
 
     /**
@@ -306,18 +283,23 @@ class GameLogicTest {
      */
     @Test
     void testIfUserIsNotOverStart() {
-        var oldWallet = user.getWallet().getMoney();
-        user.setPlace(36);
-        var dice = 3;
-        var result = false;
-        var checkStart = user.getCurrentPlace() + dice;
-        if (checkStart >= 40) {
-            result = true;
-            user.getWallet().addMoneyToWallet(2000); //Start bonus
+        int oldWallet = user2.getWallet().getMoney();
+        int dice = 5;
+        Square square = gameLogic.moveUser(dice, user2.getSessionId());
+
+        if (user2.getCurrentPlace() + dice >= 40) {
+            user2.getWallet().addMoneyToWallet(2000);
+            user2.setPlace((user2.getCurrentPlace() + dice) - 40);
+        }
+        else {
+            user2.setPlace(user.getCurrentPlace() + dice);
         }
 
-        Assertions.assertNotEquals(true, result);
-        Assertions.assertEquals(oldWallet, user.getWallet().getMoney());
+        int actualWallet = user2.getWallet().getMoney();
+        getLogInformation(user2);
+
+        Assertions.assertEquals(square.getSquareId(), user2.getCurrentPlace());
+        Assertions.assertEquals(oldWallet, actualWallet);
     }
 
     /**
@@ -329,10 +311,12 @@ class GameLogicTest {
     @Test
     void testVARCheckRedCardTrue() {
         user.setPlace(30);
-        var result = false;
-        if (user.getCurrentPlace() == 30) result = true;
+        var result = gameLogic.varChecksRedCard(user);
+
+        getLogInformation(user);
 
         Assertions.assertEquals(true, result);
+        Assertions.assertTrue(result);
     }
 
     /**
@@ -343,11 +327,13 @@ class GameLogicTest {
      */
     @Test
     void testVARCheckRedCardFalse() {
-        user.setPlace(22);
-        var result = false;
-        if (user.getCurrentPlace() == 30) result = true;
+        user2.setPlace(29);
+        var result = gameLogic.varChecksRedCard(user2);
+
+        getLogInformation(user2);
 
         Assertions.assertEquals(false, result);
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -356,13 +342,14 @@ class GameLogicTest {
      */
     @Test
     void testRedCard() {
-        user.setPlace(10);
-        user.setInDressingRoom(true);
+        gameLogic.redCard(user);
+        boolean expectedIsInDressingRoom = user.isInDressingRoom();
+        int expectPlace = user.getCurrentPlace();
 
-        Assertions.assertThrows(Exception.class, () -> gameLogic.redCard(user));
+        getLogInformation(user);
 
-        Assertions.assertEquals(10, user.getCurrentPlace());
-        Assertions.assertEquals(true, user.isInDressingRoom());
+        Assertions.assertEquals(expectedIsInDressingRoom, user.isInDressingRoom());
+        Assertions.assertEquals(expectPlace, user.getCurrentPlace());
     }
 
     /**
@@ -371,12 +358,19 @@ class GameLogicTest {
      */
     @Test
     void testIfUserHasEnoughMoney() {
-        var result = false;
-        var price = 1000;
-        if (user.getWallet().getMoney() - price <= 0) result = false;
-        else result = true;
+        int price = 3000;
+        int oldWallet = user.getWallet().getMoney();
+        var result = gameLogic.checkForEnoughMoney(user, price);
 
-        Assertions.assertNotEquals(false, result);
+        if (result) {
+            user.getWallet().withDrawMoneyOfWallet(price);
+        }
+
+        int actualWallet = user.getWallet().getMoney();
+        getLogInformation(user);
+
+        Assertions.assertTrue(result);
+        Assertions.assertNotEquals(oldWallet, actualWallet);
     }
 
     /**
@@ -385,36 +379,44 @@ class GameLogicTest {
      */
     @Test
     void testIfUserDoesNotHaveEnoughMoney() {
-        var result = false;
-        var price = 8000;
-        if (user.getWallet().getMoney() - price <= 0) result = false;
-        else result = true;
+        int price = 10000;
+        int oldWallet = user2.getWallet().getMoney();
+        var result = gameLogic.checkForEnoughMoney(user2, price);
+        int actualWallet = user2.getWallet().getMoney();
 
-        Assertions.assertEquals(false, result);
+        getLogInformation(user2);
+
+        Assertions.assertFalse(result);
+        Assertions.assertEquals(oldWallet, actualWallet);
     }
 
     /**
-     * Example test of this method in the game logic class.
-     * this method has been used by some other methods to return the user by his/her id
+     * Example test for the user if he's broke. This is an check if the user his / her wallet
+     * is under the 0 Euro.
+     * In this case the user is broke because the user haven't enough money in his / her wallet
      */
     @Test
-    void testGetUserByUserId() {
-        User currentUser = getUserByUserId(user.getUserId());
-        Assertions.assertEquals(user.getUserId(), currentUser.getUserId());
+    void testIfUserIsBroke() {
+        var result = gameLogic.checkIfUserIsBroke(user2, board);
+        getLogInformation(user2);
+
+        Assertions.assertTrue(result);
     }
 
-    private boolean checkUserNameAlreadyExists(String username)
-    {
-        for(User u : users) {
-            if (u.getUsername().equals(username)) return true;
-        }
-        return false;
+    /**
+     * Example test for the user if he's broke. This is an check if the user his / her wallet
+     * is under the 0 Euro.
+     * In this case the user has enough money.
+     */
+    @Test
+    void testIfUserIsNotBroke() {
+        var result = gameLogic.checkIfUserIsBroke(user, board);
+        getLogInformation(user2);
+
+        Assertions.assertFalse(result);
     }
 
-    private User getUserByUserId(int userId) {
-        for (User user : users) {
-            if (user.getUserId() == userId) return user;
-        }
-        return null;
+    private void getLogInformation(User user) {
+        LOG.info("name: " + user.getUsername() + ", position: " + user.getCurrentPlace() + ", is in dressing room? " + user.isInDressingRoom() + ", is broke? " + user.isBroke());
     }
 }

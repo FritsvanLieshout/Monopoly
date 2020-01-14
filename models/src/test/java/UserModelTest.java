@@ -172,4 +172,38 @@ class UserModelTest {
 
         Assertions.assertEquals(currentMoneyInWallet, user.getWallet().getMoney());
     }
+
+    /**
+     * Example test for model user -> set broke (true)
+     */
+    @Test
+    void testModelUserSetIsBrokeTrue() {
+        user.setBroke(true);
+        var isBroke = user.isBroke();
+
+        Assertions.assertTrue(user.isBroke());
+        Assertions.assertEquals(isBroke, user.isBroke());
+    }
+
+    /**
+     * Example test for model user -> set broke (false)
+     */
+    @Test
+    void testModelUserSetIsBrokeFalse() {
+        user.setBroke(false);
+        var isBroke = user.isBroke();
+
+        Assertions.assertFalse(user.isBroke());
+        Assertions.assertEquals(isBroke, user.isBroke());
+    }
+
+    /**
+     * Example test for model user -> is broke
+     */
+    @Test
+    void testModelUserIsBroke() {
+        var result = user.isBroke();
+
+        Assertions.assertFalse(result);
+    }
 }

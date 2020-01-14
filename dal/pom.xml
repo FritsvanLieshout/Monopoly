@@ -11,5 +11,7 @@
 
     <artifactId>dal</artifactId>
 
-
+    <properties>
+        <sonar.skip>true</sonar.skip>
+    </properties>
 </project>

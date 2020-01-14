@@ -14,7 +14,7 @@
     <properties>
         <jersey-server.version>2.27</jersey-server.version>
         <jetty-server.version>9.4.14.v20181114</jetty-server.version>
-
+        <sonar.skip>true</sonar.skip>
     </properties>
 
     <dependencies>

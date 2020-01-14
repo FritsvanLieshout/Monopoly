@@ -1,7 +1,5 @@
 package user_test;
 
-import logic.GameLogic;
-import logic_interface.IGameLogic;
 import models.Board;
 import models.Dice;
 import models.User;
@@ -18,14 +16,12 @@ class UserLogicTest {
     private Dice dice;
     private Board board;
     private User user;
-    private IGameLogic gameLogic;
 
     @BeforeEach
     void setup() {
         dice = new Dice();
         board = new Board();
         user = new User();
-        gameLogic = new GameLogic();
         System.out.println("[Begin test: User Tests]");
     }
 

@@ -39,14 +39,11 @@ public class GameLogic implements IGameLogic {
         changeCardNr = 1 + random.nextInt(7);
     }
 
-    public GameLogic() { }
-
     @Override
     public int getDice(Dice dice) {
         return dice.getNofDice();
     }
 
-    @Override
     public User getUser(String sessionId) {
         for (User user : onlineUsers) {
             if (user.getSessionId().equals(sessionId)) return user;
@@ -117,7 +114,7 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void registerNewUser(String username, String password, String sessionId) {
+    public boolean registerNewUser(String username, String password, String sessionId) {
         log.info("[Register a new user]");
         UserDto userDto = monopolyRestClient.registerUser(username, password);
 
@@ -125,18 +122,20 @@ public class GameLogic implements IGameLogic {
             log.info("[User " + userDto + " added to monopoly game] \n");
             messageGenerator.notifyRegisterResult(sessionId, true);
             login(username, password, sessionId);
+            return true;
         }
         else {
             messageGenerator.notifyRegisterResult(sessionId, false);
+            return false;
         }
     }
 
     @Override
-    public void login(String username, String password, String sessionId) {
+    public boolean login(String username, String password, String sessionId) {
         if (onlineUsers.size() < 4) {
             if (checkUserNameAlreadyExists(username)) {
                 messageGenerator.notifyRegisterResult(sessionId, false);
-                return;
+                return false;
             }
 
             User user = new User(Integer.parseInt(sessionId), sessionId, username);
@@ -145,7 +144,9 @@ public class GameLogic implements IGameLogic {
             messageGenerator.notifyUserAdded(sessionId, username);
             updateUsersInGame();
             checkStartingCondition();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -156,21 +157,27 @@ public class GameLogic implements IGameLogic {
         }
     }
 
-    public void startGame() {
-        messageGenerator.notifyStartGame();
-    }
+    @Override
+    public void startGame() { messageGenerator.notifyStartGame(); }
 
-    private void updateUsersInGame() {
+    @Override
+    public void updateUsersInGame() {
         for (User user : onlineUsers) {
             messageGenerator.updateUserList(onlineUsers, user.getSessionId());
         }
     }
 
-    private void checkStartingCondition() {
-        if (onlineUsers.size() == 1) startGame();
+    @Override
+    public boolean checkStartingCondition() {
+        if (onlineUsers.size() == 4) {
+            startGame();
+            return true;
+        }
+        return false;
     }
 
-    private boolean checkUserNameAlreadyExists(String username)
+    @Override
+    public boolean checkUserNameAlreadyExists(String username)
     {
         for(User u : onlineUsers) {
             if (u.getUsername().equals(username)) return true;
@@ -178,7 +185,8 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private void payRent(User user, Board board) {
+    @Override
+    public void payRent(User user, Board board) {
         for (Square s : board.getSquares()) {
             User currentUser = getUser(user.getSessionId());
             if (s.getSquareId() == currentUser.getCurrentPlace()) {
@@ -186,19 +194,24 @@ public class GameLogic implements IGameLogic {
                 User ownedUser = getUserByUserId(s.getOwner());
                 ownedUser.getWallet().addMoneyToWallet(s.getRentPrice());
                 messageGenerator.notifyPayRent(currentUser, ownedUser);
+                break;
             }
         }
     }
 
-    private void checkIfUserIsOverStart(User user, int dice) {
+    @Override
+    public boolean checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
             user.getWallet().addMoneyToWallet(2000);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
+            return true;
         }
+        return false;
     }
 
-    private boolean checkIfSquareIsOwned(User user, Board board) {
+    @Override
+    public boolean checkIfSquareIsOwned(User user, Board board) {
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == user.getCurrentPlace()) {
                 if (s.getOwner() < 0) {
@@ -213,7 +226,8 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private boolean checkIfUserIsInDressingRoom(User user) {
+    @Override
+    public boolean checkIfUserIsInDressingRoom(User user) {
         if (user.isInDressingRoom()) {
             user.getWallet().withDrawMoneyOfWallet(500);
             user.setInDressingRoom(false);
@@ -223,7 +237,8 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private boolean varChecksRedCard(User user) {
+    @Override
+    public boolean varChecksRedCard(User user) {
         if (user.getCurrentPlace() == 30) {
             redCard(user);
             return true;
@@ -231,7 +246,8 @@ public class GameLogic implements IGameLogic {
         return false;
     }
 
-    private boolean checkForEnoughMoney(User currentUser, int priceOfSquare) {
+    @Override
+    public boolean checkForEnoughMoney(User currentUser, int priceOfSquare) {
         if (currentUser.getWallet().getMoney() - priceOfSquare <= 0) {
             messageGenerator.notifyNotEnoughMoney(currentUser.getSessionId());
             return false;
@@ -239,7 +255,8 @@ public class GameLogic implements IGameLogic {
         return true;
     }
 
-    private void checkIfUserIsBroke(User user, Board board) {
+    @Override
+    public boolean checkIfUserIsBroke(User user, Board board) {
         if (user.getWallet().getMoney() < 0) {
             messageGenerator.notifyUserIsBroke(user);
             user.setBroke(true);
@@ -249,12 +266,14 @@ public class GameLogic implements IGameLogic {
                     s.setOwner(-1);
                 }
             }
-
             messageGenerator.updateCurrentUser(user, user.getSessionId());
+            return true;
         }
+        return false;
     }
 
-    private void checkRandomSquares(User user, int newPlace) {
+    @Override
+    public void checkRandomSquares(User user, int newPlace) {
         String message = "";
         switch (newPlace) {
             case 4:
@@ -274,7 +293,8 @@ public class GameLogic implements IGameLogic {
         //messageGenerator.notifyCardMessage(user, message);
     }
 
-    private void doCommunityChestCardAction(User user) {
+    @Override
+    public void doCommunityChestCardAction(User user) {
         String message = "";
         switch (communityChestCardNr) {
             case 1:
@@ -289,7 +309,7 @@ public class GameLogic implements IGameLogic {
             case 3:
                 message = "Pay school fees of €2100";
                 user.getWallet().withDrawMoneyOfWallet(2100);
-                goalBonus =+ 2100;
+                goalBonus = goalBonus + 2100;
                 break;
             case 4:
                 message = "Receive €250 consultancy fee";
@@ -298,7 +318,7 @@ public class GameLogic implements IGameLogic {
             case 5:
                 message = "Pay hospital fees of €750";
                 user.getWallet().withDrawMoneyOfWallet(750);
-                goalBonus =+ 750;
+                goalBonus = goalBonus + 750;
                 break;
             case 6:
                 message = "You have won second price in a beauty contest. Collect €100";
@@ -312,7 +332,7 @@ public class GameLogic implements IGameLogic {
             case 8:
                 message = "You receives a yellow card, pay fees of €500";
                 user.getWallet().withDrawMoneyOfWallet(500);
-                goalBonus =+ 500;
+                goalBonus = goalBonus + 500;
                 break;
             default:
                 message = "Invalid";
@@ -325,7 +345,8 @@ public class GameLogic implements IGameLogic {
         else communityChestCardNr++;
     }
 
-    private void doChangeCardAction(User user) {
+    @Override
+    public void doChangeCardAction(User user) {
         String message = "";
         switch (changeCardNr) {
             case 1:
@@ -362,7 +383,7 @@ public class GameLogic implements IGameLogic {
             case 8:
                 message = "Pay poor tax of €375";
                 user.getWallet().withDrawMoneyOfWallet(375);
-                goalBonus =+ 375;
+                goalBonus = goalBonus + 375;
                 break;
             default:
                 message = "Invalid";

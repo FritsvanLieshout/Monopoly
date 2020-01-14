@@ -291,8 +291,7 @@ public class GameController implements Initializable, IClientGUI {
             lblDice1.setText(Integer.toString(dice1));
             lblDice2.setText(Integer.toString(dice2));
 
-            //getGameClient().moveUser(noDice);
-            getGameClient().moveUser(2);
+            getGameClient().moveUser(noDice);
         }
     }
 
