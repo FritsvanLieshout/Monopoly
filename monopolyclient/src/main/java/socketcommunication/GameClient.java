@@ -84,4 +84,7 @@ public class GameClient implements IGameClient {
 
     @Override
     public void handleUserIsBrokeResponse(User user) { clientGUI.processUserIsBrokeResponse(user); }
+
+    @Override
+    public void handleSquareMessageResponse(User user, String message) { clientGUI.processSquareMessageResponse(user, message); }
 }

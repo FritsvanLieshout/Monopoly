@@ -173,4 +173,12 @@ public interface IGameClient {
      * @param user
      */
     void handleUserIsBrokeResponse(User user);
+
+    /**
+     * Sends a message to the user what kind of message it is. There are 3 squares for this message.
+     * The text of this message has been set in the logic class.
+     * @param user
+     * @param message
+     */
+    void handleSquareMessageResponse(User user, String message);
 }

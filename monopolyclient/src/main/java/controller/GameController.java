@@ -291,7 +291,7 @@ public class GameController implements Initializable, IClientGUI {
             lblDice1.setText(Integer.toString(dice1));
             lblDice2.setText(Integer.toString(dice2));
 
-            getGameClient().moveUser(noDice);
+            getGameClient().moveUser(2);
         }
     }
 
@@ -493,6 +493,13 @@ public class GameController implements Initializable, IClientGUI {
             }
             lvLog.getItems().add(getDate() + " -> " + user.getUsername() + " game over for you bro");
             checkWinner();
+        });
+    }
+
+    @Override
+    public void processSquareMessageResponse(User user, String message) {
+        Platform.runLater(() -> {
+            lvLog.getItems().add("Username: " + user.getUsername() + " -> Place: " + user.getCurrentPlace() + ", Wallet: €" + user.getWallet().getMoney());
         });
     }
 

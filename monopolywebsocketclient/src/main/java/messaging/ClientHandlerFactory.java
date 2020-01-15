@@ -45,6 +45,8 @@ public class ClientHandlerFactory implements IClientHandlerFactory {
                 return new CardMessageHandler(gc);
             case "BrokeMessage":
                 return new BrokeMessageHandler(gc);
+            case "SquareMessage":
+                return new SquareMessageHandler(gc);
             default:
                 return null;
         }

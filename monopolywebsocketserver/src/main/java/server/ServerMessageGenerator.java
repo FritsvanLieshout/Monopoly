@@ -119,4 +119,10 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
         BrokeMessage msg = new BrokeMessage(user);
         serverWebSocket.broadcast(msg);
     }
+
+    @Override
+    public void notifySquareMessage(User user, String message) {
+        SquareMessage msg = new SquareMessage(user, message);
+        serverWebSocket.broadcast(msg);
+    }
 }

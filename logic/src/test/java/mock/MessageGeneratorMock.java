@@ -59,4 +59,7 @@ public class MessageGeneratorMock implements IServerMessageGenerator {
 
     @Override
     public void notifyUserIsBroke(User user) { }
+
+    @Override
+    public void notifySquareMessage(User user, String message) { }
 }

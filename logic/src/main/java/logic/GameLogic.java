@@ -277,20 +277,22 @@ public class GameLogic implements IGameLogic {
         String message = "";
         switch (newPlace) {
             case 4:
-                message = "Pay income tax of €400";
-                user.getWallet().withDrawMoneyOfWallet(200);
+                message = "Pay income tax of €750";
+                updateWalletOfUser(user, 750, false);
                 break;
             case 20:
-                message = "You won €" + goalBonus + ", because you scored against Ajax an important goal!";
-                user.getWallet().addMoneyToWallet(goalBonus);
-                this.goalBonus = 500;
+                message = "You have won a goal bonus of €" + goalBonus + ", because you scored against Ajax an important goal!";
+                updateWalletOfUser(user, goalBonus, true);
+                resetGoalBonus();
                 break;
             case 38:
-                message = "Pay additional tax of €200";
-                user.getWallet().withDrawMoneyOfWallet(400);
+                message = "Pay additional tax of €375";
+                updateWalletOfUser(user, 375, false);
                 break;
         }
-        //messageGenerator.notifyCardMessage(user, message);
+
+        log.info("Username: " + user.getUsername() + ", " + message);
+        messageGenerator.notifySquareMessage(user, message);
     }
 
     @Override
@@ -299,40 +301,36 @@ public class GameLogic implements IGameLogic {
         switch (communityChestCardNr) {
             case 1:
                 message = "Advance to Go -> Collect €2000";
-                user.setPlace(0);
-                user.getWallet().addMoneyToWallet(2000);
+                setPlaceOfUser(user, 0);
+                updateWalletOfUser(user, 2000, true);
                 break;
             case 2:
                 message = "Bank error in your favor. Collect €1500";
-                user.getWallet().addMoneyToWallet(1500);
+                updateWalletOfUser(user, 1500, true);
                 break;
             case 3:
                 message = "Pay school fees of €2100";
-                user.getWallet().withDrawMoneyOfWallet(2100);
-                goalBonus = goalBonus + 2100;
+                updateWalletOfUser(user, 2100, false);
                 break;
             case 4:
                 message = "Receive €250 consultancy fee";
-                user.getWallet().addMoneyToWallet(250);
+                updateWalletOfUser(user, 250, true);
                 break;
             case 5:
                 message = "Pay hospital fees of €750";
-                user.getWallet().withDrawMoneyOfWallet(750);
-                goalBonus = goalBonus + 750;
+                updateWalletOfUser(user, 750, false);
                 break;
             case 6:
                 message = "You have won second price in a beauty contest. Collect €100";
-                user.getWallet().addMoneyToWallet(100);
+                updateWalletOfUser(user, 100, true);
                 break;
             case 7:
                 message = "Go to Dressing Room. If you pass Go, you don't collect €2000!";
-                user.setPlace(10);
-                user.setInDressingRoom(true);
+                setPlaceAndInDressingRoom(user);
                 break;
             case 8:
                 message = "You receives a yellow card, pay fees of €500";
-                user.getWallet().withDrawMoneyOfWallet(500);
-                goalBonus = goalBonus + 500;
+                updateWalletOfUser(user, 500, false);
                 break;
             default:
                 message = "Invalid";
@@ -340,6 +338,7 @@ public class GameLogic implements IGameLogic {
         }
 
         messageGenerator.notifyCardMessage(user, message, true);
+        log.info("Username: " + user.getUsername() + ", " + message);
 
         if (communityChestCardNr == 8) communityChestCardNr = 1;
         else communityChestCardNr++;
@@ -351,38 +350,37 @@ public class GameLogic implements IGameLogic {
         switch (changeCardNr) {
             case 1:
                 message = "Advance to Go -> Collect €2000";
-                user.setPlace(0);
-                user.getWallet().addMoneyToWallet(2000);
+                setPlaceOfUser(user, 0);
+                updateWalletOfUser(user, 2000, true);
                 break;
             case 2:
                 message = "Take a walk to Neymar";
-                user.setPlace(39);
+                setPlaceOfUser(user, 39);
                 break;
             case 3:
                 message = "Advance to Rashford -> if you pass Go. Collect €2000";
-                if (user.getCurrentPlace() > 11) user.getWallet().addMoneyToWallet(2000);
-                user.setPlace(11);
+                if (user.getCurrentPlace() > 11) updateWalletOfUser(user, 2000, true);
+                setPlaceOfUser(user, 11);
                 break;
             case 4:
                 message = "Go back 3 spaces";
-                user.setPlace(user.getCurrentPlace() - 3);
+                setPlaceOfUser(user, user.getCurrentPlace() - 3);
                 break;
             case 5:
                 message = "Back pays you dividend of €500";
-                user.getWallet().addMoneyToWallet(500);
+                updateWalletOfUser(user, 500, true);
                 break;
             case 6:
                 message = "You have won a crossword competition. Collect €200";
-                user.getWallet().addMoneyToWallet(200);
+                updateWalletOfUser(user, 200, true);
                 break;
             case 7:
                 message = "Go directly to Dressing Room. If you pass Go, you don't collect €2000!";
-                user.setPlace(10);
-                user.setInDressingRoom(true);
+                setPlaceAndInDressingRoom(user);
                 break;
             case 8:
                 message = "Pay poor tax of €375";
-                user.getWallet().withDrawMoneyOfWallet(375);
+                updateWalletOfUser(user, 375, false);
                 goalBonus = goalBonus + 375;
                 break;
             default:
@@ -391,8 +389,28 @@ public class GameLogic implements IGameLogic {
         }
 
         messageGenerator.notifyCardMessage(user, message, false);
+        log.info("Username: " + user.getUsername() + ", " + message);
 
         if (changeCardNr == 8) changeCardNr = 1;
         else changeCardNr++;
     }
+
+    private void setPlaceOfUser(User user, int place) { user.setPlace(place); }
+
+    private void updateWalletOfUser(User user, int amount, boolean result) {
+        if (result) user.getWallet().addMoneyToWallet(amount);
+        else {
+            user.getWallet().withDrawMoneyOfWallet(amount);
+            updateGoalBonus(amount);
+        }
+    }
+
+    private void updateGoalBonus(int bonus) { goalBonus = goalBonus + bonus; }
+
+    private void setPlaceAndInDressingRoom(User user) {
+        user.setPlace(10);
+        user.setInDressingRoom(true);
+    }
+
+    private void resetGoalBonus() { this.goalBonus = 500; }
 }

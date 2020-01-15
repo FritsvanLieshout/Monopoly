@@ -42,4 +42,6 @@ public interface IClientGUI {
     void processCardMessageResponse(User user, String message, boolean result);
 
     void processUserIsBrokeResponse(User user);
+
+    void processSquareMessageResponse(User user, String message);
 }

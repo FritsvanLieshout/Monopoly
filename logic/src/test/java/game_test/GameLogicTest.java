@@ -152,13 +152,13 @@ class GameLogicTest {
      */
     @Test
     void testBuyFootballPlayerThatIsOwned() {
-        int oldWallet = user.getWallet().getMoney();
-        Square square = gameLogic.moveUser(11, user.getSessionId());
-        gameLogic.buyFootballPlayer(user.getSessionId());
+        int oldWalletUser1 = user.getWallet().getMoney();
+        Square square = gameLogic.moveUser(11, user2.getSessionId());
+        gameLogic.buyFootballPlayer(user2.getSessionId());
 
         for (Square s : board.getSquares()) {
             if (s.getSquareId() == square.getSquareId()) {
-                s.setOwner(2);
+                s.setOwner(user2.getUserId());
                 if (s.getOwner() < 0) {
                     user.getWallet().withDrawMoneyOfWallet(s.getPrice());
                     s.setOwner(user.getUserId());
@@ -166,8 +166,12 @@ class GameLogicTest {
                 }
             }
         }
-        int actualWallet = user.getWallet().getMoney();
-        Assertions.assertEquals(oldWallet, actualWallet);
+
+        gameLogic.moveUser(11, user.getSessionId());
+        gameLogic.buyFootballPlayer(user.getSessionId());
+
+        int actualWalletUser = user.getWallet().getMoney();
+        Assertions.assertEquals(oldWalletUser1, actualWalletUser);
     }
 
     /**
@@ -415,6 +419,93 @@ class GameLogicTest {
 
         Assertions.assertFalse(result);
     }
+
+    /**
+     * Example test for the random squares where you need to pay some money or get some money.
+     * There are 3 squares of this. In this case I make a 3 turns to move a user. With the given dice.
+     */
+    @Test
+    void testRandomSquare() {
+        for (int t = 0; t < 3; t++) {
+            if (t == 0) moveUserToSpecificSquare(4);
+            else if (t == 1) moveUserToSpecificSquare(16);
+            else if (t == 2) moveUserToSpecificSquare(18);
+        }
+    }
+
+    /**
+     * Example test for the community chest cards
+     * There are 8 different messages with actions in the switch case statement. So I made a for loop to test this.
+     */
+    @Test
+    void testCommunityChestCards() {
+        for (int i = 0; i < 20; i++) {
+            for (int turn = 1; turn < 5; turn++) {
+                if (user2.getCurrentPlace() == 10) user2.setInDressingRoom(true);
+
+                int noDice1 = getDice();
+                int noDice2 = getDice();
+
+                if (turn == 1) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 2) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 3) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 4) moveUserToSpecificSquare(noDice1 + noDice2);
+            }
+        }
+    }
+
+    /**
+     * Example test for the change cards
+     * There are 8 different messages with actions in the switch case statement. So I made a for loop to test this.
+     */
+    @Test
+    void testChangeCards() {
+        for (int i = 0; i < 20; i++) {
+            for (int turn = 1; turn < 5; turn++) {
+                if (user.getCurrentPlace() == 10) user.setInDressingRoom(true);
+
+                int noDice1 = getDice();
+                int noDice2 = getDice();
+
+                if (turn == 1) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 2) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 3) moveUserToSpecificSquare(noDice1 + noDice2);
+                else if (turn == 4) moveUserToSpecificSquare(noDice1 + noDice2);
+            }
+        }
+    }
+
+    /**
+     * Example test to check if an user is in the dressing room (in jail in real Monopoly)
+     * In this case the user isn't in the dressing room.
+     */
+    @Test
+    void testCheckIfUserIsNotInDressingRoom() {
+        var result = gameLogic.checkIfUserIsInDressingRoom(user2);
+
+        Assertions.assertFalse(result);
+    }
+
+    /**
+     * Example test to check if an user is in the dressing room (in jail in real Monopoly)
+     * In this case the user is in the dressing room.
+     */
+    @Test
+    void testCheckIfUserIsInDressingRoom() {
+        User userTest = new User(3, "3", "Test", "Tests");
+        userTest.setInDressingRoom(true);
+        var result = gameLogic.checkIfUserIsInDressingRoom(userTest);
+
+        Assertions.assertTrue(result);
+    }
+
+    private void moveUserToSpecificSquare(int dice) {
+        var square = gameLogic.moveUser(dice, user.getSessionId());
+        user.setPlace(square.getSquareId());
+        Assertions.assertEquals(square.getSquareId(), user.getCurrentPlace());
+    }
+
+    private int getDice() { return dice.getNofDice(); }
 
     private void getLogInformation(User user) {
         LOG.info("name: " + user.getUsername() + ", position: " + user.getCurrentPlace() + ", is in dressing room? " + user.isInDressingRoom() + ", is broke? " + user.isBroke());

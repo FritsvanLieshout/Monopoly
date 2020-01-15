@@ -40,4 +40,6 @@ public interface IServerMessageGenerator {
     void notifyCardMessage(User user, String message, boolean result);
 
     void notifyUserIsBroke(User user);
+
+    void notifySquareMessage(User user, String message);
 }
