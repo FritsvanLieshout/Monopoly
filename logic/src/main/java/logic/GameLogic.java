@@ -291,8 +291,8 @@ public class GameLogic implements IGameLogic {
                 break;
         }
 
-        log.info("Username: " + user.getUsername() + ", " + message);
         messageGenerator.notifySquareMessage(user, message);
+        getLogInformationOfUser(user, message);
     }
 
     @Override
@@ -333,12 +333,11 @@ public class GameLogic implements IGameLogic {
                 updateWalletOfUser(user, 500, false);
                 break;
             default:
-                message = "Invalid";
                 break;
         }
 
         messageGenerator.notifyCardMessage(user, message, true);
-        log.info("Username: " + user.getUsername() + ", " + message);
+        getLogInformationOfUser(user, message);
 
         if (communityChestCardNr == 8) communityChestCardNr = 1;
         else communityChestCardNr++;
@@ -384,12 +383,11 @@ public class GameLogic implements IGameLogic {
                 goalBonus = goalBonus + 375;
                 break;
             default:
-                message = "Invalid";
                 break;
         }
 
         messageGenerator.notifyCardMessage(user, message, false);
-        log.info("Username: " + user.getUsername() + ", " + message);
+        getLogInformationOfUser(user, message);
 
         if (changeCardNr == 8) changeCardNr = 1;
         else changeCardNr++;
@@ -413,4 +411,6 @@ public class GameLogic implements IGameLogic {
     }
 
     private void resetGoalBonus() { this.goalBonus = 500; }
+
+    private void getLogInformationOfUser(User user, String message) { log.info("Username: " + user.getUsername() + ", " + message); }
 }

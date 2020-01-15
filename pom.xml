@@ -34,7 +34,7 @@
         <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
-<!--        <sonar.coverage.exclusions>dal/**, dalinterface/**, logic/src/main/java/**, logicinterface/**, messaging/**, models/src/main/java/**, monopolyclient/**, monopolyrestclient/**, monopolyrestserver/**, monopolyshared/**, monopolywebsocketclient/**, monopolywebsocketserver/**</sonar.coverage.exclusions>-->
+        <sonar.coverage.exclusions>dal/**, dalinterface/**, logicinterface/**, messaging/**, monopolyclient/**, monopolyrestclient/**, monopolyrestserver/**, monopolyshared/**, monopolywebsocketclient/**, monopolywebsocketserver/**</sonar.coverage.exclusions>
     </properties>
     <!-- Logback -->
     <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->

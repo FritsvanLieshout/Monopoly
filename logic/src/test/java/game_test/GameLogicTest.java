@@ -439,7 +439,7 @@ class GameLogicTest {
      */
     @Test
     void testCommunityChestCards() {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 25; i++) {
             for (int turn = 1; turn < 5; turn++) {
                 if (user2.getCurrentPlace() == 10) user2.setInDressingRoom(true);
 
@@ -460,7 +460,7 @@ class GameLogicTest {
      */
     @Test
     void testChangeCards() {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 25; i++) {
             for (int turn = 1; turn < 5; turn++) {
                 if (user.getCurrentPlace() == 10) user.setInDressingRoom(true);
 

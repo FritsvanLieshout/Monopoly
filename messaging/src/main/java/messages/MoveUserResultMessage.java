@@ -1,8 +1,5 @@
 package messages;
 
-import models.Board;
-import models.User;
-
 public class MoveUserResultMessage {
 
     private String sessionId;
