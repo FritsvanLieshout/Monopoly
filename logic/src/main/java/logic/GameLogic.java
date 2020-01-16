@@ -102,7 +102,7 @@ public class GameLogic implements IGameLogic {
                         }
                     }
                     else messageGenerator.notifyPropertyIsAlreadyOwned(s.getOwner(), sessionId);
-                }
+                  }
             }
         }
     }
@@ -150,12 +150,12 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public void processClientDisconnect(String sessionId)
-    {
+    public void processClientDisconnect(String sessionId) {
         for (User user : onlineUsers) {
             if (user.getSessionId().equals(sessionId)) onlineUsers.remove(user);
         }
     }
+
 
     @Override
     public void startGame() { messageGenerator.notifyStartGame(); }

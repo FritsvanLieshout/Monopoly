@@ -79,7 +79,30 @@ class GameLogicTest {
     @Test
     void testLoginUser() {
         var result = gameLogic.login("John", "Doe", "3");
+
         Assertions.assertTrue(result);
+    }
+
+    /**
+     * Example test of a login if there are 4 people already in one session.
+     */
+    @Test
+    void testIfThereAreMoreThan4UserLogin() {
+        gameLogic.login("John", "Doe", "3");
+        gameLogic.login("Bram", "Hacker", "4");
+        var result = gameLogic.login("John", "Doe", "3");
+
+        Assertions.assertFalse(result);
+    }
+
+    /**
+     * Example test of a login if there are already is another user with the same username in the same session.
+     */
+    @Test
+    void testIfUsernameAlreadyExist() {
+        var result = gameLogic.login("Lisa", "Soccer", "3");
+
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -143,12 +166,12 @@ class GameLogicTest {
                 Assertions.assertEquals(s.getOwner(), user.getUserId());
             }
         }
-        int actualWallet = user.getWallet().getMoney();
-        Assertions.assertNotEquals(oldWallet, actualWallet);
+
+        Assertions.assertNotEquals(oldWallet, user.getWallet().getMoney());
     }
 
     /**
-     * Example test for to buy a square(aka: football player)
+     * Example test for to buy a square(aka: football player) that's owned.
      */
     @Test
     void testBuyFootballPlayerThatIsOwned() {
@@ -167,11 +190,29 @@ class GameLogicTest {
             }
         }
 
-        gameLogic.moveUser(11, user.getSessionId());
+        User testUser = new User(3, "3", "Sander");
+        testUser.setPassword("IsOwned");
+        gameLogic.login(testUser.getUsername(), testUser.getPassword(), testUser.getSessionId());
+        gameLogic.moveUser(11, testUser.getSessionId());
+        gameLogic.buyFootballPlayer(testUser.getSessionId());
+
+        Assertions.assertEquals(oldWalletUser1, user.getWallet().getMoney());
+    }
+
+    /**
+     * Example test if the square is a non value property (square).
+     * In this case the user became on square 10 -> dressing room, this is a non valued square.
+     */
+    @Test
+    void testBuyIfSquareIsNonValue() {
+        int oldWallet = user.getWallet().getMoney();
+        Square square = gameLogic.moveUser(10, user.getSessionId());
+
+        user.setPlace(square.getSquareId());
         gameLogic.buyFootballPlayer(user.getSessionId());
 
-        int actualWalletUser = user.getWallet().getMoney();
-        Assertions.assertEquals(oldWalletUser1, actualWalletUser);
+        Assertions.assertEquals(oldWallet, user.getWallet().getMoney());
+
     }
 
     /**
@@ -401,6 +442,17 @@ class GameLogicTest {
      */
     @Test
     void testIfUserIsBroke() {
+        Square square = gameLogic.moveUser(9, user2.getSessionId());
+        gameLogic.buyFootballPlayer(user2.getSessionId());
+        user2.setPlace(square.getSquareId());
+        user2.setBroke(true);
+
+        for (Square s : board.getSquares()) {
+            if (s.getSquareId() == user2.getCurrentPlace()) {
+                s.setOwner(user2.getUserId());
+                break;
+            }
+        }
         var result = gameLogic.checkIfUserIsBroke(user2, board);
         getLogInformation(user2);
 
