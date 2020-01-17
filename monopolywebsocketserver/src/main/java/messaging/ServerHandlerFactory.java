@@ -13,7 +13,7 @@ public class ServerHandlerFactory implements IServerHandlerFactory {
         switch (classname) {
             case "RegisterUserMessage":
                 return new RegisterUserMessageHandler(iGame);
-            case "LoginUserMessage":
+            case "LoginMessage":
                 return new LoginMessageHandler(iGame);
             case "MoveUserMessage":
                 return new MoveUserMessageHandler(iGame);

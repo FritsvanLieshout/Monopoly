@@ -1,5 +1,6 @@
 package server;
 
+import client.MonopolyRestClient;
 import logic.GameLogic;
 import logic_interface.IGameLogic;
 import messaging.ServerHandlerFactory;
@@ -7,6 +8,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
+import restshared.IMonopolyRestClient;
 import server_interface.IServerHandlerFactory;
 import server_interface.IServerMessageGenerator;
 import server_interface.IServerMessageProcessor;
@@ -35,8 +37,9 @@ public class MonopolyWebSocketServer {
         socket.setMessageProcessor(messageProcessor);
 
         IServerMessageGenerator messageGenerator = new ServerMessageGenerator(socket);
+        IMonopolyRestClient monopolyRestClient = new MonopolyRestClient();
 
-        IGameLogic game = new GameLogic(messageGenerator);
+        IGameLogic game = new GameLogic(messageGenerator, monopolyRestClient);
         messageProcessor.registerGame(game);
 
         Server webSocketServer = new Server();

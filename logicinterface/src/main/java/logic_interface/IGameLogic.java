@@ -68,7 +68,7 @@ public interface IGameLogic {
      * @param password
      * @param sessionId
      */
-    boolean registerNewUser(String username, String password, String sessionId);
+    boolean register(String username, String password, String sessionId);
 
     /**
      * Login method for a registered user.

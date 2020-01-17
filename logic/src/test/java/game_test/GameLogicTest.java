@@ -5,6 +5,7 @@ import logic.GameLogic;
 import logic_interface.IBoardLogic;
 import logic_interface.IGameLogic;
 import mock.MessageGeneratorMock;
+import mock.MonopolyRestClientMock;
 import models.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import restshared.IMonopolyRestClient;
 import server_interface.IServerMessageGenerator;
 import java.util.ArrayList;
 
@@ -32,10 +34,11 @@ class GameLogicTest {
     User user2;
 
     private IServerMessageGenerator messageGenerator = new MessageGeneratorMock();
+    private IMonopolyRestClient monopolyRestClient = new MonopolyRestClientMock();
 
     @BeforeEach
     void setup() {
-        gameLogic = new GameLogic(messageGenerator);
+        gameLogic = new GameLogic(messageGenerator, monopolyRestClient);
         boardLogic = new BoardLogic();
         dice = new Dice();
         board = boardLogic.getBoard();
@@ -47,8 +50,7 @@ class GameLogicTest {
         user2.getWallet().setMoney(-100);
         users.add(user);
         users.add(user2);
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+
         System.out.println("[Begin test] :");
     }
 
@@ -64,11 +66,22 @@ class GameLogicTest {
      */
     @Test
     void testRegisterNewUser() {
-        /**
-         * Server needs to run.
-         * var result = gameLogic.registerNewUser(user.getUsername(), user.getPassword(), user.getSessionId());
-         * Assertions.assertTrue(result);
-         */
+        var result = gameLogic.register("John", "Doe", "3");
+
+        Assertions.assertTrue(result);
+    }
+
+    /**
+     * Example test for the register of a new user.
+     * This test call the method in the logic
+     * The sessionId is needed, because I need this for the web socket communication
+     * In this case the registration will be failed because he already exist.
+     */
+    @Test
+    void testRegisterNewUserFailed() {
+        var result = gameLogic.register("Kevin", "I_Hate_Test", "1");
+
+        Assertions.assertFalse(result);
     }
 
     /**
@@ -78,7 +91,7 @@ class GameLogicTest {
      */
     @Test
     void testLoginUser() {
-        var result = gameLogic.login("John", "Doe", "3");
+        var result = gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
 
         Assertions.assertTrue(result);
     }
@@ -138,7 +151,9 @@ class GameLogicTest {
     @Test
     void testMoveUserFailed() {
         int dice = 9;
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
         Square square = gameLogic.moveUser(dice, user.getSessionId());
+
         int position = square.getSquareId();
         String expect = board.getSquares()[dice].getSquareName();
         String actual = board.getSquares()[position].getSquareName();
@@ -156,6 +171,7 @@ class GameLogicTest {
     @Test
     void testBuyFootballPlayer() {
         int oldWallet = user.getWallet().getMoney();
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
         Square square = gameLogic.moveUser(11, user.getSessionId());
         gameLogic.buyFootballPlayer(user.getSessionId());
 
@@ -176,6 +192,7 @@ class GameLogicTest {
     @Test
     void testBuyFootballPlayerThatIsOwned() {
         int oldWalletUser1 = user.getWallet().getMoney();
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
         Square square = gameLogic.moveUser(11, user2.getSessionId());
         gameLogic.buyFootballPlayer(user2.getSessionId());
 
@@ -206,6 +223,8 @@ class GameLogicTest {
     @Test
     void testBuyIfSquareIsNonValue() {
         int oldWallet = user.getWallet().getMoney();
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+
         Square square = gameLogic.moveUser(10, user.getSessionId());
 
         user.setPlace(square.getSquareId());
@@ -229,6 +248,9 @@ class GameLogicTest {
     void payRent() {
         int oldWalletUser = user.getWallet().getMoney();
         int oldWalletNewUser = user2.getWallet().getMoney();
+
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
 
         Square square = gameLogic.moveUser(6, user.getSessionId());
         user.setPlace(square.getSquareId());
@@ -256,8 +278,17 @@ class GameLogicTest {
      */
     @Test
     void testCheckStartingConditionSuccess() {
-        gameLogic.login("Frits", "Lies", "3");
-        gameLogic.login("Bart", "Liesje", "4");
+        User user3 = new User(3, "3", "Sander");
+        user3.setPassword("IsOwned");
+
+        User user4 = new User(4, "4", "Bart");
+        user4.setPassword("Lieshout");
+
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user3.getUsername(), user3.getPassword(), user3.getSessionId());
+        gameLogic.login(user4.getUsername(), user4.getPassword(), user4.getSessionId());
+
         var result = gameLogic.checkStartingCondition();
         Assertions.assertTrue(result);
     }
@@ -280,6 +311,8 @@ class GameLogicTest {
      */
     @Test
     void testCheckIfUsernameAlreadyExists() {
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+
         String username = "Lisa";
         var result = gameLogic.checkUserNameAlreadyExists(username);
 
@@ -307,6 +340,7 @@ class GameLogicTest {
     void testIfUserIsOverStart() {
         int oldWallet = user.getWallet().getMoney();
         int dice = 50;
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
         Square square = gameLogic.moveUser(dice, user.getSessionId());
 
         if (user.getCurrentPlace() + dice >= 40) {
@@ -330,6 +364,7 @@ class GameLogicTest {
     void testIfUserIsNotOverStart() {
         int oldWallet = user2.getWallet().getMoney();
         int dice = 5;
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
         Square square = gameLogic.moveUser(dice, user2.getSessionId());
 
         if (user2.getCurrentPlace() + dice >= 40) {
@@ -442,6 +477,7 @@ class GameLogicTest {
      */
     @Test
     void testIfUserIsBroke() {
+        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
         Square square = gameLogic.moveUser(9, user2.getSessionId());
         gameLogic.buyFootballPlayer(user2.getSessionId());
         user2.setPlace(square.getSquareId());
@@ -491,13 +527,10 @@ class GameLogicTest {
      */
     @Test
     void testCommunityChestCards() {
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 28; i++) {
             for (int turn = 1; turn < 5; turn++) {
-                if (user2.getCurrentPlace() == 10) user2.setInDressingRoom(true);
-
                 int noDice1 = getDice();
                 int noDice2 = getDice();
-
                 if (turn == 1) moveUserToSpecificSquare(noDice1 + noDice2);
                 else if (turn == 2) moveUserToSpecificSquare(noDice1 + noDice2);
                 else if (turn == 3) moveUserToSpecificSquare(noDice1 + noDice2);
@@ -512,9 +545,8 @@ class GameLogicTest {
      */
     @Test
     void testChangeCards() {
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 28; i++) {
             for (int turn = 1; turn < 5; turn++) {
-                if (user.getCurrentPlace() == 10) user.setInDressingRoom(true);
 
                 int noDice1 = getDice();
                 int noDice2 = getDice();
@@ -552,6 +584,8 @@ class GameLogicTest {
     }
 
     private void moveUserToSpecificSquare(int dice) {
+        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+
         var square = gameLogic.moveUser(dice, user.getSessionId());
         user.setPlace(square.getSquareId());
         Assertions.assertEquals(square.getSquareId(), user.getCurrentPlace());

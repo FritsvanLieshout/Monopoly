@@ -310,7 +310,7 @@ public class GameController implements Initializable, IClientGUI {
     @Override
     public void processUserRegistered(String username) {
         Platform.runLater(() -> {
-            lvLog.getItems().add(getDate() + ": " +  username + " has been registered!");
+            lvLog.getItems().add(getDate() + ": " +  username + " has joined this game!");
         });
     }
 
@@ -376,7 +376,6 @@ public class GameController implements Initializable, IClientGUI {
             currentUser.setWallet(user.getWallet());
             currentUser.setBroke(user.isBroke());
             lvLog.getItems().add(getDate() + ": " + currentUser.getUsername() + ", Money: " + currentUser.getWallet().getMoney() + ",");
-            lvLog.getItems().add("\t Is in dressing room? " + user.isInDressingRoom() + ", Is broke? " + user.isBroke());
         });
     }
 

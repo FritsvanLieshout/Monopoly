@@ -12,8 +12,6 @@
     <modules>
         <module>monopolyclient</module>
         <module>monopolyshared</module>
-        <module>dalinterface</module>
-        <module>dal</module>
         <module>logic</module>
         <module>logicinterface</module>
         <module>monopolywebsocketclient</module>

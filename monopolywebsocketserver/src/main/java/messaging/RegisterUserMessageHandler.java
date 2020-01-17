@@ -11,6 +11,6 @@ public class RegisterUserMessageHandler extends BaseServerMessageHandler<Registe
 
     @Override
     public void handleMessageInternal(RegisterUserMessage message, String sessionId) {
-        game.registerNewUser(message.getUsername(), message.getPassword(), sessionId);
+        game.register(message.getUsername(), message.getPassword(), sessionId);
     }
 }

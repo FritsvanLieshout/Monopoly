@@ -9,6 +9,8 @@
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/dal/pom.xml" />
+        <option value="$PROJECT_DIR$/dalinterface/pom.xml" />
         <option value="$PROJECT_DIR$/factory/pom.xml" />
         <option value="$PROJECT_DIR$/models/pom.xml" />
         <option value="$PROJECT_DIR$/monopolyserver/pom.xml" />

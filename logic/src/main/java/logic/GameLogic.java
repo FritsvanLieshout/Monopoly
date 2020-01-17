@@ -5,8 +5,7 @@ import logic_interface.IGameLogic;
 import models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import restclient.MonopolyRestClient;
-import restshared.UserDto;
+import restshared.IMonopolyRestClient;
 import server_interface.IServerMessageGenerator;
 
 import java.security.SecureRandom;
@@ -17,8 +16,9 @@ public class GameLogic implements IGameLogic {
     private static final Logger log = LoggerFactory.getLogger(GameLogic.class);
 
     private ArrayList<User> onlineUsers = new ArrayList<>();
+
     private IServerMessageGenerator messageGenerator;
-    private static MonopolyRestClient monopolyRestClient;
+    private IMonopolyRestClient monopolyRestClient;
 
     private Board board;
     private IBoardLogic boardLogic;
@@ -30,9 +30,9 @@ public class GameLogic implements IGameLogic {
 
     private int goalBonus = 750;
 
-    public GameLogic(IServerMessageGenerator messageGenerator) {
+    public GameLogic(IServerMessageGenerator messageGenerator, IMonopolyRestClient monopolyRestClient) {
         this.messageGenerator = messageGenerator;
-        monopolyRestClient = new MonopolyRestClient();
+        this.monopolyRestClient = monopolyRestClient;
         boardLogic = new BoardLogic();
         board = boardLogic.getBoard();
         communityChestCardNr = 1 + random.nextInt(7);
@@ -114,14 +114,18 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public boolean registerNewUser(String username, String password, String sessionId) {
+    public boolean register(String username, String password, String sessionId) {
         log.info("[Register a new user]");
-        UserDto userDto = monopolyRestClient.registerUser(username, password);
 
-        if (userDto != null) {
-            log.info("[User " + userDto + " added to monopoly game] \n");
+        boolean checkUsername = monopolyRestClient.checkUsername(username);
+
+        if (checkUsername) {
+            User user = (User) monopolyRestClient.registerUser(username, password);
+            user.setSessionId(sessionId);
+
+            log.info("[User " + username + " added to monopoly game] \n");
             messageGenerator.notifyRegisterResult(sessionId, true);
-            login(username, password, sessionId);
+            //login(username, password, sessionId);
             return true;
         }
         else {
@@ -138,13 +142,17 @@ public class GameLogic implements IGameLogic {
                 return false;
             }
 
-            User user = new User(Integer.parseInt(sessionId), sessionId, username);
-            messageGenerator.notifyLoginResult(sessionId, user.getUserId());
-            onlineUsers.add(user);
-            messageGenerator.notifyUserAdded(sessionId, username);
-            updateUsersInGame();
-            checkStartingCondition();
-            return true;
+            User user = (User) monopolyRestClient.getUserByCredentials(username, password);
+
+            if (user != null) {
+                user.setSessionId(sessionId);
+                messageGenerator.notifyLoginResult(sessionId, user.getUserId());
+                onlineUsers.add(user);
+                messageGenerator.notifyUserAdded(sessionId, username);
+                updateUsersInGame();
+                checkStartingCondition();
+                return true;
+            }
         }
         return false;
     }
