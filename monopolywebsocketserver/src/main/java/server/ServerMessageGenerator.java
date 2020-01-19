@@ -111,7 +111,7 @@ public class ServerMessageGenerator implements IServerMessageGenerator {
     @Override
     public void notifyCardMessage(User user, String message, boolean result) {
         CardMessage msg = new CardMessage(user, message, result);
-        serverWebSocket.sendTo(user.getSessionId(), msg);
+        serverWebSocket.broadcast(msg);
     }
 
     @Override

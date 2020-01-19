@@ -4,6 +4,7 @@ import models.Board;
 import models.Square;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface provided by the GameLogic class
@@ -21,4 +22,16 @@ public interface IBoardLogic {
      * @return squares -> List
      */
     ArrayList<Square> getSquareList();
+
+    /**
+     *
+     * @return
+     */
+    List<Integer> getHighPrioritySquares();
+
+    /**
+     *
+     * @return
+     */
+    List<Integer> getNormalPrioritySquares();
 }

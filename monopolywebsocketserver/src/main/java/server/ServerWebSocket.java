@@ -110,7 +110,8 @@ public class ServerWebSocket implements IServerWebSocket {
     private void sendToClient(Session session, String message)
     {
         try {
-            session.getBasicRemote().sendText(message);
+            if (session != null) session.getBasicRemote().sendText(message);
+            else return;
         } catch (IOException e) {
             log.info(e.getMessage());
         }

@@ -10,6 +10,7 @@ import server_interface.IServerMessageGenerator;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameLogic implements IGameLogic {
 
@@ -22,6 +23,7 @@ public class GameLogic implements IGameLogic {
 
     private Board board;
     private IBoardLogic boardLogic;
+    private Dice dice;
 
     private int communityChestCardNr;
     private int changeCardNr;
@@ -30,11 +32,22 @@ public class GameLogic implements IGameLogic {
 
     private int goalBonus = 750;
 
+    private int playerStartCount = 4;
+    private boolean isSinglePlayer;
+    private int turnCount;
+    private int countValuableSquares = 26;
+
+    private List<Integer> highPrioritySquares;
+    private List<Integer> normalPrioritySquares;
+
     public GameLogic(IServerMessageGenerator messageGenerator, IMonopolyRestClient monopolyRestClient) {
         this.messageGenerator = messageGenerator;
         this.monopolyRestClient = monopolyRestClient;
         boardLogic = new BoardLogic();
         board = boardLogic.getBoard();
+        highPrioritySquares = boardLogic.getHighPrioritySquares();
+        normalPrioritySquares = boardLogic.getNormalPrioritySquares();
+        dice = new Dice();
         communityChestCardNr = 1 + random.nextInt(7);
         changeCardNr = 1 + random.nextInt(7);
     }
@@ -66,14 +79,7 @@ public class GameLogic implements IGameLogic {
             checkIfUserIsOverStart(currentUser, dice);
             newPlace = board.getPositionOnBoard(currentUser.getCurrentPlace() + dice);
             currentUser.setPlace(newPlace);
-            if (newPlace == 2 || newPlace == 17 || newPlace == 33) doCommunityChestCardAction(currentUser);
-            if (newPlace == 7 || newPlace == 22 || newPlace == 36) doChangeCardAction(currentUser);
-            messageGenerator.updateCurrentUser(currentUser, sessionId);
-            messageGenerator.notifyMoveUserMessage(dice, sessionId);
-            checkIfSquareIsOwned(currentUser, board);
-            checkRandomSquares(currentUser, newPlace);
-            varChecksRedCard(currentUser);
-            checkIfUserIsBroke(currentUser, board);
+            checkUserMovement(dice, newPlace, currentUser, sessionId);
         }
         return board.getSquares()[newPlace];
     }
@@ -99,10 +105,13 @@ public class GameLogic implements IGameLogic {
                             s.setOwner(currentUser.getUserId());
                             messageGenerator.updateCurrentUser(currentUser, sessionId);
                             messageGenerator.updateBoard(sessionId);
+
+                            String message = " has bought " + s.getSquareName();
+                            getLogInformationOfUser(currentUser, message);
                         }
                     }
                     else messageGenerator.notifyPropertyIsAlreadyOwned(s.getOwner(), sessionId);
-                  }
+                }
             }
         }
     }
@@ -111,6 +120,7 @@ public class GameLogic implements IGameLogic {
     public void switchTurn(int playerTurn, String sessionId) {
         if (++playerTurn > onlineUsers.size()) messageGenerator.notifySwitchTurn(1, sessionId);
         else messageGenerator.notifySwitchTurn(playerTurn, sessionId);
+        if (isSinglePlayer && playerTurn == 2) doAIMoves();
     }
 
     @Override
@@ -133,7 +143,7 @@ public class GameLogic implements IGameLogic {
     }
 
     @Override
-    public boolean login(String username, String password, String sessionId) {
+    public boolean login(String username, String password, boolean isSinglePlayer, String sessionId) {
         if (onlineUsers.size() < 4) {
             if (checkUserNameAlreadyExists(username)) {
                 messageGenerator.notifyRegisterResult(sessionId, false);
@@ -150,6 +160,7 @@ public class GameLogic implements IGameLogic {
                 messageGenerator.notifyUserAdded(sessionId, username);
                 updateUsersInGame();
                 checkStartingCondition();
+                if (isSinglePlayer) handleSinglePlayerMode(true);
                 return true;
             }
         }
@@ -176,7 +187,7 @@ public class GameLogic implements IGameLogic {
 
     @Override
     public boolean checkStartingCondition() {
-        if (onlineUsers.size() == 4) {
+        if (onlineUsers.size() == playerStartCount) {
             startGame();
             return true;
         }
@@ -209,7 +220,7 @@ public class GameLogic implements IGameLogic {
     @Override
     public boolean checkIfUserIsOverStart(User user, int dice) {
         if (user.getCurrentPlace() + dice >= 40) {
-            user.getWallet().addMoneyToWallet(2000);
+            user.getWallet().addMoneyToWallet(1000);
             messageGenerator.notifyUserOverStart(user.getSessionId());
             messageGenerator.updateCurrentUser(user, user.getSessionId());
             return true;
@@ -299,7 +310,7 @@ public class GameLogic implements IGameLogic {
         }
 
         messageGenerator.notifySquareMessage(user, message);
-        getLogInformationOfUser(user, message);
+        if (!message.equals("")) getLogInformationOfUser(user, message);
     }
 
     @Override
@@ -344,7 +355,7 @@ public class GameLogic implements IGameLogic {
         }
 
         messageGenerator.notifyCardMessage(user, message, true);
-        getLogInformationOfUser(user, message);
+        if (!message.equals("")) getLogInformationOfUser(user, message);
 
         if (communityChestCardNr == 8) communityChestCardNr = 1;
         else communityChestCardNr++;
@@ -394,7 +405,7 @@ public class GameLogic implements IGameLogic {
         }
 
         messageGenerator.notifyCardMessage(user, message, false);
-        getLogInformationOfUser(user, message);
+        if (!message.equals("")) getLogInformationOfUser(user, message);
 
         if (changeCardNr == 8) changeCardNr = 1;
         else changeCardNr++;
@@ -418,6 +429,59 @@ public class GameLogic implements IGameLogic {
     }
 
     private void resetGoalBonus() { this.goalBonus = 500; }
+
+    private boolean handleSinglePlayerMode(boolean isSinglePlayer) {
+        User userAI = new User(2, "2", "AI");
+        if (userAI != null) {
+            this.isSinglePlayer = isSinglePlayer;
+            onlineUsers.add(userAI);
+            this.playerStartCount = 2;
+            checkStartingCondition();
+            updateUsersInGame();
+            return true;
+        }
+        return false;
+    }
+
+    private void doAIMoves() {
+        int dice1 = dice.getNofDice();
+        int dice2 = dice.getNofDice();
+        int noDice = dice1 + dice2;
+
+        moveUser(noDice, "2");
+        if (checkToBuyByAI("2")) buyFootballPlayer("2");
+        turnCount++;
+        switchTurn(2,"2");
+    }
+
+    private boolean checkToBuyByAI(String sessionId) {
+        User currentUser = getUser(sessionId);
+        int ownedSquares = getCountOfOwnedSquares(currentUser);
+        if (currentUser.getWallet().getMoney() <= 1000) return false;
+        if (highPrioritySquares.contains(currentUser.getCurrentPlace())) return true;
+        else if (normalPrioritySquares.contains(currentUser.getCurrentPlace()) && turnCount > 5) return true;
+        else if (ownedSquares / countValuableSquares * 100 < 25 && turnCount > 5) return true;
+        else if (turnCount > 16) return true;
+        else return false;
+    }
+
+    private int getCountOfOwnedSquares(User currentUser) {
+        int count = 0;
+        for (Square s : board.getSquares())
+            if (s.getOwner() == currentUser.getUserId()) count++;
+        return count;
+    }
+
+    private void checkUserMovement(int dice, int newPlace, User currentUser, String sessionId) {
+        if (newPlace == 2 || newPlace == 17 || newPlace == 33) doCommunityChestCardAction(currentUser);
+        if (newPlace == 7 || newPlace == 22 || newPlace == 36) doChangeCardAction(currentUser);
+        messageGenerator.updateCurrentUser(currentUser, sessionId);
+        messageGenerator.notifyMoveUserMessage(dice, sessionId);
+        checkIfSquareIsOwned(currentUser, board);
+        checkRandomSquares(currentUser, newPlace);
+        varChecksRedCard(currentUser);
+        checkIfUserIsBroke(currentUser, board);
+    }
 
     private void getLogInformationOfUser(User user, String message) { log.info("Username: " + user.getUsername() + ", " + message); }
 }

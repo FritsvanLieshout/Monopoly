@@ -11,6 +11,6 @@ public class LoginMessageHandler extends BaseServerMessageHandler<LoginMessage> 
 
     @Override
     public void handleMessageInternal(LoginMessage message, String sessionId) {
-        game.login(message.getUsername(), message.getPassword(), sessionId);
+        game.login(message.getUsername(), message.getPassword(), message.isSinglePlayer(), sessionId);
     }
 }

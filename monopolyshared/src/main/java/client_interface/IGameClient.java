@@ -25,8 +25,9 @@ public interface IGameClient {
      * This method login a registered user.
      * @param username
      * @param password
+     * @param singlePlayer
      */
-    void loginUser(String username, String password);
+    void loginUser(String username, String password, boolean singlePlayer);
     /**
      * This method gives the user an true or false back for the register method
      * There will be show again a message.

@@ -91,7 +91,7 @@ class GameLogicTest {
      */
     @Test
     void testLoginUser() {
-        var result = gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        var result = gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
 
         Assertions.assertTrue(result);
     }
@@ -101,9 +101,9 @@ class GameLogicTest {
      */
     @Test
     void testIfThereAreMoreThan4UserLogin() {
-        gameLogic.login("John", "Doe", "3");
-        gameLogic.login("Bram", "Hacker", "4");
-        var result = gameLogic.login("John", "Doe", "3");
+        gameLogic.login("John", "Doe", false, "3");
+        gameLogic.login("Bram", "Hacker", false, "4");
+        var result = gameLogic.login("John", "Doe", false,"3");
 
         Assertions.assertFalse(result);
     }
@@ -113,7 +113,7 @@ class GameLogicTest {
      */
     @Test
     void testIfUsernameAlreadyExist() {
-        var result = gameLogic.login("Lisa", "Soccer", "3");
+        var result = gameLogic.login("Lisa", "Soccer", false,"3");
 
         Assertions.assertFalse(result);
     }
@@ -151,7 +151,7 @@ class GameLogicTest {
     @Test
     void testMoveUserFailed() {
         int dice = 9;
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
         Square square = gameLogic.moveUser(dice, user.getSessionId());
 
         int position = square.getSquareId();
@@ -171,7 +171,7 @@ class GameLogicTest {
     @Test
     void testBuyFootballPlayer() {
         int oldWallet = user.getWallet().getMoney();
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
         Square square = gameLogic.moveUser(11, user.getSessionId());
         gameLogic.buyFootballPlayer(user.getSessionId());
 
@@ -192,7 +192,7 @@ class GameLogicTest {
     @Test
     void testBuyFootballPlayerThatIsOwned() {
         int oldWalletUser1 = user.getWallet().getMoney();
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false, user2.getSessionId());
         Square square = gameLogic.moveUser(11, user2.getSessionId());
         gameLogic.buyFootballPlayer(user2.getSessionId());
 
@@ -209,7 +209,7 @@ class GameLogicTest {
 
         User testUser = new User(3, "3", "Sander");
         testUser.setPassword("IsOwned");
-        gameLogic.login(testUser.getUsername(), testUser.getPassword(), testUser.getSessionId());
+        gameLogic.login(testUser.getUsername(), testUser.getPassword(), false, testUser.getSessionId());
         gameLogic.moveUser(11, testUser.getSessionId());
         gameLogic.buyFootballPlayer(testUser.getSessionId());
 
@@ -223,7 +223,7 @@ class GameLogicTest {
     @Test
     void testBuyIfSquareIsNonValue() {
         int oldWallet = user.getWallet().getMoney();
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
 
         Square square = gameLogic.moveUser(10, user.getSessionId());
 
@@ -249,8 +249,8 @@ class GameLogicTest {
         int oldWalletUser = user.getWallet().getMoney();
         int oldWalletNewUser = user2.getWallet().getMoney();
 
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false, user2.getSessionId());
 
         Square square = gameLogic.moveUser(6, user.getSessionId());
         user.setPlace(square.getSquareId());
@@ -284,10 +284,10 @@ class GameLogicTest {
         User user4 = new User(4, "4", "Bart");
         user4.setPassword("Lieshout");
 
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
-        gameLogic.login(user3.getUsername(), user3.getPassword(), user3.getSessionId());
-        gameLogic.login(user4.getUsername(), user4.getPassword(), user4.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false, user2.getSessionId());
+        gameLogic.login(user3.getUsername(), user3.getPassword(), false, user3.getSessionId());
+        gameLogic.login(user4.getUsername(), user4.getPassword(), false, user4.getSessionId());
 
         var result = gameLogic.checkStartingCondition();
         Assertions.assertTrue(result);
@@ -311,7 +311,7 @@ class GameLogicTest {
      */
     @Test
     void testCheckIfUsernameAlreadyExists() {
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false,  user2.getSessionId());
 
         String username = "Lisa";
         var result = gameLogic.checkUserNameAlreadyExists(username);
@@ -340,7 +340,7 @@ class GameLogicTest {
     void testIfUserIsOverStart() {
         int oldWallet = user.getWallet().getMoney();
         int dice = 50;
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
         Square square = gameLogic.moveUser(dice, user.getSessionId());
 
         if (user.getCurrentPlace() + dice >= 40) {
@@ -364,7 +364,7 @@ class GameLogicTest {
     void testIfUserIsNotOverStart() {
         int oldWallet = user2.getWallet().getMoney();
         int dice = 5;
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false, user2.getSessionId());
         Square square = gameLogic.moveUser(dice, user2.getSessionId());
 
         if (user2.getCurrentPlace() + dice >= 40) {
@@ -477,7 +477,7 @@ class GameLogicTest {
      */
     @Test
     void testIfUserIsBroke() {
-        gameLogic.login(user2.getUsername(), user2.getPassword(), user2.getSessionId());
+        gameLogic.login(user2.getUsername(), user2.getPassword(), false, user2.getSessionId());
         Square square = gameLogic.moveUser(9, user2.getSessionId());
         gameLogic.buyFootballPlayer(user2.getSessionId());
         user2.setPlace(square.getSquareId());
@@ -583,8 +583,28 @@ class GameLogicTest {
         Assertions.assertTrue(result);
     }
 
+    /**
+     * Test for AI
+     */
+    @Test
+    void testAI() {
+        gameLogic.login(user.getUsername(), user.getPassword(), true, user.getSessionId());
+
+        for (int turns = 0; turns < 25; turns++) {
+            int dice1 = getDice();
+            int dice2 = getDice();
+            int noDice = dice1 + dice2;
+
+            var square = gameLogic.moveUser(noDice, user.getSessionId());
+            user.setPlace(square.getSquareId());
+            gameLogic.switchTurn(1, user.getSessionId());
+
+            Assertions.assertEquals(square.getSquareId(), user.getCurrentPlace());
+        }
+    }
+
     private void moveUserToSpecificSquare(int dice) {
-        gameLogic.login(user.getUsername(), user.getPassword(), user.getSessionId());
+        gameLogic.login(user.getUsername(), user.getPassword(), false, user.getSessionId());
 
         var square = gameLogic.moveUser(dice, user.getSessionId());
         user.setPlace(square.getSquareId());

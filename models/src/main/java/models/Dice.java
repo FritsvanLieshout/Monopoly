@@ -6,7 +6,9 @@ public class Dice {
 
     private int noDice;
 
-    public Dice() {}
+    public Dice() {
+        //Do Nothing, Only a constructor
+    }
 
     public int getNofDice() {
         SecureRandom rnd = new SecureRandom();

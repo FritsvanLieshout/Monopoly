@@ -4,6 +4,7 @@ import logic_interface.IBoardLogic;
 import models.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BoardLogic implements IBoardLogic {
 
@@ -12,9 +13,16 @@ public class BoardLogic implements IBoardLogic {
     private String[] squareNames;
     private ArrayList<Square> squareList;
 
+    private List<Integer> highPrioritySquares;
+    private List<Integer> normalPrioritySquares;
+
     public BoardLogic() {
         board = new Board();
         squareList = new ArrayList<>();
+        highPrioritySquares = new ArrayList<>();
+        normalPrioritySquares = new ArrayList<>();
+        initHighPrioritySquares();
+        initNormalPrioritySquares();
         initBoard(board);
     }
 
@@ -99,12 +107,36 @@ public class BoardLogic implements IBoardLogic {
         squareList.add(squares[i]);
     }
 
-    @Override
-    public Board getBoard() {
-        return board;
+    private void initHighPrioritySquares() {
+        highPrioritySquares.add(5);
+        highPrioritySquares.add(11);
+        highPrioritySquares.add(16);
+        highPrioritySquares.add(18);
+        highPrioritySquares.add(19);
+        highPrioritySquares.add(21);
+        highPrioritySquares.add(23);
+        highPrioritySquares.add(24);
+        highPrioritySquares.add(25);
+        highPrioritySquares.add(39);
     }
+
+    private void initNormalPrioritySquares() {
+        highPrioritySquares.add(13);
+        highPrioritySquares.add(14);
+        highPrioritySquares.add(26);
+        highPrioritySquares.add(27);
+        highPrioritySquares.add(29);
+    }
+
+    @Override
+    public Board getBoard() { return board; }
 
     @Override
     public ArrayList getSquareList() { return squareList; }
 
+    @Override
+    public List<Integer> getHighPrioritySquares() { return highPrioritySquares; }
+
+    @Override
+    public List<Integer> getNormalPrioritySquares() { return normalPrioritySquares; }
 }

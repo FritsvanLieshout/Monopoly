@@ -20,7 +20,7 @@ public class GameClient implements IGameClient {
     public void registerUser(String username, String password) { messageGenerator.registerUserOnServer(username, password); }
 
     @Override
-    public void loginUser(String username, String password) { messageGenerator.login(username, password); }
+    public void loginUser(String username, String password, boolean singlePlayer) { messageGenerator.login(username, password, singlePlayer); }
 
     @Override
     public void handleUserRegistrationResponse(boolean success) { clientGUI.processRegistrationResponse(success); }

@@ -52,6 +52,10 @@ public class GameController implements Initializable, IClientGUI {
     public PasswordField tfPassword;
     public Button btnLogin;
     public Button btnRegister;
+    public RadioButton rbMultiPlayer;
+    public RadioButton rbSinglePlayer;
+
+    public ToggleGroup mode;
 
     Dice dice = new Dice();
 
@@ -65,9 +69,10 @@ public class GameController implements Initializable, IClientGUI {
 
     private int playerTurn = 0;
     private int playerNr = 0;
+    private boolean isSinglePlayer = false;
 
     Rectangle rec1 = new Rectangle(25, 25, Color.RED);
-    Rectangle rec2 = new Rectangle(25, 25, Color.BLUE);
+    Rectangle rec2 = new Rectangle(25, 25, Color.web("#4287f5"));
     Rectangle rec3 = new Rectangle(25, 25, Color.YELLOW);
     Rectangle rec4 = new Rectangle(25, 25, Color.ORANGE);
 
@@ -102,6 +107,10 @@ public class GameController implements Initializable, IClientGUI {
 
         setPawnOnBoard(0);
         setDisable(true);
+
+        mode = new ToggleGroup();
+        mode.getToggles().add(rbSinglePlayer);
+        mode.getToggles().add(rbMultiPlayer);
 
         btnLogin.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -266,7 +275,7 @@ public class GameController implements Initializable, IClientGUI {
                     squareList.get(squareId).setStyle("-fx-background-color: RED; -fx-border-width: 1; -fx-border-color: BLACK");
                     break;
                 case 2:
-                    squareList.get(squareId).setStyle("-fx-background-color: BLUE; -fx-border-width: 1; -fx-border-color: BLACK");
+                    squareList.get(squareId).setStyle("-fx-background-color: #4287f5; -fx-border-width: 1; -fx-border-color: BLACK");
                     break;
                 case 3:
                     squareList.get(squareId).setStyle("-fx-background-color: YELLOW; -fx-border-width: 1; -fx-border-color: BLACK");
@@ -318,10 +327,7 @@ public class GameController implements Initializable, IClientGUI {
     public void processLoginResponse(int userId) {
         Platform.runLater(() -> {
             showAlert("Login Success, waiting for other opponent(s)");
-            btnLogin.setDisable(true);
-            btnRegister.setDisable(true);
-            tfUsername.setDisable(true);
-            tfPassword.setDisable(true);
+            setVisible(false);
             this.playerNr = userId;
         });
     }
@@ -353,6 +359,9 @@ public class GameController implements Initializable, IClientGUI {
                         lblPlayer4.setText(user.getUsername());
                     }
                 }
+            }
+            if (isSinglePlayer) {
+                lblPlayer2.setText("AI");
             }
         });
     }
@@ -400,7 +409,7 @@ public class GameController implements Initializable, IClientGUI {
     @Override
     public void processUserIsOverStartResponse() {
         Platform.runLater(() -> {
-            lvLog.getItems().add(getDate() + ": " + " You are over start, €2000 added to your wallet");
+            lvLog.getItems().add(getDate() + ": " + " You are over start, €1000 added to your wallet");
         });
     }
 
@@ -533,6 +542,7 @@ public class GameController implements Initializable, IClientGUI {
         String username = tfUsername.getText();
         String password = tfPassword.getText();
         lblCurrentPlayerName.setText(username);
+        isSinglePlayer = rbSinglePlayer.isSelected();
 
         if(username.equals(""))
         {
@@ -545,7 +555,11 @@ public class GameController implements Initializable, IClientGUI {
             if (!isLogin) {
                 getGameClient().registerUser(username, password);
             } else {
-                getGameClient().loginUser(username, password);
+                getGameClient().loginUser(username, password, isSinglePlayer);
+                if (isSinglePlayer) {
+                    User userAI = new User(2, "2", "AI");
+                    users.add(userAI);
+                }
             }
         }
     }
@@ -561,6 +575,23 @@ public class GameController implements Initializable, IClientGUI {
             getGameClient().endTurn(playerTurn);
             switchTurn();
             setDisable(true);
+        }
+    }
+
+    private void setVisible(boolean visible) {
+        btnLogin.setVisible(visible);
+        btnRegister.setVisible(visible);
+        rbMultiPlayer.setVisible(visible);
+        rbSinglePlayer.setVisible(visible);
+        tfUsername.setVisible(visible);
+        tfPassword.setVisible(visible);
+        if (isSinglePlayer) {
+            rec3.setVisible(visible);
+            rec4.setVisible(visible);
+            colorPlayer3.setVisible(visible);
+            colorPlayer4.setVisible(visible);
+            lblPlayer3.setVisible(visible);
+            lblPlayer4.setVisible(visible);
         }
     }
 

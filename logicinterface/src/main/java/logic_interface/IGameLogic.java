@@ -74,9 +74,10 @@ public interface IGameLogic {
      * Login method for a registered user.
      * @param username
      * @param password
+     * @param singlePlayer
      * @param sessionId
      */
-    boolean login(String username, String password, String sessionId);
+    boolean login(String username, String password, boolean singlePlayer, String sessionId);
 
     /**
      * Handle method for disconnected client.
