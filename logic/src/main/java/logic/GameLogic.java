@@ -430,17 +430,13 @@ public class GameLogic implements IGameLogic {
 
     private void resetGoalBonus() { this.goalBonus = 500; }
 
-    private boolean handleSinglePlayerMode(boolean isSinglePlayer) {
+    private void handleSinglePlayerMode(boolean isSinglePlayer) {
         User userAI = new User(2, "2", "AI");
-        if (userAI != null) {
-            this.isSinglePlayer = isSinglePlayer;
-            onlineUsers.add(userAI);
-            this.playerStartCount = 2;
-            checkStartingCondition();
-            updateUsersInGame();
-            return true;
-        }
-        return false;
+        this.isSinglePlayer = isSinglePlayer;
+        onlineUsers.add(userAI);
+        this.playerStartCount = 2;
+        checkStartingCondition();
+        updateUsersInGame();
     }
 
     private void doAIMoves() {
