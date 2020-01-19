@@ -68,7 +68,7 @@ public class GameLogic implements IGameLogic {
             currentUser.setPlace(newPlace);
             if (newPlace == 2 || newPlace == 17 || newPlace == 33) doCommunityChestCardAction(currentUser);
             if (newPlace == 7 || newPlace == 22 || newPlace == 36) doChangeCardAction(currentUser);
-            messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
+            messageGenerator.updateCurrentUser(currentUser, sessionId);
             messageGenerator.notifyMoveUserMessage(dice, sessionId);
             checkIfSquareIsOwned(currentUser, board);
             checkRandomSquares(currentUser, newPlace);
@@ -97,8 +97,8 @@ public class GameLogic implements IGameLogic {
                         if (checkForEnoughMoney(currentUser, s.getPrice())) {
                             currentUser.getWallet().withDrawMoneyOfWallet(s.getPrice());
                             s.setOwner(currentUser.getUserId());
-                            messageGenerator.updateCurrentUser(currentUser, currentUser.getSessionId());
-                            messageGenerator.updateBoard(currentUser.getSessionId());
+                            messageGenerator.updateCurrentUser(currentUser, sessionId);
+                            messageGenerator.updateBoard(sessionId);
                         }
                     }
                     else messageGenerator.notifyPropertyIsAlreadyOwned(s.getOwner(), sessionId);
@@ -123,9 +123,7 @@ public class GameLogic implements IGameLogic {
             User user = (User) monopolyRestClient.registerUser(username, password);
             user.setSessionId(sessionId);
 
-            log.info("[User " + username + " added to monopoly game] \n");
             messageGenerator.notifyRegisterResult(sessionId, true);
-            //login(username, password, sessionId);
             return true;
         }
         else {
@@ -146,6 +144,7 @@ public class GameLogic implements IGameLogic {
 
             if (user != null) {
                 user.setSessionId(sessionId);
+                user.setUserId(Integer.parseInt(sessionId));
                 messageGenerator.notifyLoginResult(sessionId, user.getUserId());
                 onlineUsers.add(user);
                 messageGenerator.notifyUserAdded(sessionId, username);

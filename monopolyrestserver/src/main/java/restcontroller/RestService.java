@@ -19,11 +19,7 @@ public class RestService {
         repository.save(userDTO);
     }
 
-    public User getUser(String username){
-        return repository.findUserByUsername(username);
-    }
+    public User getUser(String username) { return repository.findUserByUsername(username); }
 
-    public User getUserByCredentials(String username, String password){
-        return repository.findUserByCredentials(username, password);
-    }
+    public User getUserByCredentials(String username, String password){ return repository.findUserByCredentials(username, password); }
 }

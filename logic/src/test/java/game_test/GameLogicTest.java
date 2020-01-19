@@ -527,10 +527,11 @@ class GameLogicTest {
      */
     @Test
     void testCommunityChestCards() {
-        for (int i = 0; i < 28; i++) {
+        for (int i = 0; i < 30; i++) {
             for (int turn = 1; turn < 5; turn++) {
                 int noDice1 = getDice();
                 int noDice2 = getDice();
+
                 if (turn == 1) moveUserToSpecificSquare(noDice1 + noDice2);
                 else if (turn == 2) moveUserToSpecificSquare(noDice1 + noDice2);
                 else if (turn == 3) moveUserToSpecificSquare(noDice1 + noDice2);
@@ -545,9 +546,8 @@ class GameLogicTest {
      */
     @Test
     void testChangeCards() {
-        for (int i = 0; i < 28; i++) {
+        for (int i = 0; i < 30; i++) {
             for (int turn = 1; turn < 5; turn++) {
-
                 int noDice1 = getDice();
                 int noDice2 = getDice();
 
